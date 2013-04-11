@@ -2,42 +2,55 @@
 <html>
 <head>
     <title>SaTWo</title>
+    <LINK href="/stylesheets/style.css" rel="stylesheet" type="text/css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script src="/javascripts/view_index.js"></script>
 </head>
 <body>
     <h1>SaTWo Project</h1>
-    <div id="login_div">
-        <h2>Login</h2>
-        <form>
-            <span>Username:</span>
-            <input type="text" />
-            <br/>
-            <span>Password:</span>
-            <input type="password" />
-            <br/>
-            <input id="button_login_submit" type="submit" value="Submit" />
-            <input id="button_register" type="button" value="Register" />
-        </form>
+    <div id="init_paige">
+        <div id="log&reg_frame">
+            <div id="login_div">
+                <h2>Login</h2>
+                <span>Username:</span>
+                <input type="text" id="login_user"/>
+                <br/>
+                <span>Password:</span>
+                <input type="password" id="login_pass"/>
+                <br/>
+                <input id="button_login" type="button" value="login"/>
+                <input id="button_register" type="button" value="Register"/>
+            </div>
+            <div id="register_div">
+                <h2>Register</h2>
+                <span>Username:</span>
+                <input type="text" id="reg_user_input"/>
+                <br/>
+                <span>Password:</span>
+                <input type="password"  id="reg_pass_input"/>
+                <br/>
+                <span>Confirm password:</span>
+                <input type="password" id="reg_pass_confirm_input"/>
+                <br/>
+                <span>Email:</span>
+                <input type="email" id="reg_email_input"/>
+                <br/>
+                <input id="button_register_submit" type="button" value="Submit"/>
+                <input id="button_register_cancel" type="button" value="Cancel"/>
+            </div>
+        </div>
     </div>
-    <div id="register_div">
-        <h2>Register</h2>
-        <form>
-            <span>Username:</span>
-            <input type="text" name="reg_user" required />
-            <br/>
-            <span>Password:</span>
-            <input type="password"  name="reg_pass" required />
-            <br/>
-            <span>Confirm password:</span>
-            <input type="password" name="reg_pass_confirm" required />
-            <br/>
-            <span>Email:</span>
-            <input type="email" name="reg_email" required />
-            <br/>
-            <input id="button_register_submit" type="button" value="Submit" />
-            <input id="button_register_cancel" type="button" value="Cancel" />
-        </form>
+
+    <div id="main_paige">
+        MAIN PAIGE
+    </div>
+
+    <div id="room_paige">
+        ROOM PAIGE
+    </div>
+
+    <div id="game_paige">
+        GAME PAIGE
     </div>
 </body>
 </html>
