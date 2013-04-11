@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="/javascripts/init_page.js"></script>
+</head>
+<body>
+    <div id="log&reg_frame">
+        <div id="login_div">
+            <h2>Login</h2>
+            <span>Username:</span>
+            <input type="text" id="login_user"/>
+            <br/>
+            <span>Password:</span>
+            <input type="password" id="login_pass"/>
+            <br/>
+            <input id="button_login" type="button" value="Login" onclick="javascript:login_button_behaviour()"/>
+            <input id="button_register" type="button" value="Register" onclick="javascript:register_button_behaviour()"/>
+        </div>
+        <div id="register_div" hidden>
+            <h2>Register</h2>
+            <span>Username:</span>
+            <input type="text" id="reg_user_input"/>
+            <br/>
+            <span>Password:</span>
+            <input type="password"  id="reg_pass_input"/>
+            <br/>
+            <span>Confirm password:</span>
+            <input type="password" id="reg_pass_confirm_input"/>
+            <br/>
+            <span>Email:</span>
+            <input type="email" id="reg_email_input"/>
+            <br/>
+            <input id="button_register_submit" type="button" value="Submit" onclick="javascript:register_submit_button_behaviour()"/>
+            <input id="button_register_cancel" type="button" value="Cancel" onclick="javascript:register_cancel_button_behaviour()"/>
+        </div>
+    </div>
+</body>
+</html>

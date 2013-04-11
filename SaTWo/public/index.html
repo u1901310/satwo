@@ -8,49 +8,28 @@
 </head>
 <body>
     <h1>SaTWo Project</h1>
-    <div id="init_paige">
-        <div id="log&reg_frame">
-            <div id="login_div">
-                <h2>Login</h2>
-                <span>Username:</span>
-                <input type="text" id="login_user"/>
-                <br/>
-                <span>Password:</span>
-                <input type="password" id="login_pass"/>
-                <br/>
-                <input id="button_login" type="button" value="login"/>
-                <input id="button_register" type="button" value="Register"/>
-            </div>
-            <div id="register_div">
-                <h2>Register</h2>
-                <span>Username:</span>
-                <input type="text" id="reg_user_input"/>
-                <br/>
-                <span>Password:</span>
-                <input type="password"  id="reg_pass_input"/>
-                <br/>
-                <span>Confirm password:</span>
-                <input type="password" id="reg_pass_confirm_input"/>
-                <br/>
-                <span>Email:</span>
-                <input type="email" id="reg_email_input"/>
-                <br/>
-                <input id="button_register_submit" type="button" value="Submit"/>
-                <input id="button_register_cancel" type="button" value="Cancel"/>
-            </div>
-        </div>
+    <div id="init_page">
+        <script>
+            $('#init_page').load('html/init_page.html');
+        </script>
     </div>
 
-    <div id="main_paige">
-        MAIN PAIGE
+    <div id="main_page" hidden>
+        <script>
+            $('#main_page').load('html/main_page.html');
+        </script>
     </div>
 
-    <div id="room_paige">
-        ROOM PAIGE
+    <div id="room_page" hidden>
+        <script>
+            $('#room_page').load('html/room_page.html');
+        </script>
     </div>
 
-    <div id="game_paige">
-        GAME PAIGE
+    <div id="game_page" hidden>
+        <script>
+            $('#game_page').load('html/game_page.html');
+        </script>
     </div>
 </body>
 </html>
