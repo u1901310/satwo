@@ -7,7 +7,7 @@ a {
     color: #00B7FF;
 }
 
-.error_register_validation {
+.error_register_validation .error_new_game_validation{
     font-size: 75%;
     color: red;
 }

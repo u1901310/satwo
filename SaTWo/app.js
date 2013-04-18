@@ -28,10 +28,18 @@ if ('development' == app.get('env')) {
 }
 
 //app.get('/', routes.index);
+//Administration functions
+app.get('/clearAllUsersSATWO', routes.clearAllUsers);
+app.get('/clearAllGamesSATWO', routes.clearAllGames);
+app.get('/games', routes.findAllGames);
 app.get('/users', routes.findAll);
+//----------------------------------
 app.get('/login/:username/:password', routes.login);
 app.get('/userByUsername/:username', routes.findByUsername);
 app.post('/addUser', routes.addUser);
+app.get('/userGames/:user_id', routes.findUserGames);
+app.get('/publicGames', routes.findPublicGames);
+app.post('/addGame', routes.addGame);
 app.post('/sendRequest', routes.sendRequest);
 app.post('/rejectRequest', routes.rejectRequest);
 app.post('/addFriend', routes.addFriend);
