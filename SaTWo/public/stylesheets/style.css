@@ -1,13 +1,28 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
-  color: #00B7FF;
+    color: #00B7FF;
 }
 
 .error_register_validation {
     font-size: 75%;
     color: red;
 }
+
+.kineticjs-content {
+    background: url(../images/background.png);
+}
+
+/*
+input {
+    border-radius:15px;
+    height:55px;
+    font-size:20pt;
+    padding-left:10px;
+    background:rgba(255,255,255,0.5);
+    border:none;
+}
+*/
