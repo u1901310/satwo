@@ -14,10 +14,10 @@ db.open(function(err, db) {
     if(!err) {
         console.log("Connected to 'adadb' database");
         db.collection('users', {safe:true}, function(err, collection) {
-            //if (err) {
+            if (err) {
                 console.log("The 'users' collection doesn't exist. Creating it with sample data...");
                 populateDB();
-            //}
+            }
         });
     }
 });
@@ -91,6 +91,9 @@ var populateDB = function() {
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * */
+
+// Function to login a user. It searches for the user in the collection 'users'
+//  and return its information if it was found.
 exports.login = function(req, res) {
     var name = req.params.username;
     var pass = req.params.password;
@@ -107,6 +110,8 @@ exports.login = function(req, res) {
     });
 };
 
+// Function to find a user by its username. It is similar to login function,
+//  but this function does not return the user information
 exports.findByUsername = function(req, res) {
     var name = req.params.username;
     db.collection('users', function(err, collection) {
@@ -122,6 +127,8 @@ exports.findByUsername = function(req, res) {
     });
 };
 
+// Function to add a user to the database. It initializes the default attributes
+//  and insert the new user into the 'users' collection.
 exports.addUser = function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -149,6 +156,9 @@ exports.addUser = function(req, res) {
     });
 };
 
+// Function to send a friendship request to another user. By this way, the user
+//  who sends the request is added to the friendship requests' list of the user
+//  who receives it
 exports.sendRequest = function(req, res) {
     var user = req.body.user;
     var friend = req.body.friend;
@@ -166,6 +176,8 @@ exports.sendRequest = function(req, res) {
     });
 };
 
+// Function to reject a friendship request. It deletes a friendship request from
+//  its list by giving the username of the friend.
 exports.rejectRequest = function(req, res) {
     var user = req.body.user;
     var friend = req.body.friend;
@@ -183,6 +195,10 @@ exports.rejectRequest = function(req, res) {
     });
 };
 
+// Function to add a friend to the friend's list. It adds the friend to the friend's
+//  list of the user, it adds the user to the friend's list of the friend, and it
+//  removes the friendship request of the friend from the friendship requests' list
+//  of the user.
 exports.addFriend = function(req, res) {
     var user = req.body.user;
     var friend = req.body.friend;
@@ -217,6 +233,8 @@ exports.addFriend = function(req, res) {
     });
 };
 
+// Function to remove a friend from the friend's list. It removes the friend from
+//  the user friend's list, and it removes the user from the friend friend's list.
 exports.removeFriend = function(req, res) {
     var user = req.body.user;
     var friend = req.body.friend;
@@ -242,6 +260,7 @@ exports.removeFriend = function(req, res) {
     });
 };
 
+// Function to get the set of requests from a certain user.
 exports.getRequests = function(req, res) {
     var name = req.params.username;
 
@@ -258,6 +277,7 @@ exports.getRequests = function(req, res) {
     });
 };
 
+// Function to get the set of friends of a certain user.
 exports.getFriends = function(req, res) {
     var name = req.params.username;
 
@@ -296,7 +316,8 @@ exports.getUserUsername = function(req, res) {
 * ----------------------------------------------------------------------------------------------------------------------------------------------
 * ----------------------------------------------------------------------------------------------------------------------------------------------
 * */
- exports.findUserGames = function(req, res) {
+// Function to the get the games created by a certain user.
+exports.findUserGames = function(req, res) {
     var userId = req.params.user_id;
 
     console.log('Listing all user games');
@@ -329,6 +350,7 @@ exports.getUserUsername = function(req, res) {
     });
 };
 
+// Function to get the set of public games created by all users.
 exports.findPublicGames = function(req, res) {
     console.log('Listing all public games');
     db.collection('games', function(err, collection) {
@@ -640,6 +662,7 @@ exports.clearAll = function(req, res) {
     });
 };
 
+// Function to clear all users from the database.
 exports.clearAllUsers = function(req, res) {
     console.log('Deleting all users');
     db.collection('users', function(err, collection) {
@@ -648,6 +671,7 @@ exports.clearAllUsers = function(req, res) {
     });
 };
 
+// Function to clear all public games from the database.
 exports.clearAllGames = function(req, res) {
     console.log('Deleting all games');
     db.collection('games', function(err, collection) {
@@ -664,6 +688,7 @@ exports.clearAllFactions = function(req, res) {
     });
 };
 
+// Function to get all public games from the database.
 exports.findAllGames = function(req, res) {
     db.collection('games', function(err, collection) {
         collection.find().toArray(function(err, items) {
@@ -673,6 +698,7 @@ exports.findAllGames = function(req, res) {
     });
 };
 
+// Function to get all users from the database.
 exports.findAll = function(req, res) {
     db.collection('users', function(err, collection) {
         collection.find().toArray(function(err, items) {
