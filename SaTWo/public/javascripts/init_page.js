@@ -1,11 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: Eddard
- * Date: 4/04/13
- * Time: 18:24
- * To change this template use File | Settings | File Templates.
- */
-
 /*
  * Function to define the behaviour of the login button
  * */
@@ -149,11 +141,11 @@ var validate_register = function() {
     }
 
     return validation;
-}
+};
 
 var remove_tag_by_class = function(class_text) {
     $('.' + class_text).remove();
-}
+};
 
 var validate_uniqueness = function(username) {
     var res;
@@ -172,4 +164,4 @@ var validate_uniqueness = function(username) {
             }
         });
     return res;
-}
+};
