@@ -5,6 +5,24 @@
     <script src="/javascripts/main_page.js"></script>
 </head>
 <body>
-    MAIN PAGE
+    <input id="button_own_games" type="button" value="My Games" onclick="javascript:own_games_button_behaviuour()"/>
+    <input id="button_public_games" type="button" value="Public Games" onclick="javascript:public_games_button_behaviuour()"/>
+    <input id="nutton_new_game" type="button" value="New Game" onclick="javascript:new_game_button_behaviuour()"/>
+    <div id="my_games_list">My games list</div>
+    <div id="public_games_list" hidden>Public games list</div>
+    <div id="new_game_info" hidden>
+        New Game
+        <span>Game name:</span>
+        <input id="game_name_input" type="text"/>
+        <br>
+        <span>Password (Optional):</span>
+        <input id="game_pass_input" type="password"/>
+        <br>
+        <span>Number of players:</span>
+        <input id="game_players_number_input" type="number" min="2" max="6" value="2"/>
+        <br>
+        <input id="button_game_submit" type="button" value="Submit" onclick="javascript:submit_new_game_button_behaviour()"/>
+        <input id="button_game_cancel" type="button" value="Cancel" onclick="javascript:cancel_new_game_button_behaviour()"/>
+    </div>
 </body>
 </html>

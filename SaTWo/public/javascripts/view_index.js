@@ -10,6 +10,8 @@ $(document).ready(function() {
     //Clean all possible information in inputs fields
     clear_inputs('login_div');
     clear_inputs('register_div');
+
+    var user_looged = null;
 });
 
 /*
