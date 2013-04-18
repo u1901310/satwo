@@ -4,25 +4,33 @@
     <title>SaTWo</title>
     <LINK href="/stylesheets/style.css" rel="stylesheet" type="text/css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.4.0.min.js"></script>
     <script src="/javascripts/view_index.js"></script>
 </head>
 <body>
-    <h1>SaTWo Project</h1>
-    <div id="header_buttons" hidden>
-        <script>
-            $('#header_buttons').load('html/header_buttons.html');
-        </script>
-    </div>
+    <!--<h1>SaTWo Project</h1>-->
     <div id="init_page">
         <script>
             $('#init_page').load('html/init_page.html');
         </script>
     </div>
 
-    <div id="main_page" hidden></div>
+    <div id="main_page" hidden>
+        <script>
+            $('#main_page').load('html/main_page.html');
+        </script>
+    </div>
 
-    <div id="room_page" hidden></div>
+    <div id="room_page" hidden>
+        <script>
+            //$('#room_page').load('html/room_page.html');
+        </script>
+    </div>
 
-    <div id="game_page" hidden></div>
+    <div id="game_page" hidden>
+        <script>
+            //$('#game_page').load('html/game_page.html');
+        </script>
+    </div>
 </body>
 </html>

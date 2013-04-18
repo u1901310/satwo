@@ -40,6 +40,13 @@ app.post('/addUser', routes.addUser);
 app.get('/userGames/:user_id', routes.findUserGames);
 app.get('/publicGames', routes.findPublicGames);
 app.post('/addGame', routes.addGame);
+app.post('/sendRequest', routes.sendRequest);
+app.post('/rejectRequest', routes.rejectRequest);
+app.post('/addFriend', routes.addFriend);
+app.post('/removeFriend', routes.removeFriend);
+app.get('/getRequests/:username', routes.getRequests);
+app.get('/getFriends/:username', routes.getFriends);
+app.get('/remove', routes.removeUsers);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

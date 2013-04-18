@@ -17,6 +17,8 @@ db.open(function(err, db) {
             if (err) {
                 console.log("The 'users' collection doesn't exist. Creating it with sample data...");
                 populateDB();
+            } else {
+                populateDB();
             }
         });
     }
@@ -27,9 +29,32 @@ var populateDB = function() {
 
     var users = [
         {
-            username: "admin",
-            password: "abcd",
-            email: "admin@mail.com"
+            username: "Pau",
+            password: "Pau1234",
+            email: "pau@mail.cat",
+            requests: [],
+            friends: []
+        },
+        {
+            username: "Edu",
+            password: "Edu1234",
+            email: "edu@mail.cat",
+            requests: [],
+            friends: []
+        },
+        {
+            username: "Pep",
+            password: "Pep1234",
+            email: "pep@mail.cat",
+            requests: [],
+            friends: []
+        },
+        {
+            username: "Pol",
+            password: "Pol1234",
+            email: "pol@mail.cat",
+            requests: [],
+            friends: []
         }];
 
     db.collection('users', function(err, collection) {
@@ -41,9 +66,9 @@ var populateDB = function() {
  * GET home page.
  */
 
-/*exports.index = function(req, res){
+exports.index = function(req, res){
   res.render('index', { title: 'SaTWo: Save the World' });
-};*/
+};
 
 exports.findAll = function(req, res) {
     db.collection('users', function(err, collection) {
@@ -96,7 +121,9 @@ exports.addUser = function(req, res) {
         user_username: username,
         user_password: password,
         user_email: email,
-        user_games_id: []
+        user_games_id: [],
+        user_requests: [],
+        user_friends: []
         //Altres atributs necessaris per defecte
     };
 
@@ -110,6 +137,138 @@ exports.addUser = function(req, res) {
                 res.send(result[0]);
             }
         });
+    });
+}
+
+exports.sendRequest = function(req, res) {
+    var user = req.body.user;
+    var friend = req.body.friend;
+
+    console.log('Sending friendship request from user ' + friend + ' to user ' + user);
+    db.collection('users', function(err, collection) {
+        collection.update({username: friend}, {$addToSet: {requests: user}}, function(err, result){
+            if (err) {
+                res.send({'error':'An error has occurred sending a request'});
+            } else {
+                console.log('Success: user ' + user + ' added to user ' + friend + ' requests');
+                res.send(null);
+            }
+        });
+    });
+}
+
+exports.rejectRequest = function(req, res) {
+    var user = req.body.user;
+    var friend = req.body.friend;
+
+    console.log('Removing request from user ' + friend + ' sent to user ' + user);
+    db.collection('users', function(err, collection) {
+        collection.update({username: user}, {$pull: {requests: friend}}, function(err, result) {
+            if (err) {
+                res.send({'error':'An error occurred removing a request'});
+            } else {
+                console.log('Success: request from user ' + friend + ' removed from user ' + user);
+                res.send(null);
+            }
+        });
+    });
+}
+
+exports.addFriend = function(req, res) {
+    var user = req.body.user;
+    var friend = req.body.friend;
+
+    console.log('Adding friend ' + friend + ' to user ' + user + ' and vice versa');
+    db.collection('users', function(err, collection) {
+        collection.update({username: user}, {$addToSet: {friends: friend}}, function(err, result){
+            if (err) {
+                res.send({'error':'An error has occurred adding a new friend'});
+            } else {
+                console.log('Success: user ' + friend + ' added to user ' + user + ' as a friend');
+            }
+        });
+
+        collection.update({username: friend}, {$addToSet: {friends: user}}, function(err, result){
+            if (err) {
+                res.send({'error':'An error has occurred adding a new friend'});
+            } else {
+                console.log('Success: user ' + user + ' added to user ' + friend + ' as a friend');
+            }
+        });
+
+        console.log('Removing request from user ' + friend + ' sent to user ' + user);
+        collection.update({username: user}, {$pull: {requests: friend}}, function(err, result) {
+            if (err) {
+                res.send({'error':'An error occurred removing a request'});
+            } else {
+                console.log('Success: request from user ' + friend + ' removed from user ' + user);
+                res.send(null);
+            }
+        });
+    });
+}
+
+exports.removeFriend = function(req, res) {
+    var user = req.body.user;
+    var friend = req.body.friend;
+
+    console.log('Removing friend ' + friend + ' from user ' + user + ' and vice versa');
+    db.collection('users', function(err, collection) {
+        collection.update({username: user}, {$pull: {friends: friend}}, function(err, result){
+            if (err) {
+                res.send({'error':'An error has occurred removing an existing friend'});
+            } else {
+                console.log('Success: user ' + friend + ' removed from user ' + user + ' as a friend');
+            }
+        });
+
+        collection.update({username: friend}, {$pull: {friends: user}}, function(err, result){
+            if (err) {
+                res.send({'error':'An error has occurred removing an existing friend'});
+            } else {
+                console.log('Success: user ' + user + ' removed from user ' + friend + ' as a friend');
+                res.send(null);
+            }
+        });
+    });
+}
+
+exports.getRequests = function(req, res) {
+    var name = req.params.username;
+
+    db.collection('users', function(err, collection) {
+        collection.findOne({ 'username': name}, function(err, item) {
+            if(item != null) {
+                console.log("User " + name + " found");
+                res.send({"requests": item.requests});
+            } else {
+                console.log("User " + name + " not found");
+                res.send({"requests": null});
+            }
+        });
+    });
+}
+
+exports.getFriends = function(req, res) {
+    var name = req.params.username;
+
+    db.collection('users', function(err, collection) {
+        collection.findOne({ 'username': name}, function(err, item) {
+            if(item != null) {
+                console.log("User " + name + " found");
+                res.send({"friends": item.friends});
+            } else {
+                console.log("User " + name + " not found");
+                res.send({"friends": null});
+            }
+        });
+    });
+}
+
+exports.removeUsers = function(req, res) {
+    db.collection('users', function(err, collection) {
+        collection.remove();
+        res.send(null);
     });
 };
 
