@@ -1,25 +1,10 @@
-/**
- * Created with JetBrains WebStorm.
- * User: Eddard
- * Date: 4/04/13
- * Time: 18:24
- * To change this template use File | Settings | File Templates.
- */
-
-//var user = null;
-var user = [
-    {
-        username: "admin",
-        password: "abcd",
-        email: "admin@mail.com"
-    }];
 
 $(document).ready(function() {
     //Clean all possible information in inputs fields
     clear_inputs('login_div');
     clear_inputs('register_div');
 
-    var user_looged = null;
+    var user_logged = null;
 });
 
 /*

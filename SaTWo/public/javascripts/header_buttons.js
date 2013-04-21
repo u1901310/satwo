@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: Eddard
- * Date: 12/04/13
- * Time: 12:50
- * To change this template use File | Settings | File Templates.
- */
 
 /*
 * Function to logout
