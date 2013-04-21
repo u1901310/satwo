@@ -6,7 +6,9 @@ $(document).ready(function() {
     reload_friends();
 });
 
-
+/*
+ * Function to define the behaviour of the 'add friend' button
+ * */
 var add_friend_button_behaviour = function(){
     if (user_logged.user_username != $('#friend_username').val()) {
         var info = $.getJSON('userByUsername/' + $('#friend_username').val(), function(data) {
@@ -30,6 +32,9 @@ var add_friend_button_behaviour = function(){
     }
 };
 
+/*
+ * Function to reload the friendship requests of the user.
+ * */
 function reload_requests(){
     $('#requests_list').empty();
 
@@ -50,6 +55,9 @@ function reload_requests(){
     });
 };
 
+/*
+ * Function to reload the friends of the user.
+ * */
 function reload_friends(){
     $('#friends_list').empty();
 
@@ -68,6 +76,9 @@ function reload_friends(){
     });
 };
 
+/*
+ * Function to define the behaviour of the 'remove friend' button
+ * */
 var remove_friend_button_behaviour = function(name){
     var ok = confirm("Remove friend: " + name + "?");
     if (ok) {
@@ -86,6 +97,9 @@ var remove_friend_button_behaviour = function(name){
     }
 };
 
+/*
+ * Function to define the behaviour of the 'accept request' button
+ * */
 var accept_request_button_behaviour = function(name){
     if (user_logged.user_username != name) {
         var info = $.getJSON('userByUsername/' + name, function(data) {
@@ -112,6 +126,9 @@ var accept_request_button_behaviour = function(name){
     }
 };
 
+/*
+ * Function to define the behaviour of the 'reject request' button
+ * */
 var reject_request_button_behaviour = function(name){
     $.post('/rejectRequest',
         {

@@ -143,10 +143,16 @@ var validate_register = function() {
     return validation;
 };
 
+/*
+ * Function to remove every tag from a certain class
+ * */
 var remove_tag_by_class = function(class_text) {
     $('.' + class_text).remove();
 };
 
+/*
+ * Function to validate the uniqueness of a username asynchronously.
+ * */
 var validate_uniqueness = function(username) {
     var res;
 
