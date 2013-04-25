@@ -4,7 +4,21 @@ $(document).ready(function() {
     list_user_games();
     reload_requests();
     reload_friends();
+
+    var socket = io.connect('http://localhost:3000/');
+    socket.on('request_received', function (data) {
+        reload_requests();
+    });
+    socket.on('friend_received', function (data) {
+        reload_friends();
+    });
 });
+
+var chat_button_behaviour = function(){
+    $('#main_page').hide();
+    $('#game_page').show();
+    $('#game_page').load('html/game_page.html');
+};
 
 /*
  * Function to define the behaviour of the 'add friend' button
@@ -23,6 +37,11 @@ var add_friend_button_behaviour = function(){
                     },
                     "json"
                 );
+
+                var socket = io.connect('http://localhost:3000/');
+                socket.emit('request_sent', {info: 'sent'});
+
+                alert("Friendship request sent");
             } else {
                 alert("This user does not exist");
             }
@@ -93,7 +112,10 @@ var remove_friend_button_behaviour = function(name){
             "json"
         );
 
-        reload_friends();
+        var socket = io.connect('http://localhost:3000/');
+        socket.emit('friend_sent', {info: 'sent'});
+
+        //reload_friends();
     }
 };
 
@@ -115,8 +137,11 @@ var accept_request_button_behaviour = function(name){
                     "json"
                 );
 
+                var socket = io.connect('http://localhost:3000/');
+                socket.emit('friend_sent', {info: 'sent'});
+
                 reload_requests();
-                reload_friends();
+                //reload_friends();
             } else {
                 alert("This user does not exist");
             }
