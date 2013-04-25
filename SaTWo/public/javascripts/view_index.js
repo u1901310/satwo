@@ -4,7 +4,9 @@ $(document).ready(function() {
     clear_inputs('login_div');
     clear_inputs('register_div');
 
+    //Session params
     var user_logged = null;
+    var current_game_id = null;
 });
 
 /*

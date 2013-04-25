@@ -193,7 +193,7 @@ function list_user_games() {
             if(data.result == 'ok') {
                 $.each(data.games_list, function() {
                     $('#my_games_list').append(
-                        '<span>' + this.game_name + ' ' + this.game_current_num_of_players + '/' + this.game_num_of_players + '<input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/> </span>' +
+                        '<span>' + this.game_name + ' ' + this.game_current_num_of_players + '/' + this.game_num_of_players + '<input class="continue_game_button" type="button" value="Continue" onclick="javascript:continue_game_button_behaviour(\'' + this._id + '\')"/> </span>' +
                             '<br>'
                     );
                 });
@@ -258,22 +258,44 @@ var new_game_button_behaviuour = function() {
  * Function to define the behaviour of the new game submit button
  * */
 var submit_new_game_button_behaviour = function() {
+    var game_created_id;
     $('.error_new_game_validation').remove();
     if(validate_game()) {
-        $.post('/addGame',
-            {
+        //Petition to create a new game
+        $.ajax({
+            url: 'addGame/',
+            type: 'POST',
+            data: {
                 name: $('#game_name_input').val(),
                 password: $('#game_pass_input').val(),
-                n_players: $('#game_players_number_input').val()
+                n_players: $('#game_players_number_input').val(),
+                user_creator: user_logged._id
             },
-            function(data,status){
-                alert(data._id);
-            },
-            "json"
-        );
+            async: false
+        }).done(function(data) {
+                game_created_id = data._id;
+
+                //Petition to link the creator user with the created game
+                $.post('/addGameToUser',
+                    {
+                        user: user_logged._id,
+                        game: game_created_id
+                    },
+                    function(data, status){
+
+                    },
+                    "json"
+                );
+            });
+
+
         $('#new_game_info').hide();
         //Redirigir a la sala en canvi de mostrar de nou el llistat
-        own_games_button_behaviuour();
+        current_game_id = game_created_id;
+        $('#main_page').hide();
+        $('#room_page').show();
+        $('#room_page').load('html/room_page.html');
+        //own_games_button_behaviuour();
         alert("Game created");
     }
 };
@@ -284,6 +306,7 @@ var submit_new_game_button_behaviour = function() {
 var validate_game = function() {
     var validation = true;
     var name = $('#game_name_input').val();
+    var n_players = $('#game_players_number_input').val();
 
     /*
      * Name condition:
@@ -300,6 +323,20 @@ var validate_game = function() {
             $('#game_name_input').after('<span class="error_new_game_validation">*Name only can contains lowercase, uppercase, digits and underscores</span>');
         }
     }
+    /*
+    * Nº of player condition:
+    *   1 - Must be between 2 and 6
+    * */
+    if(n_players < 2) {
+        //validation = false;
+        //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be greater than 2</span>');
+        $('#game_players_number_input').val(2);
+    }
+    if(n_players > 6) {
+        //validation = false;
+        //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be lower than 6</span>');
+        $('#game_players_number_input').val(6);
+    }
     return validation;
 };
 
@@ -315,7 +352,31 @@ var cancel_new_game_button_behaviour = function() {
  * Function to define the behaviour of the enter game button
  * */
 var enter_game_button_behaviour = function(game_id) {
-    alert(game_id);
+    current_game_id = game_id;
+    $.getJSON('/gameIsFull/' + game_id, function(data) {
+        if(data.result == 'yes') {
+            alert("Game is Full");
+        } else {
+            $.getJSON('/gameIsSecure/' + game_id, function(data) {
+                if(data.result == 'yes') {
+                    $('#Game_management_div').hide();
+                    $('#access_secure_games_div').show();
+                } else {
+                    $.post('/linkGameAndUser',
+                        {
+                            user: user_logged._id,
+                            game: game_id
+                        },
+                        function(data, status){},
+                        "json"
+                    );
+                    $('#main_page').hide();
+                    $('#room_page').show();
+                    $('#room_page').load('html/room_page.html');
+                }
+            });
+        }
+    });
 };
 
 /*
@@ -323,4 +384,48 @@ var enter_game_button_behaviour = function(game_id) {
  * */
 var continue_game_button_behaviour = function() {
 
+};
+
+/*
+* Function to access a secure game
+* */
+var access_secure_game = function() {
+    $('.error_access_secure_game').remove();
+    $.post('/validateGamePassword',
+        {
+            game_id: current_game_id,
+            validation_password: $('#password_game_access_input').val()
+        },
+        function(data) {
+            if(data.result == 'ok') {
+                $.post('/linkGameAndUser',
+                    {
+                        user: user_logged._id,
+                        game: current_game_id
+                    },
+                    function(data, status){},
+                    "json"
+                );
+                $('#access_secure_games_div').hide();
+                $('#Game_management_div').show();
+                $('#main_page').hide();
+                $('#room_page').show();
+                $('#room_page').load('html/room_page.html');
+            } else {
+                $('#password_game_access_input').after('<span class="error_access_secure_game">*Error: Password incorrect</span>');
+            }
+        },
+        "json"
+    );
+};
+
+/*
+* Function to cancel the access to a secure game
+* */
+var cancel_access_secure_game = function() {
+    current_game_id = null;
+    $('.error_access_secure_game').remove();
+    clear_inputs('access_secure_games_div');
+    $('#access_secure_games_div').hide();
+    $('#Game_management_div').show();
 };
