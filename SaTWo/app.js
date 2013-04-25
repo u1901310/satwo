@@ -29,8 +29,10 @@ if ('development' == app.get('env')) {
 
 //app.get('/', routes.index);
 //Administration functions
+app.get('/clearAllSATWO', routes.clearAll);
 app.get('/clearAllUsersSATWO', routes.clearAllUsers);
 app.get('/clearAllGamesSATWO', routes.clearAllGames);
+app.get('/clearAllFactionsSATWO', routes.clearAllFactions);
 app.get('/games', routes.findAllGames);
 app.get('/users', routes.findAll);
 //----------------------------------
@@ -46,6 +48,16 @@ app.post('/addFriend', routes.addFriend);
 app.post('/removeFriend', routes.removeFriend);
 app.get('/getRequests/:username', routes.getRequests);
 app.get('/getFriends/:username', routes.getFriends);
+app.get('/getUserUsername/:user_id', routes.getUserUsername);
+app.post('/addGameToUser', routes.addGameToUser);
+app.post('/linkGameAndUser', routes.linkGameAndUser);
+app.post('/unlinkGameAndUser', routes.unlinkGameAndUser);
+app.get('/gameIsFull/:game_id', routes.gameIsFull);
+app.get('/gameIsSecure/:game_id', routes.gameIsSecure);
+app.post('/validateGamePassword', routes.validateGamePassword);
+app.get('/getGame/:game_id', routes.getGame);
+app.post('/confirmUserToGame', routes.confirmUserToGame);
+app.get('/getFactions', routes.getFactions);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
