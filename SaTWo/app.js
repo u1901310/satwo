@@ -67,6 +67,7 @@ server.listen(app.get('port'), function(){
 
 //web socket
 var io = require('socket.io').listen(server);
+io.set('log level', 1);
 
 //app.post('/sendRequest', function (req, res) {
 //    res.sendfile(__dirname + '/public/html/main_page.html');
@@ -78,9 +79,18 @@ io.sockets.on('connection', function (socket) {
     socket.on('request_sent', function (data) {
         io.sockets.emit('request_received', { info: 'received'});
     });
+
     socket.on('friend_sent', function (data) {
         io.sockets.emit('friend_received', { info: 'received'});
-    })
+    });
+
+    socket.on('new_game_sent', function (data) {
+        io.sockets.emit('new_game_received', { info: 'received'});
+    });
+
+    socket.on('enter_game_sent', function (data) {
+        io.sockets.emit('enter_game_received', { info: 'received'});
+    });
 
     // when the client emits 'sendchat', this listens and executes
     socket.on('sendchat', function (data) {
@@ -104,6 +114,18 @@ io.sockets.on('connection', function (socket) {
 
         // upadate the list of users in chat, client-side
         io.sockets.emit('updateusers', usernames);
+    });
+
+    // when the clients emits 'removeuser', this listens and executes
+    socket.on('removeuser', function(){
+        // remove the username from global usernames list
+        delete usernames[socket.username];
+
+        // update list of users in chat, client-side
+        io.sockets.emit('updateusers', usernames);
+
+        // echo globally that this client has left
+        socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
     });
 
     // when the user disconnects... perform this

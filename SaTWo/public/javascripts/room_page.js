@@ -1,4 +1,6 @@
 
+var socket = io.connect('http://localhost:3000/');
+
 $(document).ready(function() {
     $.getJSON('/getGame/' + current_game_id, function(game) {
        $('#Room_name_div').text("Room of " + game.game_name);
@@ -6,6 +8,14 @@ $(document).ready(function() {
     });
     print_room_user_info();
     print_room_list_users();
+
+    $('#chat_zone').show();
+    $('#chat_zone').load('html/chat_zone.html');
+
+    socket.on('enter_game_received', function (data) {
+        //setTimeout('', 5000);
+        print_room_list_users();
+    });
 });
 
 /*
@@ -122,9 +132,14 @@ var leave_button_behaviour = function(user_id) {
     }).done(function() {
             //Enviar peticio per repintar el llista de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
             alert("Exit from the room");
+            $('#chat_zone').hide();
             $('#room_page').hide();
             $('#main_page').show();
             $('#main_page').load('html/main_page.html');
+
+            socket.emit('new_game_sent', {info: 'sent'});
+            socket.emit('enter_game_sent', {info: 'sent'});
+            socket.emit('removeuser', {info: 'sent'});
     });
     /*$.post('unlinkGameAndUser',
         {
