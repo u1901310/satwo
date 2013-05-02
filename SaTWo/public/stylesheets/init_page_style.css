@@ -1,0 +1,198 @@
+/* Style sheet for Init Page*/
+
+#log_and_reg_frame {
+    background-color: rgba(250, 250, 210, 0.8);/*lightgoldenrodyellow;paleturquoise; bisque;*/
+    width: 48%;
+    height: 48%;
+    /*border: 2px outset tan;*/
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
+    position: relative;
+     top: 25%;
+     left: 25%;
+    border-radius: 15px;
+    opacity: 1;
+    padding: 1% 2% 2% 2%;
+}
+
+#log_and_reg_frame img {
+    width: 25%;/*Cal modificar la imatge per no haver d'escalar i reduir temps de transferencia de la imatge*/
+}
+
+/*
+    LOGIN CSS
+*/
+#login_div #login_img {
+    margin-bottom: 4%;
+}
+
+#login_div #login_user_img {
+    margin-left: 15%;
+}
+
+#login_div #login_user {
+    width: 38%;
+    height: 10%;
+    padding-left: 2%;
+    margin-left: 5%;
+    border-radius: 10px;
+    position: absolute;
+     top: 41%;
+}
+
+#login_div #login_pass_img {
+    margin: 1% 0% 0% 15%;
+}
+
+#login_div #login_pass {
+    width: 38%;
+    height: 10%;
+    padding-left: 2%;
+    margin-left: 5%;
+    border-radius: 10px;
+    position: absolute;
+     top: 57%;
+}
+
+#login_div #button_login {
+    width: 20%;
+    height: 15%;
+    border-radius: 10px;
+    position: absolute;
+    top: 76%;
+    left: 45%;
+}
+
+#login_div #button_register {
+    width: 20%;
+    height: 15%;
+    border-radius: 10px;
+    position: absolute;
+    top: 76%;
+    left: 69%;
+}
+
+/*
+    REGISTER CSS
+*/
+#register_div #register_img {
+    width: 32%;
+    margin-bottom: 2%;
+}
+
+#register_div #register_user_img {
+    margin-left: 15%;
+}
+
+#register_div #reg_user_input {
+    width: 38%;
+    height: 9%;
+    padding-left: 2%;
+    margin-left: 5%;
+    border-radius: 10px;
+    position: absolute;
+    top: 33%;
+}
+
+#register_div #register_pass_img {
+    margin: 0.5% 0% 0% 15%;
+}
+
+#register_div #reg_pass_input {
+    width: 38%;
+    height: 9%;
+    padding-left: 2%;
+    margin-left: 5%;
+    border-radius: 10px;
+    position: absolute;
+    top: 48%;
+}
+
+#register_div #register_repeat_pass_img {
+    margin: 0.5% 0% 0% 15%;
+}
+
+#register_div #reg_pass_confirm_input {
+    width: 38%;
+    height: 9%;
+    padding-left: 2%;
+    margin-left: 5%;
+    border-radius: 10px;
+    position: absolute;
+    top: 61%;
+}
+
+#register_div #register_email_img {
+    margin: 0.5% 0% 0% 15%;
+}
+
+#register_div #reg_email_input {
+    width: 38%;
+    height: 9%;
+    padding-left: 2%;
+    margin-left: 5%;
+    border-radius: 10px;
+    position: absolute;
+    top: 75%;
+}
+
+/*
+#register_div input {
+    margin-left: 15px;
+}
+
+#register_div #register_user_img {
+    width: 20%;
+}
+
+#register_div #reg_user_input {
+    position: relative;
+     left: 2%;
+     top: -4%;
+    width: 45%;
+    height: 8%;
+    border-radius: 10px;
+    padding-left: 2%;
+}
+
+#register_div #register_pass_img {
+    width: 20%;
+}
+
+#register_div #reg_pass_input {
+    position: relative;
+     left: 2%;
+     top: -4%;
+    width: 45%;
+    height: 8%;
+    border-radius: 10px;
+    padding-left: 2%;
+}
+
+#register_div #register_repeat_pass_img {
+    width: 20%;
+}
+
+#register_div #reg_pass_confirm_input {
+    position: relative;
+     left: 2%;
+     top: -2.5%;
+    width: 45%;
+    height: 8%;
+    border-radius: 10px;
+    padding-left: 2%;
+}
+
+#register_div #reg_email_input {
+    position: relative;
+     left: 14.1%;
+    width: 45%;
+}
+
+#register_div #button_register_submit {
+    margin-top: 2%;
+}
+
+#register_div #button_register_cancel {
+    margin-top: 2%;
+}*/

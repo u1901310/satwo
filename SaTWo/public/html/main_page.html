@@ -2,29 +2,31 @@
 <html>
 <head>
     <title></title>
-    <!--<script src="/socket.io/lib/socket.io.js"></script>-->
+    <LINK href="/stylesheets/main_page_style.css" rel="stylesheet" type="text/css">
     <script src="/javascripts/main_page.js"></script>
 </head>
 <body>
-    <h1>MAIN PAGE</h1>
-    <input id="button_chat" type="button" value="Chat" onclick="javascript:chat_button_behaviour()"/>
-    <div id="Friend_management_div">
-        <input id="button_add_friend" type="button" value="Add friend" onclick="javascript:add_friend_button_behaviour()"/>
-        <input id="friend_username"/>
-
-        <p>Requests:</p>
-        <div id="requests_list"></div>
-        <p>Friends:</p>
-        <div id="friends_list"></div>
+    <!--<h1>MAIN PAGE</h1>-->
+    <div id="header_buttons_div">
+        <div id="header_buttons_positioning_div">
+            <span id="header_username_holder"></span>
+            <input id="button_logout" type="button" value="" onclick="javascript:logout()"/>
+            <input id="button_request" type="button" value="request" onclick="javascript:request_button_behaviour()"/>
+            <!-- Aqui la resta de botons com el d'opcions, etc. -->
+        </div>
+        <div id="requests_list" hidden></div>
     </div>
+    <!-- <input id="button_chat" type="button" value="Chat" onclick="javascript:chat_button_behaviour()"/> -->
     <div id="Game_management_div">
+        <img id="Game_rooms_label" src="/images/game_rooms_label.png" alt="Game rooms"/>
         <input id="button_own_games" type="button" value="My Games" onclick="javascript:own_games_button_behaviuour()"/>
         <input id="button_public_games" type="button" value="Public Games" onclick="javascript:public_games_button_behaviuour()"/>
-        <input id="nutton_new_game" type="button" value="New Game" onclick="javascript:new_game_button_behaviuour()"/>
+        <input id="button_new_game" type="button" value="New Game" onclick="javascript:new_game_button_behaviuour()"/>
         <div id="my_games_list">My games list</div>
         <div id="public_games_list" hidden>Public games list</div>
         <div id="new_game_info" hidden>
             New Game
+            <br>
             <span>Game name:</span>
             <input id="game_name_input" type="text"/>
             <br>
@@ -43,6 +45,17 @@
         <br>
         <input id="button_password_game_access_submit" type="button" value="Submit" onclick="javascript:access_secure_game()"/>
         <input id="button_password_game_access_cancel" type="button" value="Cancel" onclick="javascript:cancel_access_secure_game()"/>
+    </div>
+    <div id="Friend_management_div">
+        <img id="Friends_label" src="/images/friends.png" alt="Friends"/>
+        <br>
+        <input id="friend_username"/>
+        <input id="button_add_friend" type="button" value="Add friend" onclick="javascript:add_friend_button_behaviour()"/>
+
+        <!--<p>Requests:</p>-->
+        <!--<div id="requests_list"></div>-->
+        <!--<p id="friends_label">Friends:</p>-->
+        <div id="friends_list"></div>
     </div>
 </body>
 </html>

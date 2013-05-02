@@ -1,0 +1,305 @@
+/* Style sheet for Main Page*/
+
+/*
+    GAME MANAGEMENT CSS
+*/
+#Game_management_div {
+    /*border: 3px solid black;*/
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
+    background-color: rgba(250, 250, 210, 0.8);/*lightgoldenrodyellow;*/
+    border-radius: 15px;
+    width: 65%;
+    height: 80%;
+    margin: 5% 0 0 2%;
+    padding: 1% 1% 1% 1%;
+    float: left;
+}
+
+#Game_management_div #Game_rooms_label {
+    margin: -4% 0% -5% -2%;
+    float: left;
+}
+
+#Game_management_div #button_new_game {
+    position: relative;
+     left: 37%;
+}
+
+#Game_management_div #my_games_list {
+    border: 3px solid white;
+    background-color: rgba(255, 255, 255, 0.5);
+    background-image: url(../images/game_list_background.png);
+    background-repeat: no-repeat;
+    background-position: 75% 0%;
+    background-size: 40% 100%;
+    border-radius: 10px;
+    margin-top: 1%;
+    padding-top: 1%;
+    height: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    width: 99%;
+    max-width: 99%;
+}
+
+#Game_management_div #public_games_list {
+    border: 3px solid white;
+    background-color: rgba(255, 255, 255, 0.5);
+    background-image: url(../images/game_list_background.png);
+    background-repeat: no-repeat;
+    background-position: 75% 0%;
+    background-size: 40% 100%;
+    border-radius: 10px;
+    margin-top: 1%;
+    padding-top: 1%;
+    height: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+    width: 99%;
+    max-width: 99%;
+}
+
+#Game_management_div #new_game_info {
+    border: 3px solid black;
+    background-color: darkred;
+    border-radius: 10px;
+    padding: 1% 0% 1% 2%;
+    width: 40%;
+    position: relative;
+     left: 30%;
+     top: 20%;
+}
+
+#Game_management_div #game_pass_input {
+    position: relative;
+     left: 6%;
+}
+
+#Game_management_div #game_players_number_input {
+    position: relative;
+     left: 10%;
+}
+
+#Game_management_div #button_game_submit {
+    position: absolute;
+     left: 67%;
+     top: 89%;
+}
+
+#Game_management_div #button_game_cancel {
+    position: absolute;
+    left: 83%;
+    top: 89%;
+}
+
+#Game_management_div #public_games_list p {
+    margin: 0% 0% 1% 2%;
+    /*background-color: rgba(176, 224, 230, 0.8);*/
+    border: 2px outset teal;
+    border-radius: 7px;
+    width: 96%;
+    height: 8%;
+}
+
+#Game_management_div #public_games_list p:nth-child(even) {
+    background-color: rgba(176, 224, 230, 0.8);
+}
+
+#Game_management_div #public_games_list p:nth-child(odd) {
+    background-color: rgba(64, 224, 208, 0.8);
+}
+
+#Game_management_div #my_games_list p {
+    margin: 0% 0% 1% 2%;
+    /*background-color: rgba(176, 224, 230, 0.8);*/
+    border: 2px outset teal;
+    border-radius: 7px;
+    width: 96%;
+    height: 8%;
+}
+
+#Game_management_div #my_games_list p:nth-child(even) {
+    background-color: rgba(176, 224, 230, 0.8);
+}
+
+#Game_management_div #my_games_list p:nth-child(odd) {
+    background-color: rgba(64, 224, 208, 0.8);
+}
+
+.game_list_name {
+    position: relative;
+     left: 2%;
+    float: left;
+    width: 60%;
+    margin-top: 0.5%;
+}
+
+.game_list_ocupation {
+    position: relative;
+     left: 24%;
+    float: left;
+    width: 6%;
+    margin-top: 0.5%;
+}
+
+.game_list_secure {
+    position: relative;
+    left: 22%;
+    float: left;
+    margin-top: 0.5%;
+}
+
+.game_list_no_secure {
+    position: relative;
+    left: 22%;
+    float: left;
+    width: 16px;
+    height: 16px;
+}
+
+.enter_game_button {
+    margin-top: -0.2%;
+    position: relative;
+     left: 23%;
+    margin-top: 0.25%;
+}
+
+.continue_game_button {
+    margin-top: -0.2%;
+    position: relative;
+     left: 22%;
+    margin-top: 0.25%;
+}
+
+.no_games_msg {
+    width: 30%;
+    position: relative;
+     top: 45%;
+     left: 40%;
+}
+
+/*
+    FRIENDS CSS
+*/
+#Friend_management_div {
+    /*border: 3px solid black;*/
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
+    background-color: rgba(250, 250, 210, 0.8);/*lightgoldenrodyellow;*/
+    border-radius: 15px;
+    width: 20%;
+    height: 80%;
+    margin: 5% 0 0 3%;
+    padding: 1% 1% 1% 2%;
+    float: left;
+}
+
+#Friends_label {
+    width: 40%;
+    margin-bottom: 3%;
+}
+
+#Friend_management_div #friend_username {
+    width: 60%;
+    margin-right: 6%;
+    padding-left: 2%;
+    border-radius: 10px;
+}
+
+#Friend_management_div #friends_list {
+    margin-top: 4%;
+    padding: 4% 4% 4% 7%;
+    background-color: rgba(255, 255, 255, 0.6);
+    width: 85%;
+    height: 65%;
+    border-radius: 10px;
+}
+
+#Friend_management_div .friend_item {
+    margin-bottom: 2%;
+    padding-left: 4%;
+}
+
+#Friend_management_div .friend_item:hover {
+    border: 2px inset #E9DC51;
+    border-radius: 10px;
+    background-color: rgba(239, 228, 176, 0.8);
+}
+
+#Friend_management_div .friend_name {
+    float: left;
+    width: 85%;
+    padding-top: 1%;
+}
+
+/*
+    HEADER BUTTONS CSS
+*/
+#header_buttons_div{
+    /*border: 3px solid black;*/
+    width: 100%;
+}
+
+#header_buttons_positioning_div {
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
+    width: 18.2%;
+    position: relative;
+     left: 72%;
+    border-radius: 15px;
+    background-color: rgba(250, 250, 210, 0.5);
+    padding: 0.4% 1% 0.2% 4%;
+}
+
+#header_buttons_div #requests_list {
+    /*border: 3px solid black;*/
+    border-left: 2px outset lightgrey;
+    border-right: 2px outset darkgrey;
+    border-bottom: 2px outset grey;
+    border-radius: 5px;
+    background-color: whitesmoke;
+    width: 19%;
+    max-height: 60%;
+    overflow-y: auto;
+    position: absolute;
+     left: 72.5%;
+    padding: 0% 1% 0% 1%;
+}
+
+#header_buttons_div .request_item {
+    margin-top: 3%;
+    padding-bottom: 2.5%;
+    border-bottom: 1px solid grey;
+}
+
+#header_buttons_div .request_item:last-child {
+    border-bottom: none;
+}
+
+#header_buttons_div .request_name {
+    float: left;
+    width: 80%;
+}
+
+#header_buttons_div .button_accept_request {
+    color: lawngreen;
+    font-weight: bolder;
+}
+
+#header_buttons_div .button_reject_request {
+    color: darkred;
+    font-weight: bolder;
+}
+
+
+#header_buttons_div #button_logout {
+    background-image: url(../images/exit.png);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+}

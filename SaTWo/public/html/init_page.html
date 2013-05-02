@@ -2,34 +2,44 @@
 <html>
 <head>
     <title></title>
-    <link rel="stylesheet" href="./stylesheets/style.css"/>
+    <LINK href="/stylesheets/init_page_style.css" rel="stylesheet" type="text/css">
     <script src="/javascripts/init_page.js"></script>
 </head>
 <body>
-    <div id="log&reg_frame">
+    <div id="log_and_reg_frame">
         <div id="login_div">
-            <h2>Login</h2>
-            <span>Username:</span>
+            <img id="login_img" src="/images/login.png" alt="Login"/>
+            <br>
+            <!--<h2>Login</h2>-->
+            <img id="login_user_img" src="/images/username.png" alt="Username"/>
+            <!--<span>Username:</span>-->
             <input type="text" id="login_user"/>
             <br/>
-            <span>Password:</span>
+            <img id="login_pass_img" src="/images/password.png" alt="Password"/>
+            <!--<span>Password:</span>-->
             <input type="password" id="login_pass"/>
             <br/>
             <input id="button_login" type="button" value="Login" onclick="javascript:login_button_behaviour()"/>
             <input id="button_register" type="button" value="Register" onclick="javascript:register_button_behaviour()"/>
         </div>
         <div id="register_div" hidden>
-            <h2>Register</h2>
-            <span>Username:</span>
+            <img id="register_img" src="/images/register_green.png" alt="Register"/>
+            <br>
+            <!--<h2>Register</h2>-->
+            <img id="register_user_img" src="/images/username.png" alt="Username"/>
+            <!--<span>Username:</span>-->
             <input type="text" id="reg_user_input"/>
             <br/>
-            <span>Password:</span>
+            <img id="register_pass_img" src="/images/password.png" alt="Password"/>
+            <!--<span>Password:</span>-->
             <input type="password"  id="reg_pass_input"/>
             <br/>
-            <span>Confirm password:</span>
+            <img id="register_repeat_pass_img" src="/images/repeat_pass.png" alt="Repeat password"/>
+            <!--<span>Confirm password:</span>-->
             <input type="password" id="reg_pass_confirm_input"/>
             <br/>
-            <span>Email:</span>
+            <img id="register_email_img" src="/images/e-mail.png" alt="E-mail"/>
+            <!--<span>Email:</span>-->
             <input type="email" id="reg_email_input"/>
             <br/>
             <input id="button_register_submit" type="button" value="Submit" onclick="javascript:register_submit_button_behaviour()"/>

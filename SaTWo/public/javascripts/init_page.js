@@ -6,13 +6,10 @@ var login_button_behaviour = function() {
     var password = $('#login_pass').val();
     $.getJSON('login/' + username + '/' + password, function(data) {
         if(data.result == 'ok') {
+            user_logged = data;
             $('#init_page').hide();
             $('#main_page').show();
             $('#main_page').load('html/main_page.html');
-            user_logged = data;
-            $('#header_username_holder').text(user_logged.user_username);
-            $('#header_buttons').show();
-            $('#header_buttons').load('html/header_buttons.html');
         } else {
             alert("Username or password incorrect");
         }
