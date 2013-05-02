@@ -36,6 +36,8 @@ var logout = function() {
     $('#game_page').hide();
     clear_inputs('login_div');
     $('#init_page').show();
+
+    socket.emit('removeuser', {info: 'sent'});
 };
 
 /*

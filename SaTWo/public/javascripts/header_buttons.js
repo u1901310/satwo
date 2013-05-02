@@ -12,6 +12,4 @@ var logout = function() {
     $('#chat_zone').hide();
     clear_inputs('login_div');
     $('#init_page').show();
-
-    socket.emit('removeuser', {info: 'sent'});
 }
