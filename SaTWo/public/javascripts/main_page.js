@@ -2,12 +2,17 @@ var socket = io.connect('http://localhost:3000/');
 
 //TODO: Recarregar les sol·licituds i amics automàticament quan s'afegeixen
 $(document).ready(function() {
+    $('#header_username_holder').text(user_logged.user_username);
+
     list_user_games();
-    reload_requests();
+    //Substituir reload_request per advice_requests
+    advice_requests();
+    //reload_requests();
     reload_friends();
 
     socket.on('request_received', function (data) {
-        reload_requests();
+        //reload_requests(); //Substituir per que ens avisi que hi han noves peticions
+        advice_requests();
     });
     socket.on('friend_received', function (data) {
         reload_friends();
@@ -19,6 +24,33 @@ $(document).ready(function() {
         list_public_games();
     });
 });
+
+/*
+ * Function to logout
+ * */
+var logout = function() {
+    user_logged = null;
+    $('#header_buttons').hide();
+    $('#main_page').hide();
+    $('#room_page').hide();
+    $('#game_page').hide();
+    clear_inputs('login_div');
+    $('#init_page').show();
+};
+
+/*
+* Function to codify the behaviour of the request button. It has to show all the request of the user
+* */
+var button_pressed = true;
+var request_button_behaviour = function() {
+    reload_requests();
+    if(button_pressed) {
+        $('#requests_list').show();
+    } else {
+        $('#requests_list').hide();
+    }
+    button_pressed = !button_pressed;
+};
 
 var chat_button_behaviour = function(){
     $('#main_page').hide();
@@ -64,17 +96,38 @@ function reload_requests(){
 
     var info = $.getJSON('getRequests/' + user_logged.user_username, function(data) {
         if(data.result == 'ok') {
-            $.each(data.requests, function(){
-                $('#requests_list').append(
-                    '<div class="request_item">' +
-                    '   <span>' + this + '</span>' +
-                    '   <input class="button_accept_request" type="button" value="V" ' +
-                    '       onclick="javascript:accept_request_button_behaviour(\'' + this + '\')"/>' +
-                    '   <input class="button_reject_request" type="button" value="X" ' +
-                    '       onclick="javascript:reject_request_button_behaviour(\'' + this + '\')"/>' +
-                    '</div>'
-                );
-            });
+            if(data.requests.length > 0) {
+                $.each(data.requests, function(){
+                    $('#requests_list').append(
+                        '<div class="request_item">' +
+                            '   <span class="request_name">' + this + '</span>' +
+                            '   <input class="button_accept_request" type="button" value="V" ' +
+                            '       onclick="javascript:accept_request_button_behaviour(\'' + this + '\')"/>' +
+                            '   <input class="button_reject_request" type="button" value="X" ' +
+                            '       onclick="javascript:reject_request_button_behaviour(\'' + this + '\')"/>' +
+                            '</div>'
+                    );
+                });
+            } else {
+                $('#button_request').val('Requests');
+            }
+        }
+    });
+};
+
+/*
+* Function to advice if the user have requests
+* */
+function advice_requests() {
+    $.ajax({
+        url: 'getRequests/' + user_logged.user_username,
+        type: 'GET',
+        async: false
+    }).done(function(data) {
+        if(data.requests.length == 0) {
+            $('#button_request').val('Requests');
+        } else {
+            $('#button_request').val('Requests !');
         }
     });
 };
@@ -90,7 +143,7 @@ function reload_friends(){
             $.each(data.friends, function(){
                 $('#friends_list').append(
                     '<div class="friend_item">' +
-                    '   <span>' + this + '</span>' +
+                    '   <span class="friend_name">' + this + '</span>' +
                     '   <input class="button_remove_friend" type="button" value="X" ' +
                     '       onclick="javascript:remove_friend_button_behaviour(\'' + this + '\')"/>' +
                     '</div>'
@@ -111,9 +164,7 @@ var remove_friend_button_behaviour = function(name){
                 user: user_logged.user_username,
                 friend: name
             },
-            function(data,status){
-
-            },
+            function(data,status){},
             "json"
         );
 
@@ -135,9 +186,7 @@ var accept_request_button_behaviour = function(name){
                         user: user_logged.user_username,
                         friend: name
                     },
-                    function(data,status){
-
-                    },
+                    function(data,status){},
                     "json"
                 );
 
@@ -163,9 +212,7 @@ var reject_request_button_behaviour = function(name){
             user: user_logged.user_username,
             friend: name
         },
-        function(data,status){
-
-        },
+        function(data,status){},
         "json"
     );
 
@@ -196,12 +243,11 @@ function list_user_games() {
             if(data.result == 'ok') {
                 $.each(data.games_list, function() {
                     $('#my_games_list').append(
-                        '<span>' + this.game_name + ' ' + this.game_current_num_of_players + '/' + this.game_num_of_players + '<input class="continue_game_button" type="button" value="Continue" onclick="javascript:continue_game_button_behaviour(\'' + this._id + '\')"/> </span>' +
-                            '<br>'
+                        '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><input class="continue_game_button" type="button" value="Continue" onclick="javascript:continue_game_button_behaviour(\'' + this._id + '\')"/></p>'
                     );
                 });
             } else {
-                $('#my_games_list').append('<p>Sorry, no games found</p>');
+                $('#my_games_list').append('<span class="no_games_msg">Sorry, no games found</span>');
             }
         });
 };
@@ -232,18 +278,16 @@ function list_public_games() {
                 $.each(data.games_list, function() {
                     if(this.game_password != "") {
                         $('#public_games_list').append(
-                            '<span>' + this.game_name + ' ' + this.game_current_num_of_players + '/' + this.game_num_of_players + '<img src="/images/lock_key.png" alt="this game need a password"> <input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/> </span>' +
-                            '<br>'
+                            '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><img class="game_list_secure" src="/images/lock_key.png" alt="this game need a password"> <input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/></p>'
                         );
                     }else {
                         $('#public_games_list').append(
-                            '<span>' + this.game_name + ' ' + this.game_current_num_of_players + '/' + this.game_num_of_players + '<input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/> </span>' +
-                            '<br>'
+                            '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><span class="game_list_no_secure"></span><input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/></p>'
                         );
                     }
                 });
             } else {
-                $('#public_games_list').append('<p>Sorry, no games found</p>');
+                $('#public_games_list').append('<span class="no_games_msg">Sorry, no games found</span>');
             }
         });
 };
