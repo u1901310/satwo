@@ -16,6 +16,14 @@ $(document).ready(function() {
         //setTimeout('', 5000);
         print_room_list_users();
     });
+
+    socket.on('start_game_received', function (data) {
+        if (current_game_id == data.info) {
+            $('#room_page').hide();
+            $('#game_page').show();
+            $('#game_page').load('html/game_page.html');
+        }
+    });
 });
 
 /*
@@ -162,5 +170,32 @@ var leave_button_behaviour = function(user_id) {
 *  params: - (it usesthe current_game_id)
 * */
 var start_button_behaviour = function() {
+    $.getJSON('/getGame/' + current_game_id, function(game) {
+        if (game.game_num_of_players == game.game_current_num_of_players) {
+            var not_confirmed = false;
+            $.each(game.game_users_info, function() {
+                if (!this.confirmation) not_confirmed = true;
+            });
+            if (!not_confirmed) {
+                // Initialize the game
+                $.post('/initGame',
+                    {
+                        id: current_game_id
+                    },
+                    function(data, status){
 
+                    },
+                    "json"
+                );
+
+                socket.emit('start_game_sent', {game_id: game._id});
+            }
+            else {
+                alert("There are some players who have not confirmed yet");
+            }
+        }
+        else {
+            alert("There aren't enough players");
+        }
+    });
 };
