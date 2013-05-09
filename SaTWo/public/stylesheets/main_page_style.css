@@ -4,127 +4,107 @@
     GAME MANAGEMENT CSS
 */
 #Game_management_div {
-    /*border: 3px solid black;*/
     border-top: 2px outset tan;
     border-bottom: 2px outset chocolate;
-    background-color: rgba(250, 250, 210, 0.8);/*lightgoldenrodyellow;*/
+    background-color: rgba(250, 250, 210, 0.8);
     border-radius: 15px;
     width: 65%;
-    height: 80%;
-    margin: 5% 0 0 2%;
+    height: 96%;
+    margin: -4% 0 0 2%;
     padding: 1% 1% 1% 1%;
     float: left;
 }
 
 #Game_management_div #Game_rooms_label {
-    margin: -4% 0% -5% -2%;
+    margin: -4% 0% -2% -2%;
     float: left;
 }
 
+#Game_management_div #button_own_games {
+    float: left;
+    padding: 0.75%;
+    border-radius: 10px;
+}
+
+#Game_management_div #button_public_games {
+    float: left;
+    padding: 0.75%;
+    border-radius: 10px;
+}
+
 #Game_management_div #button_new_game {
-    position: relative;
-     left: 37%;
+    float: right;
+    padding: 0.75%;
+    margin-right: 1%;
+    border-radius: 10px;
 }
 
 #Game_management_div #my_games_list {
-    border: 3px solid white;
+    border: 1px solid white;
     background-color: rgba(255, 255, 255, 0.5);
     background-image: url(../images/game_list_background.png);
     background-repeat: no-repeat;
     background-position: 75% 0%;
     background-size: 40% 100%;
     border-radius: 10px;
-    margin-top: 1%;
+    margin-top: 3%;
     padding-top: 1%;
-    height: 80%;
-    max-height: 80%;
+    height: 85%;
+    max-height: 85%;
     overflow-y: auto;
     width: 99%;
     max-width: 99%;
 }
 
 #Game_management_div #public_games_list {
-    border: 3px solid white;
+    border: 1px solid white;
     background-color: rgba(255, 255, 255, 0.5);
     background-image: url(../images/game_list_background.png);
     background-repeat: no-repeat;
     background-position: 75% 0%;
     background-size: 40% 100%;
     border-radius: 10px;
-    margin-top: 1%;
+    margin-top: 3%;
     padding-top: 1%;
-    height: 80%;
-    max-height: 80%;
+    height: 85%;
+    max-height: 85%;
     overflow-y: auto;
     width: 99%;
     max-width: 99%;
 }
 
-#Game_management_div #new_game_info {
-    border: 3px solid black;
-    background-color: darkred;
-    border-radius: 10px;
-    padding: 1% 0% 1% 2%;
-    width: 40%;
-    position: relative;
-     left: 30%;
-     top: 20%;
-}
-
-#Game_management_div #game_pass_input {
-    position: relative;
-     left: 6%;
-}
-
-#Game_management_div #game_players_number_input {
-    position: relative;
-     left: 10%;
-}
-
-#Game_management_div #button_game_submit {
-    position: absolute;
-     left: 67%;
-     top: 89%;
-}
-
-#Game_management_div #button_game_cancel {
-    position: absolute;
-    left: 83%;
-    top: 89%;
-}
-
 #Game_management_div #public_games_list p {
     margin: 0% 0% 1% 2%;
-    /*background-color: rgba(176, 224, 230, 0.8);*/
-    border: 2px outset teal;
+    border: 2px inset blanchedalmond;
     border-radius: 7px;
     width: 96%;
     height: 8%;
+    color: whitesmoke;
 }
 
 #Game_management_div #public_games_list p:nth-child(even) {
-    background-color: rgba(176, 224, 230, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 #Game_management_div #public_games_list p:nth-child(odd) {
-    background-color: rgba(64, 224, 208, 0.8);
+    background-color: rgba(40, 40, 40, 0.8);
 }
 
 #Game_management_div #my_games_list p {
     margin: 0% 0% 1% 2%;
-    /*background-color: rgba(176, 224, 230, 0.8);*/
-    border: 2px outset teal;
+    border: 2px inset blanchedalmond;
     border-radius: 7px;
     width: 96%;
     height: 8%;
+    color: whitesmoke;
 }
 
 #Game_management_div #my_games_list p:nth-child(even) {
-    background-color: rgba(176, 224, 230, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 #Game_management_div #my_games_list p:nth-child(odd) {
-    background-color: rgba(64, 224, 208, 0.8);
+    background-color: rgba(40, 40, 40, 0.8);
 }
 
 .game_list_name {
@@ -132,7 +112,7 @@
      left: 2%;
     float: left;
     width: 60%;
-    margin-top: 0.5%;
+    margin-top: 0.9%;
 }
 
 .game_list_ocupation {
@@ -140,14 +120,14 @@
      left: 24%;
     float: left;
     width: 6%;
-    margin-top: 0.5%;
+    margin-top: 0.9%;
 }
 
 .game_list_secure {
     position: relative;
     left: 22%;
     float: left;
-    margin-top: 0.5%;
+    margin-top: 0.9%;
 }
 
 .game_list_no_secure {
@@ -159,17 +139,15 @@
 }
 
 .enter_game_button {
-    margin-top: -0.2%;
     position: relative;
      left: 23%;
-    margin-top: 0.25%;
+    margin-top: 0.7%;
 }
 
 .continue_game_button {
-    margin-top: -0.2%;
     position: relative;
      left: 22%;
-    margin-top: 0.25%;
+    margin-top: 0.7%;
 }
 
 .no_games_msg {
@@ -177,6 +155,72 @@
     position: relative;
      top: 45%;
      left: 40%;
+}
+
+/* NEW GAME */
+#Game_management_div #new_game_info {
+    border: 2px inset blanchedalmond;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 1% 0% 1% 2%;
+    width: 50%;
+    height: 43%;
+    position: relative;
+    left: 25%;
+    top: 29%;
+}
+
+#Game_management_div #new_game_img {
+    margin: -17% 0% 0% -4%;
+    width: 40%;
+}
+
+#Game_management_div .new_game_element{
+    margin-top: -5%;
+}
+
+#Game_management_div #game_name_img {
+    vertical-align: middle;
+    width: 46%;
+}
+
+#Game_management_div #game_name_input {
+    width: 45%;
+    border-radius: 10px;
+    padding-left: 2%;
+}
+
+#Game_management_div #game_pass_img {
+    vertical-align: middle;
+    width: 46%;
+}
+
+#Game_management_div #game_pass_input {
+    width: 45%;
+    border-radius: 10px;
+    padding-left: 2%;
+}
+
+#Game_management_div #game_players_number_img {
+    vertical-align: middle;
+    width: 46%;
+}
+
+#Game_management_div #game_players_number_input {
+    text-align: center;
+    border-radius: 5px;
+}
+
+#Game_management_div #button_game_submit {
+    margin-left: 55%;
+    padding: 2% 4%;
+    border-radius: 10px;
+}
+
+#Game_management_div #button_game_cancel {
+    margin-left: 5%;
+    padding: 2% 4%;
+    border-radius: 10px;
 }
 
 /*
@@ -190,7 +234,7 @@
     border-radius: 15px;
     width: 20%;
     height: 80%;
-    margin: 5% 0 0 3%;
+    margin: 2% 0 0 3%;
     padding: 1% 1% 1% 2%;
     float: left;
 }
@@ -207,13 +251,20 @@
     border-radius: 10px;
 }
 
+#Friend_management_div #button_add_friend {
+    border-radius: 8px;
+}
+
 #Friend_management_div #friends_list {
     margin-top: 4%;
     padding: 4% 4% 4% 7%;
     background-color: rgba(255, 255, 255, 0.6);
     width: 85%;
-    height: 65%;
+    height: 72%;
+    max-height: 72%;
+    overflow-y: auto;
     border-radius: 10px;
+    border: 1px solid white;
 }
 
 #Friend_management_div .friend_item {
@@ -253,17 +304,16 @@
 }
 
 #header_buttons_div #requests_list {
-    /*border: 3px solid black;*/
     border-left: 2px outset lightgrey;
     border-right: 2px outset darkgrey;
     border-bottom: 2px outset grey;
     border-radius: 5px;
     background-color: whitesmoke;
-    width: 19%;
+    width: 17.5%;
     max-height: 60%;
     overflow-y: auto;
     position: absolute;
-     left: 72.5%;
+     left: 70.5%;
     padding: 0% 1% 0% 1%;
 }
 
@@ -279,7 +329,7 @@
 
 #header_buttons_div .request_name {
     float: left;
-    width: 80%;
+    width: 75%;
 }
 
 #header_buttons_div .button_accept_request {
@@ -302,4 +352,60 @@
     cursor: pointer;
     width: 40px;
     height: 40px;
+}
+
+/*
+    ACCESS SECURE GAME
+*/
+#access_secure_games_div {
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
+    background-color: rgba(250, 250, 210, 0.8);
+    border-radius: 15px;
+    width: 65%;
+    height: 96%;
+    margin: -4% 0 0 2%;
+    padding: 1% 1% 1% 1%;
+    float: left;
+}
+
+#access_secure_games_div #access_secure_games_holder {
+    width: 58%;
+    height: 48%;
+    position: relative;
+     top: 20%;
+     left: 19%;
+   padding: 2%;
+   border: 2px inset blanchedalmond;
+   border-radius: 15px;
+   background-color: rgba(0, 0, 0, 0.8);
+}
+
+#access_secure_games_div #enter_game_password {
+    width: 80%;
+    position: relative;
+     top: -7%;
+     left: -5%;
+
+}
+
+#access_secure_games_div #password_game_access_input {
+    margin: 0% 0% 10% 14%;
+    width: 69%;
+    padding: 2%;
+    border-radius: 20px;
+    border: 1px inset grey;
+    text-align: center;
+}
+
+#access_secure_games_div #button_password_game_access_submit {
+    margin-left: 40%;
+    padding: 2% 5% 2% 5%;
+    border-radius: 15px;
+}
+
+#access_secure_games_div #button_password_game_access_cancel {
+    margin-left: 5%;
+    padding: 2% 5% 2% 5%;
+    border-radius: 15px;
 }

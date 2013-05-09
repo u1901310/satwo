@@ -12,9 +12,42 @@ $(document).ready(function() {
     $('#chat_zone').show();
     $('#chat_zone').load('html/chat_zone.html');
 
+    //A user has enter to the game, everyone in the game, except the user who just enter reprint the list
     socket.on('enter_game_received', function (data) {
-        //setTimeout('', 5000);
-        print_room_list_users();
+        if(current_game_id == data.info1 && user_logged._id != data.info2) {
+            print_room_list_users();
+        }
+    });
+
+    //A user confirmed his participation to the game, data: {info: game_id whom user confirm}
+    socket.on('room_user_confirmation_received', function(data) {
+        if(current_game_id == data.info) {
+            print_room_list_users();
+        }
+    });
+
+    //A user leave the room and it could be the room_admin so new admin, data: {info: game_id}
+    socket.on('room_leave_received', function(data) {
+        if(current_game_id == data.info) {
+            print_room_list_users();
+            $.getJSON('/getGame/' + current_game_id, function(game) {
+                print_room_buttons(game);
+            });
+        }
+    });
+
+    //A user it's been expeled of a game, data: {info1: from whom 'game_id' it's been expeled, info2: whom 'user_id' it's been expeled}
+    socket.on('room_user_expelled_received', function(data) {
+        if(user_logged._id == data.info2) {
+            $('#chat_zone').hide();
+            $('#room_page').hide();
+            $('#main_page').show();
+            $('#main_page').load('html/main_page.html');
+        } else {
+            if(current_game_id == data.info1) {
+                print_room_list_users();
+            }
+        }
     });
 });
 
@@ -25,13 +58,13 @@ $(document).ready(function() {
 function print_room_user_info() {
     $('#Room_player_div').empty();
     $.getJSON('/getFactions', function(factions) {
-        $('#Room_player_div').append('<span>' + user_logged.user_username + '</span>');
+        $('#Room_player_div').append('<span id="Room_player_name">' + user_logged.user_username + '</span>');
         $('#Room_player_div').append('<select id="Room_faction_selector"></select>');
         var i;
         for(i = 0; i < factions.length; i++) {
             $('#Room_faction_selector').append('<option value="' + factions[i].faction_name + '">' + factions[i].faction_name + '</option>');
         }
-        $('#Room_player_div').append('<input type="button" value="INVITE FRIEND" onclick="javascript:invite_friend_button_behaviour()"/>');
+        $('#Room_player_div').append('<input id="Room_invite_friend_button" type="button" value="INVITE FRIEND" onclick="javascript:invite_friend_button_behaviour()"/>');
     });
 };
 
@@ -56,28 +89,28 @@ function print_room_list_users() {
                         if(user_logged._id == game.game_room_administrator) { //If user is room admin, it has privileges
                             if(user_logged._id == user_id) { //Don't need privileges for himself
                                 if(user_confirmed) {
-                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmation">Confirmed</span><span class="Room_list_faction">' + user_faction + '</span></p>');
+                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmed">Confirmed</span><span class="Room_list_faction">' + user_faction + '</span></p>');
                                 } else {
-                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmation">Waiting for confirmation</span></p>');
+                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_unconfirmed">Waiting for confirmation</span></p>');
                                 }
                             } else { //Privileges to expel other users
                                 if(user_confirmed) {
-                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmation">Confirmed</span><span class="Room_list_faction">' + user_faction + '</span><input type="button" value="EXPEL" onclick="javascript:expel_button_behaviour(\'' + user_id + '\')"/></p>');
+                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmed">Confirmed</span><span class="Room_list_faction">' + user_faction + '</span><input class="Room_list_expel_button" type="button" value="EXPEL" onclick="javascript:expel_button_behaviour(\'' + user_id + '\')"/></p>');
                                 } else {
-                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmation">Waiting for confirmation</span><input type="button" value="EXPEL" onclick="javascript:expel_button_behaviour(\'' + user_id + '\')"/></p>');
+                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_unconfirmed">Waiting for confirmation</span><input class="Room_list_expel_button" type="button" value="EXPEL" onclick="javascript:expel_button_behaviour(\'' + user_id + '\')"/></p>');
                                 }
                             }
                         } else { //Other users don't have privileges
                             if(user_confirmed) {
-                                $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmation">Confirmed</span><span class="Room_list_faction">' + user_faction + '</span></p>');
+                                $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmed">Confirmed</span><span class="Room_list_faction">' + user_faction + '</span></p>');
                             } else {
-                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_confirmation">Waiting for confirmation</span></p>');
+                                    $('#Room_list_player_div').append('<p><span class="Room_list_username">' + username + '</span><span class="Room_list_unconfirmed">Waiting for confirmation</span></p>');
                             }
                         }
                 });
                 //});
             } else {
-                $('#Room_list_player_div').append('<p>\< Empty Slot \></p>');
+                $('#Room_list_player_div').append('<p><span class="Room_list_no_user">\< Empty Slot \></span></p>');
             }
         }
     });
@@ -91,10 +124,20 @@ function print_room_list_users() {
 function print_room_buttons(game) {
     $('#Room_buttons_div').empty();
     if(user_logged._id == game.game_room_administrator) {
-        $('#Room_buttons_div').append('<input type="button" value="Start" onclick="javascript:start_button_behaviour()"/>');
+        $('#Room_buttons_div').append('<input id="Room_start_button" type="button" value="Start" onclick="javascript:start_button_behaviour()"/>');
     }
-    $('#Room_buttons_div').append('<input id="Room_confirm_button" type="button" value="Confirm" onclick="javascript:confirm_button_behaviour(\'' + user_logged._id + '\')"/>');
-    $('#Room_buttons_div').append('<input type="button" value="Leave" onclick="javascript:leave_button_behaviour(\'' + user_logged._id + '\')"/>');
+    var find = false;
+    var i = 0;
+    while(!find) {
+        if(game.game_users_info[i].user_id == user_logged._id) {
+            find = true;
+            if(!game.game_users_info[i].confirmation) {
+                $('#Room_buttons_div').append('<input id="Room_confirm_button" type="button" value="Confirm" onclick="javascript:confirm_button_behaviour(\'' + user_logged._id + '\')"/>');
+            }
+        }
+        i++;
+    }
+    $('#Room_buttons_div').append('<input id="Room_leave_button" type="button" value="Leave" onclick="javascript:leave_button_behaviour(\'' + user_logged._id + '\')"/>');
 };
 
 /*
@@ -102,18 +145,34 @@ function print_room_buttons(game) {
 *  params: user_id (also it uses the current_game_id)
 * */
 var confirm_button_behaviour = function(user_id) {
-    $.post('confirmUserToGame',
+    $.ajax({
+        url: 'confirmUserToGame',
+        type: 'POST',
+        data: {
+                user_id: user_id,
+                game_id: current_game_id,
+                user_faction: $('#Room_faction_selector').val()
+              },
+        async: false
+    }).done(function() {
+            socket.emit('room_user_confirmation_sent', {info: current_game_id});
+            //Enviar peticio per repintar el llistat de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
+            $('#Room_confirm_button').hide();
+        });
+    /*$.post('confirmUserToGame',
         {
             user_id: user_id,
             game_id: current_game_id,
             user_faction: $('#Room_faction_selector').val()
         },
         function() {
+            alert("return from confirmUserToGame");
+            socket.emit('game_user_confirmation_sent', {info: current_game_id});
             //Enviar peticio per repintar el llistat de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
             $('#Room_confirm_button').hide();
         },
         "json"
-    );
+    );*/
 };
 
 /*
@@ -138,7 +197,7 @@ var leave_button_behaviour = function(user_id) {
             $('#main_page').load('html/main_page.html');
 
             socket.emit('new_game_sent', {info: 'sent'});
-            socket.emit('enter_game_sent', {info: 'sent'});
+            socket.emit('room_leave_sent', {info: current_game_id});
             socket.emit('removeuser', {info: 'sent'});
     });
     /*$.post('unlinkGameAndUser',
@@ -155,6 +214,27 @@ var leave_button_behaviour = function(user_id) {
         },
         "json"
     );*/
+};
+
+/*
+ * Function to expel a user of the game (only for room administrators)
+ *  params: user_id (also it uses the curret_game_id)
+ * */
+var expel_button_behaviour = function(user_id) {
+    $.ajax({
+        url: 'unlinkGameAndUser',
+        type: 'POST',
+        data: {
+            user_id: user_id,
+            game_id: current_game_id
+        },
+        async:false
+    }).done(function() {
+            alert("User: " + user_id + " expelled");
+            socket.emit('room_user_expelled_sent', {info1: current_game_id, info2: user_id});
+            //socket.emit('enter_game_sent', {info: 'sent'});
+            socket.emit('removeuser', {info: 'sent'});
+        });
 };
 
 /*

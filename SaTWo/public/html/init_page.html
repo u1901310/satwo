@@ -10,40 +10,42 @@
         <div id="login_div">
             <img id="login_img" src="/images/login.png" alt="Login"/>
             <br>
-            <!--<h2>Login</h2>-->
-            <img id="login_user_img" src="/images/username.png" alt="Username"/>
-            <!--<span>Username:</span>-->
-            <input type="text" id="login_user"/>
-            <br/>
-            <img id="login_pass_img" src="/images/password.png" alt="Password"/>
-            <!--<span>Password:</span>-->
-            <input type="password" id="login_pass"/>
-            <br/>
-            <input id="button_login" type="button" value="Login" onclick="javascript:login_button_behaviour()"/>
-            <input id="button_register" type="button" value="Register" onclick="javascript:register_button_behaviour()"/>
+            <p id="login_user_holder">
+                <img id="login_user_img" src="/images/username.png" alt="Username"/>
+                <input type="text" id="login_user"/>
+            </p>
+            <p id="login_pass_holder">
+                <img id="login_pass_img" src="/images/password.png" alt="Password"/>
+                <input type="password" id="login_pass"/>
+            </p>
+            <div id="login_buttons_holder">
+                <input id="button_login" type="button" value="Login" onclick="javascript:login_button_behaviour()"/>
+                <input id="button_register" type="button" value="Register" onclick="javascript:register_button_behaviour()"/>
+            </div>
         </div>
         <div id="register_div" hidden>
             <img id="register_img" src="/images/register_green.png" alt="Register"/>
             <br>
-            <!--<h2>Register</h2>-->
-            <img id="register_user_img" src="/images/username.png" alt="Username"/>
-            <!--<span>Username:</span>-->
-            <input type="text" id="reg_user_input"/>
-            <br/>
-            <img id="register_pass_img" src="/images/password.png" alt="Password"/>
-            <!--<span>Password:</span>-->
-            <input type="password"  id="reg_pass_input"/>
-            <br/>
-            <img id="register_repeat_pass_img" src="/images/repeat_pass.png" alt="Repeat password"/>
-            <!--<span>Confirm password:</span>-->
-            <input type="password" id="reg_pass_confirm_input"/>
-            <br/>
-            <img id="register_email_img" src="/images/e-mail.png" alt="E-mail"/>
-            <!--<span>Email:</span>-->
-            <input type="email" id="reg_email_input"/>
-            <br/>
-            <input id="button_register_submit" type="button" value="Submit" onclick="javascript:register_submit_button_behaviour()"/>
-            <input id="button_register_cancel" type="button" value="Cancel" onclick="javascript:register_cancel_button_behaviour()"/>
+            <p id="register_username_holder">
+                <img id="register_user_img" src="/images/username_reg.png" alt="Username"/>
+                <input type="text" id="reg_user_input"/>
+            </p>
+            <p id="register_pass_holder">
+                <img id="register_pass_img" src="/images/password_Reg.png" alt="Password"/>
+                <input type="password"  id="reg_pass_input"/>
+            </p>
+            <p id="register_repeat_pass_holder">
+                <img id="register_repeat_pass_img" src="/images/repeat_password_reg.png" alt="Repeat password"/>
+                <input type="password" id="reg_pass_confirm_input"/>
+            </p>
+            <p id="register_email_holder">
+                <img id="register_email_img" src="/images/email_reg.png" alt="E-mail"/>
+                <input type="email" id="reg_email_input"/>
+            </p>
+            <div id="register_buttons_holder">
+                <input id="button_register_submit" type="button" value="Submit" onclick="javascript:register_submit_button_behaviour()"/>
+                <input id="button_register_cancel" type="button" value="Cancel" onclick="javascript:register_cancel_button_behaviour()"/>
+            </div>
         </div>
     </div>
 </body>
