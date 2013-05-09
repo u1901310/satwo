@@ -624,6 +624,7 @@ exports.unlinkGameAndUser = function(req, res) {
                 console.log('The game has no players, so let\'s kill it');
                 games.remove({_id: new BSON.ObjectID(game_id)});
                 //!!!!!!!!!!!!!!!!! Cal repintar tots els llistats de jocs publics per evitar errors !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                res.send(null);
             } else {
                 console.log('Deleting user: ' + user_id + ' from game: ' + game_id);
                 games.update({ _id: new BSON.ObjectID(game_id)}, {$pull: {game_users_info: {user_id: user_id}}}, function(err, result) {
@@ -631,23 +632,24 @@ exports.unlinkGameAndUser = function(req, res) {
                         res.send({error: 'An error has ocurred deleting a user to game'});
                     } else {
                         //Still there some players so check if new room administrator is needed
+                        console.log('Success: user ' + user_id + ' deleted from game ' + game_id);
                         if(game.game_room_administrator == user_id) {
                             console.log('Assigning a new room administrator to the game');
                             var new_room_administrator = game.game_users_info[1].user_id; //Per no reconsultar el joc, agafem el de la posicio 1
                             games.update({_id: new BSON.ObjectID(game_id)}, {$set: {game_room_administrator: new_room_administrator}}, function(err, result) {
                                 if(err) {
-                                    console.log('An error has ocurred assigning a new room administrator');
+                                    res.send({error: 'An error has ocurred assigning a new room administrator'});
                                 } else {
                                     console.log('Success: the new room administrator is user: ' + new_room_administrator);
-                                    // !!!! repintar la sala del nou administrador !!!!!!!!
+                                    res.send(null);
                                 }
                             });
+                        } else {
+                            res.send(null);
                         }
                     }
-                    console.log('Success: user ' + user_id + ' deleted from game ' + game_id);
                 });
             }
-            res.send(null);
         });
     });
 };

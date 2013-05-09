@@ -1,0 +1,100 @@
+/* Style sheet for Room Page*/
+#Room_name_div {
+    margin: 2%;
+    font-weight: bold;
+    font-size: 23px;
+}
+
+#Room_player_div {
+    margin: 3% 0% 2% 0%;
+    padding: 2%;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px outset white;
+    border-radius: 10px;
+}
+
+#Room_player_div #Room_player_name {
+    float: left;
+    width: 25%;
+}
+
+#Room_player_div #Room_faction_selector {
+    margin-left: 2%;
+    width: 20%;
+    border-radius: 5px;
+}
+
+#Room_player_div #Room_invite_friend_button {
+    float: right;
+    padding: 1% 2%;
+    margin-top: -0.5%;
+    border-radius: 10px;
+}
+
+#Room_list_player_div {
+    padding: 2%;
+    border: 2px inset blanchedalmond;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: whitesmoke;
+    height: 54%;
+}
+
+#Room_list_player_div p {
+    border: 1px inset white;
+    border-radius: 10px;
+    margin: 0% 0% 1% 0%;
+    padding: 1%;
+}
+
+#Room_list_player_div .Room_list_username {
+    float: left;
+    width: 30%;
+}
+
+#Room_list_player_div .Room_list_unconfirmed {
+    margin-left: 7%;
+}
+
+#Room_list_player_div .Room_list_confirmed {
+    margin-left: 13%;
+}
+
+#Room_list_player_div .Room_list_faction {
+    margin-left: 20%;
+}
+
+#Room_list_player_div .Room_list_no_user {
+    margin-left: 41%;
+}
+
+#Room_list_player_div .Room_list_expel_button {
+    float: right;
+    padding: 0.75%;
+    margin-right: 2%;
+    margin-top: -0.45%;
+    border-radius: 10px;
+    font-size: 60%;
+}
+
+#Room_buttons_div {
+    margin-top: 4%;
+    text-align: right;
+}
+
+#Room_buttons_div #Room_confirm_button {
+    padding: 1.5% 3%;
+    border-radius: 10px;
+    margin-right: 2%;
+}
+
+#Room_buttons_div #Room_leave_button {
+    padding: 1.5% 3%;
+    border-radius: 10px;
+}
+
+#Room_buttons_div #Room_start_button {
+    padding: 1.5% 3%;
+    border-radius: 10px;
+    float: left;
+}

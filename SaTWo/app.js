@@ -95,8 +95,24 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('new_game_received', { info: 'received'});
     });
 
+    //When a user enter un a game, info send {info1: game_id, info2: user_id}
     socket.on('enter_game_sent', function (data) {
-        io.sockets.emit('enter_game_received', { info: 'received'});
+        io.sockets.emit('enter_game_received', { info1: data.info1, info2: data.info2});
+    });
+
+    //When a user confirm his participation to a game, info send {info: game_id}
+    socket.on('room_user_confirmation_sent', function (data) {
+        io.sockets.emit('room_user_confirmation_received', { info: data.info});
+    });
+
+    //When a user leave a game (it could be the room_admin),info send {info: game_id}
+    socket.on('room_leave_sent', function(data) {
+        io.sockets.emit('room_leave_received', {info: data.info});
+    });
+
+    //When room administrator expels a user from a game, info send {info1: game_id, info2: user_id}
+    socket.on('room_user_expelled_sent', function(data) {
+        io.sockets.emit('room_user_expelled_received', {info1: data.info1, info2: data.info2});
     });
 
     socket.on('start_game_sent', function (data) {

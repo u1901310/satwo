@@ -2,34 +2,20 @@
 <html>
     <head>
         <title></title>
+        <LINK href="/stylesheets/chat_zone_style.css" rel="stylesheet" type="text/css">
         <script src="/javascripts/chat_zone.js"></script>
     </head>
     <body>
         <h2>CHAT</h2>
 
-
-        <div style="float:left; width:100px; border-right:1px solid black; height:300px; padding:10px; overflow-y:scroll;">
-            <b>USERS</b>
+        <div id="Chat_users_div">
+            <b><span id="Chat_users_label">USERS</span></b>
             <div id="users"></div>
         </div>
-        <div style="float:left; width:300px; height:250px; overflow-y:scroll; padding:10px;">
+        <div id="Chat_conversation_div">
             <div id="conversation"></div>
-            <input id="data" style="width:200px;"/>
+            <input id="data"/>
             <input type="button" id="datasend" value="send"/>
         </div>
-
-
-        <!--
-        <div style="float:left; width:100px; border-right:1px solid black; height:100px; padding:10px; overflow-y:scroll;">
-            <b>USERS</b>
-            <div id="users"></div>
-        </div>
-        <div style="float:left; width:300px; height:100px; overflow-y:scroll; padding:10px;">
-            <div id="conversation"></div>
-        </div>
-        <br>
-        <input id="data" style="margin-left:100px; width:200px;"/>
-        <input type="button" id="datasend" value="send"/>
-        -->
     </body>
 </html>

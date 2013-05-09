@@ -25,26 +25,34 @@
         <div id="my_games_list">My games list</div>
         <div id="public_games_list" hidden>Public games list</div>
         <div id="new_game_info" hidden>
-            New Game
-            <br>
-            <span>Game name:</span>
-            <input id="game_name_input" type="text"/>
-            <br>
-            <span>Password (Optional):</span>
-            <input id="game_pass_input" type="password"/>
-            <br>
-            <span>Number of players:</span>
-            <input id="game_players_number_input" type="number" min="2" max="6" value="2"/>
-            <br>
+            <img id="new_game_img" src="/images/new_game_white.png" alt="New Game"/>
+            <p class="new_game_element">
+                <!--<span>Game name:</span>-->
+                <img id="game_name_img" src="/images/game_name_white.png" alt="Game Name"/>
+                <input id="game_name_input" type="text"/>
+            </p>
+            <p class="new_game_element">
+                <!--<span>Password (Optional):</span>-->
+                <img id="game_pass_img" src="/images/optional_password_white.png" alt="Optional password"/>
+                <input id="game_pass_input" type="password"/>
+            </p>
+            <p class="new_game_element">
+                <!--<span>Number of players:</span>-->
+                <img id="game_players_number_img" src="/images/number_of_players_white.png" alt="Number of Players"/>
+                <input id="game_players_number_input" type="number" min="2" max="6" value="2"/>
+            </p>
             <input id="button_game_submit" type="button" value="Submit" onclick="javascript:submit_new_game_button_behaviour()"/>
             <input id="button_game_cancel" type="button" value="Cancel" onclick="javascript:cancel_new_game_button_behaviour()"/>
         </div>
     </div>
     <div id="access_secure_games_div" hidden>
-        <input id="password_game_access_input" type="password"/>
-        <br>
-        <input id="button_password_game_access_submit" type="button" value="Submit" onclick="javascript:access_secure_game()"/>
-        <input id="button_password_game_access_cancel" type="button" value="Cancel" onclick="javascript:cancel_access_secure_game()"/>
+        <div id="access_secure_games_holder">
+            <img id="enter_game_password" src="/images/enter_game_password_white.png" alt="Enter Game Password"/>
+            <input id="password_game_access_input" type="password"/>
+            <br>
+            <input id="button_password_game_access_submit" type="button" value="Submit" onclick="javascript:access_secure_game()"/>
+            <input id="button_password_game_access_cancel" type="button" value="Cancel" onclick="javascript:cancel_access_secure_game()"/>
+        </div>
     </div>
     <div id="Friend_management_div">
         <img id="Friends_label" src="/images/friends.png" alt="Friends"/>

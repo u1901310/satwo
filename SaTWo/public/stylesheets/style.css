@@ -4,12 +4,12 @@ html {
 }
 
 body {
-    /*padding: 50px;*/
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-    background-image: url(../images/Background3.png);
+    background-image: url(../images/background2.jpg);
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    height: 87%;
+    margin: 0%;
+    height: 99%;
 }
 
 a {
@@ -25,19 +25,44 @@ a {
     //background: url(../images/background.png);
 }
 
-#header_buttons {
-    height: 7%;
-    border: 3px solid black;
+#Project_image {
+    width: 25%;
+    position: relative;
+     left: 37.5%;
+    display: block;
 }
 
 #init_page {
-    height: 88%;
-    margin-top: 5%;
-    border: 3px solid black;
+    height: 70%;
+    padding: 1% 5% 4% 5%;
 }
 
 #main_page {
-    height: 80%;
-    margin-top: 5%;
-    border: 3px solid black;
+    height: 70%;
+    padding: 1% 5% 4% 5%;
+}
+
+#room_page {
+    height: 60%;
+    padding: 1% 5% 4% 5%;
+    float: left;
+    width: 45%;
+    margin-left: 7%;
+    background-color: rgba(250, 250, 210, 0.6);
+    border-radius: 15px;
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
+}
+
+/*.chat_room {*/
+#chat_zone {
+    float: right;
+    width: 25%;
+    height: 60%;
+    margin-right: 6%;
+    padding: 1% 2% 4% 2%;
+    background-color: rgba(250, 250, 210, 0.6);
+    border-radius: 15px;
+    border-top: 2px outset tan;
+    border-bottom: 2px outset chocolate;
 }

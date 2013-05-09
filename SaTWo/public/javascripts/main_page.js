@@ -13,6 +13,7 @@ $(document).ready(function() {
     socket.on('request_received', function (data) {
         //reload_requests(); //Substituir per que ens avisi que hi han noves peticions
         advice_requests();
+        reload_requests();
     });
     socket.on('friend_received', function (data) {
         reload_friends();
@@ -397,6 +398,7 @@ var validate_game = function() {
  * Function to define the behaviour of the new game cancel button
  * */
 var cancel_new_game_button_behaviour = function() {
+    $('.error_new_game_validation').remove();
     $('#new_game_info').hide();
     own_games_button_behaviuour();
 };
@@ -427,7 +429,7 @@ var enter_game_button_behaviour = function(game_id) {
                     $('#room_page').show();
                     $('#room_page').load('html/room_page.html');
 
-                    socket.emit('enter_game_sent', {info: 'sent'});
+                    socket.emit('enter_game_sent', {info1: game_id, info2: user_logged._id});
                 }
             });
         }
@@ -467,7 +469,7 @@ var access_secure_game = function() {
                 $('#room_page').show();
                 $('#room_page').load('html/room_page.html');
 
-                socket.emit('enter_game_sent', {info: 'sent'});
+                socket.emit('enter_game_sent', {info1: current_game_id, info2: user_logged._id});
             } else {
                 $('#password_game_access_input').after('<span class="error_access_secure_game">*Error: Password incorrect</span>');
             }
