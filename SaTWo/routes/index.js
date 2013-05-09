@@ -75,6 +75,18 @@ var populateDB = function() {
     db.collection('factions', function(err, collection) {
        collection.insert(factions, {safe:true}, function(err, result) {});
     });
+
+    var territories = [];
+    for (var i = 0; i < 42; i++) {
+        territories[i] = {
+            territory_image: 'territory' + (i+1) + '.png',
+            territory_size: Math.floor(Math.random()*3) + 2
+        };
+    }
+
+    db.collection('territories', function(err, collection) {
+        collection.insert(territories, {safe:true}, function(err, result) {});
+    });
 };
 
 /*
@@ -382,7 +394,9 @@ exports.addGame = function(req, res) {
         game_current_num_of_players: 1,
         game_is_public: true,
         game_room_administrator: creator,
-        game_users_info: [{user_id: creator, confirmation: false, faction: null}] //La confirmació serveix per la gestio de la sala de espera
+        game_users_info: [{user_id: creator, confirmation: false, faction: null}], //La confirmació serveix per la gestio de la sala de espera
+        game_players: [],
+        game_territories: []
         //Altres atributs necessaris per defecte
     };
 
@@ -400,7 +414,117 @@ exports.addGame = function(req, res) {
 };
 
 /*
-* SFuntion to link a user with a game
+ * SFunction to initialize the info of the players and the territories when the game starts
+ *  params: (POST) id
+ * */
+exports.initGame = function(req, res) {
+    var game_id = req.body.id;
+
+    console.log('Initializing game (id): ' + game_id);
+
+    var territories_num;
+    db.collection('territories', function(err, territories) {
+        territories_num = territories.length;
+    });
+
+    db.collection('games', function(err, games) {
+        games.findOne({ _id: new BSON.ObjectID(game_id)}, function(err, game) {
+            for (var i = 0; i < game.game_num_of_players; i++) {
+                games.update({ _id: new BSON.ObjectID(game_id)}, { $push:
+                    {
+                        game_players:
+                        {
+                            player_id: i+1,
+                            player_faction: game.game_users_info[i].faction,
+                            player_weapons: {weapon_level_1: 0, weapon_level_2: 0, weapon_level_3: 0},
+                            player_cards: [],
+                            player_resources: {brick: 0, lumber: 0, ore: 0, wool: 0, grain: 0}
+                        }
+                    }}, function(err, result) {
+                        if(err) {
+                            res.send({ error: 'An error has occurred initializing the game'});
+                        } else {
+                            //console.log('Success: Game initialized');
+                        }
+                });
+            }
+
+            var territory_random_numbers = [2,2,3,3,3,4,4,4,4,4,5,5,5,5,5,6,6,6,6,6,6,8,8,8,8,8,8,9,9,9,9,9,10,10,10,10,10,11,11,11,12,12];
+            var position;
+            var max_resources = 0;
+            var resource_limit;
+            var resource_counters = [0, 0, 0, 0, 0];
+            var territory_resources;
+
+            var game_territories = [];
+
+            db.collection('territories', function(err, territories) {
+                territories.find().toArray(function(err, items) {
+                    // Comptem el nombre de recursos totals sumant el nombre de recursos de cada territori
+                    for (var i = 0; i < items.length; i++) {
+                        max_resources = max_resources + items[i].territory_size;
+                    };
+
+                    // Trobem el limit total de cada recurs en el joc (un 20% més del que li tocaria per ser exactes)
+                    resource_limit = Math.floor((max_resources/5)*1.2);
+
+                    for (var i = 0; i < items.length; i++) {
+                        // Generem un valor aleatori corresponent a una posicio de l'array 'territory_random_numbers'
+                        position = Math.floor(Math.random()*territory_random_numbers.length);
+
+                        // Generem els recursos del territori, sempre que el nombre total d'un recurs no superi el limit
+                        territory_resources = generateTerritoryResources(resource_counters, resource_limit, items[i].territory_size);
+
+                        game_territories[i] = {
+                            territory_id: items[i]._id,
+                            territory_random_number: territory_random_numbers[position],
+                            territory_resources: territory_resources,
+                            territory_ruler: null,
+                            territory_level: 1,
+                            territory_thief: false
+                        };
+
+                        // Eliminem el valor de la posició 'position' de 'territory_random_numbers' (n'eliminem '1')
+                        territory_random_numbers.splice(position, 1);
+
+                        // Actualitzem el nombre total de cada recurs
+                        for (var j = 0; j < 5; j++) resource_counters[j] = resource_counters[j] + territory_resources[j];
+                    };
+
+                    games.update({ _id: new BSON.ObjectID(game_id)}, { $pushAll: {game_territories: game_territories}}, function(err, result) {
+                        if(err) {
+                            res.send({ error: 'An error has occurred initializing the game'});
+                        } else {
+                            console.log('Success: Game initialized');
+                        }
+                    });
+                })
+            });
+        });
+    });
+};
+
+/*
+ * IFunction to generate random territory resources
+ * return: territory_resources
+ */
+function generateTerritoryResources(resource_counters, resource_limit, territory_size) {
+    var territory_resources = [0, 0, 0, 0, 0];
+    var value;
+    var i = 0;
+    while (i < territory_size) {
+        value = Math.floor(Math.random()*5);
+        if (resource_counters[value] < resource_limit) {
+            territory_resources[value] = territory_resources[value] + 1;
+            i = i + 1;
+        }
+    }
+
+    return territory_resources;
+}
+
+/*
+* SFunction to link a user with a game
 *  params: (POST) user_id and game_id
 */
 exports.addGameToUser = function(req, res) {
@@ -635,13 +759,30 @@ exports.confirmUserToGame = function(req, res) {
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * */
 exports.getFactions = function(req, res) {
-  db.collection('factions', function(err, factions) {
-      factions.find().toArray(function(err, items) {
-          console.log('Found all factions of application');
-          res.send(items);
-      });
-  });
+    db.collection('factions', function(err, factions) {
+        factions.find().toArray(function(err, items) {
+            console.log('Found all factions of application');
+            res.send(items);
+        });
+    });
 };
+
+
+/* ---------------------------------------------------------------------------------------------------------------------------------------------
+ *  ---------------------------------------------------------------------------------------------------------------------------------------------
+ *       TERRITORIES SERVER FUNCTIONS
+ * ----------------------------------------------------------------------------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------------------------------------------------------------------------
+ * */
+exports.getTerritories = function(req, res) {
+    db.collection('territories', function(err, territories) {
+        territories.find().toArray(function(err, items) {
+            console.log('Found all territories of application');
+            res.send(items);
+        });
+    });
+};
+
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------------
  *  ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -650,15 +791,20 @@ exports.getFactions = function(req, res) {
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * */
 exports.clearAll = function(req, res) {
-    console.log('Deleting all');
+    console.log('Deleting all users');
     db.collection('users', function(err, collection) {
         collection.drop();
     });
+    console.log('Deleting all games')
     db.collection('games', function(err, collection) {
         collection.drop();
     });
     console.log('Deleting all factions');
     db.collection('factions', function(err, collection) {
+        collection.drop();
+    });
+    console.log('Deleting all territories');
+    db.collection('territories', function(err, collection) {
         collection.drop();
         res.send('all erased');
     });

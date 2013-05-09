@@ -42,6 +42,7 @@ app.post('/addUser', routes.addUser);
 app.get('/userGames/:user_id', routes.findUserGames);
 app.get('/publicGames', routes.findPublicGames);
 app.post('/addGame', routes.addGame);
+app.post('/initGame', routes.initGame);
 app.post('/sendRequest', routes.sendRequest);
 app.post('/rejectRequest', routes.rejectRequest);
 app.post('/addFriend', routes.addFriend);
@@ -58,6 +59,7 @@ app.post('/validateGamePassword', routes.validateGamePassword);
 app.get('/getGame/:game_id', routes.getGame);
 app.post('/confirmUserToGame', routes.confirmUserToGame);
 app.get('/getFactions', routes.getFactions);
+app.get('/getTerritories', routes.getTerritories);
 
 var server = http.createServer(app);
 
@@ -106,6 +108,10 @@ io.sockets.on('connection', function (socket) {
     //When room administrator expels a user from a game, info send {info1: game_id, info2: user_id}
     socket.on('room_user_expelled_sent', function(data) {
         io.sockets.emit('room_user_expelled_received', {info1: data.info1, info2: data.info2});
+    });
+
+    socket.on('start_game_sent', function (data) {
+        io.sockets.emit('start_game_received', {info: data.game_id});
     });
 
     // when the client emits 'sendchat', this listens and executes
