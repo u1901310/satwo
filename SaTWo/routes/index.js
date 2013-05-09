@@ -396,7 +396,9 @@ exports.addGame = function(req, res) {
         game_room_administrator: creator,
         game_users_info: [{user_id: creator, confirmation: false, faction: null}], //La confirmació serveix per la gestio de la sala de espera
         game_players: [],
-        game_territories: []
+        game_territories: [],
+        game_turn: 1,
+        game_round: 1
         //Altres atributs necessaris per defecte
     };
 
@@ -434,6 +436,7 @@ exports.initGame = function(req, res) {
                     {
                         game_players:
                         {
+                            player_user_id: game.game_users_info[i].user_id,
                             player_id: i+1,
                             player_faction: game.game_users_info[i].faction,
                             player_weapons: {weapon_level_1: 0, weapon_level_2: 0, weapon_level_3: 0},
@@ -496,6 +499,7 @@ exports.initGame = function(req, res) {
                             res.send({ error: 'An error has occurred initializing the game'});
                         } else {
                             console.log('Success: Game initialized');
+                            res.send(null);
                         }
                     });
                 })
@@ -578,7 +582,7 @@ exports.linkGameAndUser = function(req, res) {
                if(err) {
                    res.send({ error: 'An error has ocurred incrementing the current number of players of the game'});
                } else {
-
+                   res.send(null);
                }
            });
        });
@@ -747,6 +751,100 @@ exports.confirmUserToGame = function(req, res) {
           }
       });
   });
+};
+
+/*
+ * SFunction to get the turn of a game
+ *  params: game_id
+ * */
+exports.getGameTurn = function(req, res) {
+    var game_id = req.params.game_id;
+
+    console.log('Get turn of the game with id: ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            res.send(game.game_turn);
+        });
+    });
+};
+
+/*
+ * SFunction to set the turn of a game
+ *  params: (POST) game_id and turn
+ */
+exports.setGameTurn = function(req, res) {
+    var game_id = req.body.game_id;
+    var turn = req.body.turn;
+
+    console.log('Setting turn ' + turn + ' to game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: turn}}, function(err, result) {
+            if(err) {
+                res.send({error: 'An error has occurred setting the turn of a game'});
+            } else {
+                console.log('Success: turn ' + turn + ' set to game ' + game_id);
+                res.send(null);
+            }
+        });
+    });
+};
+
+/*
+ * SFunction to get the round of a game
+ *  params: game_id
+ * */
+exports.getGameRound = function(req, res) {
+    var game_id = req.params.game_id;
+
+    console.log('Get round of the game with id: ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            res.send(game.game_round);
+        });
+    });
+};
+
+/*
+ * SFunction to set the round of a game
+ *  params: (POST) game_id and round
+ */
+exports.setGameRound = function(req, res) {
+    var game_id = req.body.game_id;
+    var round = req.body.round;
+
+    console.log('Setting round ' + round + ' to game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_round: round}}, function(err, result) {
+            if(err) {
+                res.send({error: 'An error has occurred setting the round of a game'});
+            } else {
+                console.log('Success: round ' + round + ' set to game ' + game_id);
+                res.send(null);
+            }
+        });
+    });
+};
+
+/*
+ * SFunction to set the territory's ruler of a game
+ *  params: (POST) game_id, territory_id and player_id
+ */
+exports.setTerritoryRuler = function(req, res) {
+    var game_id = req.body.game_id;
+    var territory_id = req.body.territory_id;
+    var player_id = req.body.player_id;
+
+    console.log('Setting ruler ' + player_id + ' to territory ' + territory_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.update({_id: new BSON.ObjectID(game_id), "game_territories.territory_id": new BSON.ObjectID(territory_id)}, {$set: {"game_territories.$.territory_ruler": player_id}}, function(err, result) {
+            if(err) {
+                res.send({error: 'An error has occurred setting the ruler on a territory'});
+            } else {
+                console.log('Success: player ' + player_id + ' set to ruler of territory ' + territory_id + ' for game ' + game_id);
+                res.send(null);
+            }
+        });
+    });
 };
 
 
