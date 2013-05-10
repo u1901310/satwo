@@ -206,7 +206,7 @@ var leave_button_behaviour = function(user_id) {
 
             socket.emit('new_game_sent', {info: 'sent'});
             socket.emit('room_leave_sent', {info: current_game_id});
-            socket.emit('removeuser', {info: 'sent'});
+            socket.emit('unsubscribe', current_game_id);
     });
     /*$.post('unlinkGameAndUser',
         {

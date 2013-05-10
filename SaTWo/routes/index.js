@@ -849,6 +849,82 @@ exports.setTerritoryRuler = function(req, res) {
     });
 };
 
+/*
+ * SFunction to add territory's resources to player
+ *  params: (POST) game_id, territory_id and player_id
+ */
+exports.addResourcesFromTerritory = function(req, res) {
+    var game_id = req.body.game_id;
+    var territory_id = req.body.territory_id;
+    var player_id = req.body.player_id;
+
+    console.log('Adding resources from territory ' + territory_id + ' to player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+        //games.findOne({_id: new BSON.ObjectID(game_id), "game_territories.territory_id": new BSON.ObjectID(territory_id)}, function(err, territory){
+            //game.game_territories.findOne({territory_id: new BSON.ObjectID(territory_id)}, function(err, territory){
+            //games.findOne({_id: new BSON.ObjectID(game_id), "game_players.player_id": player_id}, function(err, player){
+
+            var i = 0;
+            var territory;
+            while (!territory) {
+                if (game.game_territories[i].territory_id == territory_id) {
+                    territory = game.game_territories[i];
+                }
+                i++;
+            }
+
+            i = 0;
+            var player;
+            while (!player) {
+                if (game.game_players[i].player_id == player_id) {
+                    player = game.game_players[i];
+
+                    game.game_players[i].player_resources.brick += territory.territory_resources[0];
+                    game.game_players[i].player_resources.lumber += territory.territory_resources[1];
+                    game.game_players[i].player_resources.ore += territory.territory_resources[2];
+                    game.game_players[i].player_resources.wool += territory.territory_resources[3];
+                    game.game_players[i].player_resources.grain += territory.territory_resources[4];
+
+                    //player.player_resources = resources;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred adding resources to player'});
+                } else {
+                    console.log('Success: resources from territory ' + territory_id + ' added to player ' + player_id + ' for game ' + game_id);
+                    res.send(null);
+                }
+            });
+
+                //game.game_players.findOne({player_id: player_id}, function(err, player) {
+                    /*
+                    var resources = {
+                        brick: territory.territory_resources[0] + player.player_resources.brick,
+                        lumber: territory.territory_resources[1] + player.player_resources.lumber,
+                        ore: territory.territory_resources[2] + player.player_resources.ore,
+                        wool: territory.territory_resources[3] + player.player_resources.wool,
+                        grain: territory.territory_resources[4] + player.player_resources.grain
+                    };
+
+                    games.update({_id: new BSON.ObjectID(game_id), "game_players.player_id": player_id}, {$set: {"game_players.$.player_resources": resources}}, function(err, result) {
+                        if(err) {
+                            res.send({error: 'An error has occurred adding resources to player'});
+                        } else {
+                            console.log('Success: resources from territory ' + territory_id + ' added to player ' + player_id + ' for game ' + game_id);
+                            res.send(null);
+                        }
+                    });
+                    */
+                //});
+            //});
+        });
+    });
+};
+
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------------
  *  ---------------------------------------------------------------------------------------------------------------------------------------------
