@@ -60,11 +60,6 @@ app.get('/getGame/:game_id', routes.getGame);
 app.post('/confirmUserToGame', routes.confirmUserToGame);
 app.get('/getFactions', routes.getFactions);
 app.get('/getTerritories', routes.getTerritories);
-app.get('/getGameTurn/:game_id', routes.getGameTurn);
-app.post('/setGameTurn', routes.setGameTurn);
-app.get('/getGameRound/:game_id', routes.getGameRound);
-app.post('/setGameRound', routes.setGameRound);
-app.post('/setTerritoryRuler', routes.setTerritoryRuler);
 
 var server = http.createServer(app);
 

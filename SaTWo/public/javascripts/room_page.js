@@ -9,6 +9,7 @@ $(document).ready(function() {
     print_room_user_info();
     print_room_list_users();
 
+    $('#chat_zone').removeClass('chat_game').addClass('chat_room'); //Alerta per si no funciona al no tenir class chat_game!!!
     $('#chat_zone').show();
     $('#chat_zone').load('html/chat_zone.html');
 
@@ -52,6 +53,7 @@ $(document).ready(function() {
 
     socket.on('start_game_received', function (data) {
         if (current_game_id == data.info) {
+            $('#chat_zone').removeClass('chat_room').addClass('chat_game');
             $('#room_page').hide();
             $('#game_page').show();
             $('#game_page').load('html/game_page.html');

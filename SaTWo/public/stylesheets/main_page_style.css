@@ -190,6 +190,10 @@
     padding-left: 2%;
 }
 
+#Game_management_div .error_new_game_validation {
+    color: red;
+}
+
 #Game_management_div #game_pass_img {
     vertical-align: middle;
     width: 46%;
