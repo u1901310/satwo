@@ -90,24 +90,48 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('new_game_received', { info: 'received'});
     });
 
+    socket.on('alter_games_list', function() {
+       io.sockets.emit('update_games_list');
+    });
+
     //When a user enter un a game, info send {info1: game_id, info2: user_id}
-    socket.on('enter_game_sent', function (data) {
+    /*socket.on('enter_game_sent', function (data) {
         io.sockets.emit('enter_game_received', { info1: data.info1, info2: data.info2});
+    });*/
+    socket.on('subscribe_game', function(room) {
+        io.sockets.in(room).emit('update_players');
+        socket.join(room);
+        socket.room = room;
+        console.log("Rooms when subcribe: " + JSON.stringify(io.sockets.manager.rooms));
     });
 
     //When a user confirm his participation to a game, info send {info: game_id}
-    socket.on('room_user_confirmation_sent', function (data) {
+    /*socket.on('room_user_confirmation_sent', function (data) {
         io.sockets.emit('room_user_confirmation_received', { info: data.info});
+    });*/
+    socket.on('game_confirmation_player', function() {
+        io.sockets.in(socket.room).emit('update_players');
+        console.log("Rooms when confirm: " + JSON.stringify(io.sockets.manager.rooms));
     });
 
     //When a user leave a game (it could be the room_admin),info send {info: game_id}
-    socket.on('room_leave_sent', function(data) {
+    /*socket.on('room_leave_sent', function(data) {
         io.sockets.emit('room_leave_received', {info: data.info});
+    });*/
+    socket.on('unsubscribe_game', function() {
+        socket.leave(socket.room);
+        io.sockets.in(socket.room).emit('leave_update_players');
+        socket.room = null;
+        console.log("Rooms when unsubcribe: " + JSON.stringify(io.sockets.manager.rooms));
     });
 
     //When room administrator expels a user from a game, info send {info1: game_id, info2: user_id}
-    socket.on('room_user_expelled_sent', function(data) {
+    /*socket.on('room_user_expelled_sent', function(data) {
         io.sockets.emit('room_user_expelled_received', {info1: data.info1, info2: data.info2});
+    });*/
+    socket.on('expelled_player' , function(user_expelled) {
+        io.sockets.in(socket.room).emit('inform_expelled_player', user_expelled);
+        console.log("Rooms when player expelled: " + JSON.stringify(io.sockets.manager.rooms));
     });
 
     socket.on('start_game_sent', function (data) {

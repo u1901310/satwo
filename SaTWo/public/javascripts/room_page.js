@@ -14,31 +14,42 @@ $(document).ready(function() {
     $('#chat_zone').load('html/chat_zone.html');
 
     //A user has enter to the game, everyone in the game, except the user who just enter reprint the list
-    socket.on('enter_game_received', function (data) {
+    /*socket.on('enter_game_received', function (data) {
         if(current_game_id == data.info1 && user_logged._id != data.info2) {
             print_room_list_users();
         }
+    });*/
+    socket.on('update_players', function() {
+        alert("Update player list");
+        print_room_list_users();
     });
 
     //A user confirmed his participation to the game, data: {info: game_id whom user confirm}
-    socket.on('room_user_confirmation_received', function(data) {
+    /*socket.on('room_user_confirmation_received', function(data) {
         if(current_game_id == data.info) {
             print_room_list_users();
         }
-    });
+    });*/
 
     //A user leave the room and it could be the room_admin so new admin, data: {info: game_id}
-    socket.on('room_leave_received', function(data) {
+    /*socket.on('room_leave_received', function(data) {
         if(current_game_id == data.info) {
             print_room_list_users();
             $.getJSON('/getGame/' + current_game_id, function(game) {
                 print_room_buttons(game);
             });
         }
+    });*/
+    socket.on('leave_update_players', function() {
+        alert("Update a player leave");
+        print_room_list_users();
+        $.getJSON('/getGame/' + current_game_id, function(game) {
+            print_room_buttons(game);
+        });
     });
 
     //A user it's been expeled of a game, data: {info1: from whom 'game_id' it's been expeled, info2: whom 'user_id' it's been expeled}
-    socket.on('room_user_expelled_received', function(data) {
+    /*socket.on('room_user_expelled_received', function(data) {
         if(user_logged._id == data.info2) {
             $('#chat_zone').hide();
             $('#room_page').hide();
@@ -49,6 +60,17 @@ $(document).ready(function() {
                 print_room_list_users();
             }
         }
+    });*/
+    socket.on('inform_expelled_player', function(user_expelled_id) {
+       if(user_logged._id == user_expelled_id) {
+           alert("I've been expelled");
+           $('#chat_zone').hide();
+           $('#room_page').hide();
+           $('#main_page').show();
+           $('#main_page').load('html/main_page.html');
+
+           socket.emit('unsubscribe_game');
+       }
     });
 
     socket.on('start_game_received', function (data) {
@@ -165,8 +187,8 @@ var confirm_button_behaviour = function(user_id) {
               },
         async: false
     }).done(function() {
-            socket.emit('room_user_confirmation_sent', {info: current_game_id});
-            //Enviar peticio per repintar el llistat de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
+            //socket.emit('room_user_confirmation_sent', {info: current_game_id});
+            socket.emit('game_confirmation_player');
             $('#Room_confirm_button').hide();
         });
     /*$.post('confirmUserToGame',
@@ -199,15 +221,16 @@ var leave_button_behaviour = function(user_id) {
         },
         async:false
     }).done(function() {
-            //Enviar peticio per repintar el llista de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
-            alert("Exit from the room");
+            //alert("Exit from the room");
             $('#chat_zone').hide();
             $('#room_page').hide();
             $('#main_page').show();
             $('#main_page').load('html/main_page.html');
 
-            socket.emit('new_game_sent', {info: 'sent'});
-            socket.emit('room_leave_sent', {info: current_game_id});
+            //socket.emit('new_game_sent', {info: 'sent'});
+            socket.emit('alter_games_list');
+            //socket.emit('room_leave_sent', {info: current_game_id});
+            socket.emit('unsubscribe_game');
             socket.emit('removeuser', {info: 'sent'});
     });
     /*$.post('unlinkGameAndUser',
@@ -241,8 +264,10 @@ var expel_button_behaviour = function(user_id) {
         async:false
     }).done(function() {
             alert("User: " + user_id + " expelled");
-            socket.emit('room_user_expelled_sent', {info1: current_game_id, info2: user_id});
+            //socket.emit('room_user_expelled_sent', {info1: current_game_id, info2: user_id});
+            socket.emit('expelled_player', user_id);
             //socket.emit('enter_game_sent', {info: 'sent'});
+            socket.emit('alter_games_list');
             socket.emit('removeuser', {info: 'sent'});
         });
 };

@@ -652,6 +652,7 @@ exports.unlinkGameAndUser = function(req, res) {
             }
         });
     });
+    res.send(null);
 };
 
 /*

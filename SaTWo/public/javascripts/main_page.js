@@ -18,11 +18,14 @@ $(document).ready(function() {
     socket.on('friend_received', function (data) {
         reload_friends();
     });
-    socket.on('new_game_received', function (data) {
+    /*socket.on('new_game_received', function (data) {
         list_public_games();
     });
     socket.on('enter_game_received', function (data) {
         list_public_games();
+    });*/
+    socket.on('update_games_list', function() {
+       list_public_games();
     });
 });
 
@@ -348,9 +351,11 @@ var submit_new_game_button_behaviour = function() {
         $('#room_page').load('html/room_page.html');
         //own_games_button_behaviuour();
 
-        socket.emit('new_game_sent', {info: 'sent'});
+        //socket.emit('new_game_sent', {info: 'sent'});
+        socket.emit('subscribe_game', current_game_id);
+        socket.emit('alter_games_list');
 
-        alert("Game created");
+        //alert("Game created");
     }
 };
 
@@ -429,7 +434,9 @@ var enter_game_button_behaviour = function(game_id) {
                     $('#room_page').show();
                     $('#room_page').load('html/room_page.html');
 
-                    socket.emit('enter_game_sent', {info1: game_id, info2: user_logged._id});
+                    //socket.emit('enter_game_sent', {info1: game_id, info2: user_logged._id});
+                    socket.emit('subscribe_game', current_game_id);
+                    socket.emit('alter_games_list');
                 }
             });
         }
@@ -469,7 +476,9 @@ var access_secure_game = function() {
                 $('#room_page').show();
                 $('#room_page').load('html/room_page.html');
 
-                socket.emit('enter_game_sent', {info1: current_game_id, info2: user_logged._id});
+                //socket.emit('enter_game_sent', {info1: current_game_id, info2: user_logged._id});
+                socket.emit('subscribe_game', current_game_id);
+                socket.emit('alter_games_list');
             } else {
                 $('#password_game_access_input').after('<span class="error_access_secure_game">*Error: Password incorrect</span>');
             }
