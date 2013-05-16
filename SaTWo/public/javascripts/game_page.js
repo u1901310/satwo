@@ -80,8 +80,6 @@ function action(territory_id) {
                     "json"
                 );
 
-                //Falta assignar recursos!!!
-
                 if (player_id < game.game_num_of_players) {
                     $.post('/setGameTurn',
                         {
@@ -116,7 +114,16 @@ function action(territory_id) {
                     "json"
                 );
 
-                //Falta assignar recursos!!!
+                $.ajax({
+                    url: '/addResourcesFromTerritory',
+                    type: 'POST',
+                    data: {
+                        game_id: current_game_id,
+                        territory_id: territory_id,
+                        player_id: player_id
+                    },
+                    async: false
+                }).done(function(data){});
 
                 if (player_id > 1) {
                     $.post('/setGameTurn',
@@ -140,6 +147,20 @@ function action(territory_id) {
                         "json"
                     );
                 }
+            }
+            else { //Ronda > 2
+                if (daus llançats) {
+                    if (territory_id és neutre) {
+                        acció per a territori neutre
+                    }
+                    else if (territory_id és ocupat) {
+                        acció per a territori ocupat
+                    }
+                    else { //territory_id és meu
+                        acció per a territori meu
+                    }
+                }
+
             }
         }
     });

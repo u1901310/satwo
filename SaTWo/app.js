@@ -60,6 +60,12 @@ app.get('/getGame/:game_id', routes.getGame);
 app.post('/confirmUserToGame', routes.confirmUserToGame);
 app.get('/getFactions', routes.getFactions);
 app.get('/getTerritories', routes.getTerritories);
+app.get('/getGameTurn/:game_id', routes.getGameTurn);
+app.post('/setGameTurn', routes.setGameTurn);
+app.get('/getGameRound/:game_id', routes.getGameRound);
+app.post('/setGameRound', routes.setGameRound);
+app.post('/setTerritoryRuler', routes.setTerritoryRuler);
+app.post('/addResourcesFromTerritory', routes.addResourcesFromTerritory);
 
 var server = http.createServer(app);
 
@@ -138,51 +144,34 @@ io.sockets.on('connection', function (socket) {
         io.sockets.emit('start_game_received', {info: data.game_id});
     });
 
+
+
+
+    socket.on('subscribe', function(room, username) {
+        io.sockets.in(room).emit('userconnected', username);
+        socket.emit('updatechat', 'SERVER', 'you have connected');
+        socket.join(room);
+        socket.username = username;
+        socket.room = room;
+    });
+
+    socket.on('unsubscribe', function(room) {
+        socket.leave(room);
+        io.sockets.in(room).emit('userdisconnected', socket.username);
+    });
+
     // when the client emits 'sendchat', this listens and executes
     socket.on('sendchat', function (data) {
         // we tell the client to execute 'updatechat' with 2 parameters
-        io.sockets.emit('updatechat', socket.username, data);
-    });
-
-    // when the client emits 'adduser', this listens and executes
-    socket.on('adduser', function (username) {
-        // we store the username in the socket session for this client
-        socket.username = username;
-
-        // add the client's username to the global list
-        usernames[username] = username;
-
-        // echo to client they've connected
-        socket.emit('updatechat', 'SERVER', 'you have connected');
-
-        // echo globally (all clients) that a person has connected
-        socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
-
-        // upadate the list of users in chat, client-side
-        io.sockets.emit('updateusers', usernames);
-    });
-
-    // when the clients emits 'removeuser', this listens and executes
-    socket.on('removeuser', function(){
-        // remove the username from global usernames list
-        delete usernames[socket.username];
-
-        // update list of users in chat, client-side
-        io.sockets.emit('updateusers', usernames);
-
-        // echo globally that this client has left
-        socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+        io.sockets.in(socket.room).emit('updatechat', socket.username, data);
     });
 
     // when the user disconnects... perform this
     socket.on('disconnect', function(){
-        // remove the username from global usernames list
-        delete usernames[socket.username];
+
+        socket.leave(socket.room);
 
         // update list of users in chat, client-side
-        io.sockets.emit('updateusers', usernames);
-
-        // echo globally that this client has left
-        socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+        io.sockets.in(socket.room).emit('userdisconnected', socket.username);
     });
 });
