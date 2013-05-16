@@ -60,12 +60,16 @@ app.get('/getGame/:game_id', routes.getGame);
 app.post('/confirmUserToGame', routes.confirmUserToGame);
 app.get('/getFactions', routes.getFactions);
 app.get('/getTerritories', routes.getTerritories);
+<<<<<<< Temporary merge branch 1
 app.get('/getGameTurn/:game_id', routes.getGameTurn);
 app.post('/setGameTurn', routes.setGameTurn);
+app.get('/nextGameTurn/:game_id', routes.nextGameTurn);
 app.get('/getGameRound/:game_id', routes.getGameRound);
 app.post('/setGameRound', routes.setGameRound);
 app.post('/setTerritoryRuler', routes.setTerritoryRuler);
 app.post('/addResourcesFromTerritory', routes.addResourcesFromTerritory);
+=======
+>>>>>>> Temporary merge branch 2
 
 var server = http.createServer(app);
 

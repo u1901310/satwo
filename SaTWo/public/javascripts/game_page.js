@@ -57,6 +57,20 @@
 //});
 
 var player_id;
+var resources_conquer = {
+                            brick: 0,
+                            lumber: 0,
+                            ore: 0,
+                            wool: 0,
+                            grains: 0
+                        };
+var resources_update = {
+                            brick: 0,
+                            lumber: 0,
+                            ore: 0,
+                            wool: 0,
+                            grains: 0
+                        };
 
 $(document).ready(function(){
     $.getJSON('getGame/' + current_game_id, function(game) {
@@ -64,12 +78,31 @@ $(document).ready(function(){
             if (this.player_user_id == user_logged._id) player_id = this.player_id;
         });
     });
+    $('#Dices_space').text(dices_throwed);
 });
+
+/*
+* Action defines all possible actions during the game.
+*   in round 1 and 2 is to assign the first territories to each user
+*   in Round 1 the selection is from 1 to num_of_players
+*   in Round 2 the selection is from num_of players to 1 and from those territories players will get resources
+*   Since Round 3 each player will have to:
+*    1 - throw the dices to make the territories generate resources to their dominator if the result is their number (special case for 7)
+*        this function will be implemented outset.
+*    2 - make any of those actions:
+*       - Update self territories
+*       - Conquer neutral neighboring territories
+*       - Invade enemy neighboring territories
+*       - (Other accions implemented in future)
+*    3 - Finish turn, this will increment the turn counter and if the player is the last it will increment the round and set the turn to 1
+* */
+var dices_throwed = false;
+var territories_info = [];
 
 function action(territory_id) {
     $.getJSON('getGame/' + current_game_id, function(game) {
         if (game.game_turn == player_id) {
-            if (game.game_round == 1) {
+            if (game.game_round == 1) { //First round of territory selection from 1 to n_players
                 $.post('/setTerritoryRuler',
                     {
                         game_id: current_game_id,
@@ -90,8 +123,7 @@ function action(territory_id) {
                         function(data,status){},
                         "json"
                     );
-                }
-                else {
+                } else {
                     $.post('/setGameRound',
                         {
                             game_id: current_game_id,
@@ -102,8 +134,7 @@ function action(territory_id) {
                         "json"
                     );
                 }
-            }
-            else if (game.game_round == 2) {
+            } else if (game.game_round == 2) { //Second round of territory selection from n_player to 1, it territory generates resources
                 $.post('/setTerritoryRuler',
                     {
                         game_id: current_game_id,
@@ -135,8 +166,7 @@ function action(territory_id) {
                         function(data,status){},
                         "json"
                     );
-                }
-                else {
+                } else {
                     $.post('/setGameRound',
                         {
                             game_id: current_game_id,
@@ -147,6 +177,41 @@ function action(territory_id) {
                         "json"
                     );
                 }
+            } else { //Rounds of game (>2) here will be the actions that player could do
+                if(dices_throwed) {
+                    //Estaria bé tenir una array d'objectes {neutral:boolean, enemy:boolean, own:boolean} que s'actualitzes al tirar els daus
+                    //Aixi podriem actualitzar les imatges i aprofitar per coneixer la informacio
+                    if(territories_info[territory_id].neutral) { //It's a neutral territory
+                        alert("Conquer");
+                    } else if(territories_info[territory_id].enemy) { //It's an enemy territory
+                        alert("Attack");
+                    } else if(territories_info[territory_id].own) { //It's our own territory
+                        alert("Update");
+                    }
+                } else {
+                    alert("You have to throw the dices");
+                    //Focus throw dices button
+                }
+                /*if (daus llançats) {
+                    if (territory_id és neutre) {
+                        acció per a territori neutre
+                        mostrar missatge de consum de recursos per conquerir
+                        si acceptar assignar nou dominador i reduir recursos
+                        altrament no fer res
+                        Comprovar si ha guanyat
+                    }
+                    else if (territory_id és ocupat) {
+                        acció per a territori ocupat
+                        mostrar missatge de consum de recursos per atacar
+                        si acceptar assignar nou dominador i reduir recursos
+                        altrament no fer res
+                        Comprovar si ha guanyat
+                    }
+                    else { //territory_id és meu
+                        acció per a territori meu
+                    }
+
+                }*/
             }
             else { //Ronda > 2
                 if (daus llançats) {
@@ -166,12 +231,142 @@ function action(territory_id) {
     });
 };
 
+/*
+* Function to end the current turn
+* */
+var end_turn = function() {
+    dices_throwed = false;
+    $('#Dices_space').text(dices_throwed);
+    $.getJSON('/nextGameTurn/' + current_game_id, function(data) {
+       //Netajar els territoris clickable
+    });
+}
 
+/*
+* Function to simulate a throw of dices and update some info like players resources or auxiliary info to show the clickable territories
+* */
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Cal acabar
+var throw_dices = function() {
+    var dice1 = Math.floor(Math.random()*6) + 1;
+    var dice2 = Math.floor(Math.random()*6) + 1;
+    var result = dice1 + dice2;
 
+    alert(result);
+    //Mostrar el resultat de la tirada
+    if(result == 7) {
+        //Realitzar acció lladre
+    } else {
+        //Assignar recursos als jugadors dominadors d'un territori amb el numero = result (peticio servidor)
+        $.post('/addResourcesFromTerritoryByNumber',
+                {
+                    game_id: current_game_id,
+                    territory_number: result
+                },
+                function(data) {
+                    //Actualitzar els comptadors (sockets)
+                },
+                "json"
+        );
+    }
+    //Per sincronisme, poder s'ha de duplicar i posar al retorn del afegir recursos i del lladre.
+    dices_throwed = true;
+    $('#Dices_space').text(dices_throwed);
+    //Comprovar territoris clicables (funcio per actualitzar imatges i la variable territories_info) funcio clickable_territories!!!!
+    //Haura de comprar si tenim recursos per realitzar les diferents accions i marcar tots els territoris on les poguem fer
+    clickable_territories();
+}
 
+/*
+* Function to select all the territories clickables for the current player.
+* */
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 cal acabar
+var clickable_territories = function() {
+    var check_conquer = false;
+    var check_update = false;
+    var check_attack_lvl1 = false;
+    var check_attack_lvl2 = false;
+    var check_attack_lvl3 = false;
 
+    $.getJSON('getGame/' + current_game_id, function(game) {
+        var player = game.game_players[game.game_turn];
 
+        check_conquer = are_greater(player.player_resources, resources_conquer);
+        check_update = are_greater(player.player_resources, resources_update);
 
+        var weapons_check = check_weapons(player.player_weapons);
+        check_attack_lvl1 = weapons_check[0];
+        check_attack_lvl2 = weapons_check[1];
+        check_attack_lvl3 = weapons_check[2];
+
+        alert("Checking the clicable territories");
+        for(var i = 0; i < game.game_territories.length; i++) {
+            /*
+            * Per cada territori comprovar si algun adjacent és nostre, en cas afirmatiu:
+            *  Si es neutre i check_conquer llavors canviar imatge i guardar info
+            *  Si es enemic, compravar el lvl i el check_attacklvl llavors canviar imatge i guardar info
+            * En cas contrari comprovar si es nostre
+            *   En cas afirmatiu i check_update llavors canviar imatge i guardar info
+            *   altrament guardar info indicant que no es clicable.
+            * */
+            alert("Territory " + (i+1));
+            var territory = game.game_territories[i];
+            var trobat = false;
+            var j = 0;
+            alert("Checking neighbours");
+            while(!trobat && j < territory.territory_neighbours.length) {
+                alert("Neighbour territory " + territory.territory_neighbours[j]);
+                if(game.game_territories[territory.territory_neighbours[j]].territory_ruler == game.game_turn) {
+                    trobat = true;
+                    alert("Neighbour is our territory");
+                }
+                j++;
+            }
+            if(trobat && check_conquer) {
+                alert("Neutral territory");
+                territories_info[territory._id] = {neutral: true, enemy: false, own: false};
+                //Actualitzar imatge per mostrar que es neutral
+            } else if(territory.territory_ruler == game.game_turn && check_update) {
+                alert("Own territory");
+                territories_info[territory._id] = {neutral: false, enemy: false, own: true};
+                //Actualitzar imatge per mostrar que es pot actualitzar
+            } else if(trobat && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
+                alert("Enemy territory");
+                territories_info[territory._id] = {neutral: false, enemy: true, own: false};
+                //Actualitzar imatge per mostrar que es atacable
+            } else {
+                alert("Non clicable territory");
+                territories_info[territory._id] = {neutral: false, enemy: false, own: false};
+            }
+        }
+        alert("Territories info:/n " + territories_info);
+    });
+}
+
+/*
+* Function to check if A resources are greater than B resources
+* */
+var are_greater = function(a_resources, b_resources) {
+    return (a_resources.brick >= b_resources.brick) && (a_resources.lumber >= b_resources.lumber) && (a_resources.ore >= b_resources.ore) && (a_resources.wool >= b_resources.wool) && (a_resources.grain >= b_resources.grain);
+}
+
+/*
+ * Function to check if player have enough weapons to attack territories of lvl1 or lvl2 or lvl3
+ * */
+var check_weapons = function(weapons) {
+    var result = [false, false, false];
+    var check = weapons.weapon_level_1 * 1 + weapons.weapon_level_2 * 2 + weapons.weapon_level_3 * 3;
+
+    if(check > 0) {
+        result[0] = true;
+    }
+    if(check > 1) {
+        result[1] = true;
+    }
+    if(check > 2) {
+        result[2] = true;
+    }
+    return result;
+}
 
 
 
