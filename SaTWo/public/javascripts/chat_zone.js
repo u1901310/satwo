@@ -1,27 +1,51 @@
 var socket = io.connect('http://localhost:3000');
+var usernames = {};
 
-// on connection to server, ask for user's name with an anonymous callback
-//socket.on('connect', function(){
-//    // call the server-side function 'adduser' and send one parameter (value of prompt)
-//socket.emit('adduser', prompt("What's your name?"));
-socket.emit('adduser', user_logged.user_username);
-//});
+socket.emit('subscribe', current_game_id, user_logged.user_username);
+
+socket.on('userconnected', function(username) {
+    usernames[username] = username;
+
+    $('#conversation').append('<b>SERVER:</b> ' + username + ' has connected<br>');
+
+    $('#users').empty();
+    $.each(usernames, function(key, value) {
+        $('#users').append('<div>' + key + '</div>');
+    });
+});
+
+socket.on('userdisconnected', function(username) {
+    delete usernames[username];
+    $('#conversation').append('<b>SERVER:</b> ' + username + ' has disconnected<br>');
+
+    $('#users').empty();
+    $.each(usernames, function(key, value) {
+        $('#users').append('<div>' + key + '</div>');
+    });
+});
 
 // listener, whenever the server emits 'updatechat', this updates the chat body
 socket.on('updatechat', function (username, data) {
     $('#conversation').append('<b>' + username + ':</b> ' + data + '<br>');
 });
 
-// listener, whenever the server emits 'updateusers', this updates the username list
-socket.on('updateusers', function(data) {
-    $('#users').empty();
-    $.each(data, function(key, value) {
-        $('#users').append('<div>' + key + '</div>');
-    });
-});
-
 // on load of page
 $(function(){
+    $('#users').empty();
+    $.getJSON('/getGame/' + current_game_id, function(game) {
+        $.each(game.game_users_info, function(){
+            var user_id = this.user_id;
+            $.ajax({
+                url: 'getUserUsername/' + user_id,
+                type: 'GET',
+                async: false
+            }).done(function(username){
+                usernames[username] = username;
+                $('#users').append('<div>' + username + '</div>');
+            });
+        });
+    });
+
     // when the client clicks SEND
     $('#datasend').click(function() {
         var message = $('#data').val();

@@ -23,6 +23,51 @@ db.open(function(err, db) {
 });
 
 //Function to initialize the database
+var neighbours = [
+    [2,6,32],
+    [1,6,7,9],
+    [4,9,13],
+    [3,7,8,9],
+    [6,7,8,21],
+    [1,2,5,7],
+    [2,4,5,6,8,9],
+    [4,5,7],
+    [2,3,4,7], //America Nord
+    [11,12],
+    [10,12,13,18],
+    [10,11,13],
+    [3,11,12], //America Sud
+    [15,18,19],
+    [14,16,17,19,33],
+    [15,18,24,33],
+    [15,19],
+    [11,14,15,16,24,26],
+    [14,15,17], //Africa
+    [21,22,23,26],
+    [5,20,23],
+    [20,23,24,25,26],
+    [20,21,22,25],
+    [16,18,22,25,26,33],
+    [22,23,24,27,33,37],
+    [18,20,22,24], //Europa
+    [25,28,29,33,37],
+    [27,29,34,35,36,37],
+    [27,28,33,35],
+    [32,34,36,38],
+    [32,34],
+    [1,30,31,34,38],
+    [15,16,24,25,27,29],
+    [28,30,31,32,36],
+    [28,29,40],
+    [28,30,34,37,38],
+    [25,27,28,36],
+    [30,32,36], //Asia
+    [41,42],
+    [35,41,42],
+    [39,40,42],
+    [39,40,41] //Oceania
+];
+
 var populateDB = function() {
 
     var users = [
@@ -80,7 +125,8 @@ var populateDB = function() {
     for (var i = 0; i < 42; i++) {
         territories[i] = {
             territory_image: 'territory' + (i+1) + '.png',
-            territory_size: Math.floor(Math.random()*3) + 2
+            territory_size: Math.floor(Math.random()*3) + 2,
+            territory_neighbours: neighbours[i]
         };
     }
 
@@ -484,7 +530,8 @@ exports.initGame = function(req, res) {
                             territory_resources: territory_resources,
                             territory_ruler: null,
                             territory_level: 1,
-                            territory_thief: false
+                            territory_thief: false,
+                            territory_neighbours: items[i].territory_neighbours
                         };
 
                         // Eliminem el valor de la posició 'position' de 'territory_random_numbers' (n'eliminem '1')
@@ -793,6 +840,39 @@ exports.setGameTurn = function(req, res) {
 };
 
 /*
+ * SFunction to set the next turn of a game
+ *  params: game_id
+ */
+exports.nextGameTurn = function(req, res) {
+    var game_id = req.params.game_id;
+
+    console.log('Setting next turn to game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            if(game.game_turn == game.game_num_of_players) {
+                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: 1}}, function(err, result) {
+                    if(err) {
+                        res.send({error: 'An error has occurred setting the turn of a game'});
+                    } else {
+                        console.log('Success: turn set to 1 to game ' + game_id);
+                        res.send(null);
+                    }
+                });
+            } else {
+                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: game.game_turn + 1}}, function(err, result) {
+                    if(err) {
+                        res.send({error: 'An error has occurred setting the turn of a game'});
+                    } else {
+                        console.log('Success: next turn set to game ' + game_id);
+                        res.send(null);
+                    }
+                });
+            }
+        });
+    });
+};
+
+/*
  * SFunction to get the round of a game
  *  params: game_id
  * */
@@ -846,6 +926,126 @@ exports.setTerritoryRuler = function(req, res) {
                 console.log('Success: player ' + player_id + ' set to ruler of territory ' + territory_id + ' for game ' + game_id);
                 res.send(null);
             }
+        });
+    });
+};
+
+/*
+ * SFunction to add territory's resources to player
+ *  params: (POST) game_id, territory_id and player_id
+ */
+exports.addResourcesFromTerritory = function(req, res) {
+    var game_id = req.body.game_id;
+    var territory_id = req.body.territory_id;
+    var player_id = req.body.player_id;
+
+    console.log('Adding resources from territory ' + territory_id + ' to player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+        //games.findOne({_id: new BSON.ObjectID(game_id), "game_territories.territory_id": new BSON.ObjectID(territory_id)}, function(err, territory){
+            //game.game_territories.findOne({territory_id: new BSON.ObjectID(territory_id)}, function(err, territory){
+            //games.findOne({_id: new BSON.ObjectID(game_id), "game_players.player_id": player_id}, function(err, player){
+
+            var i = 0;
+            var territory;
+            while (!territory) {
+                if (game.game_territories[i].territory_id == territory_id) {
+                    territory = game.game_territories[i];
+                }
+                i++;
+            }
+
+            i = 0;
+            var player;
+            while (!player) {
+                if (game.game_players[i].player_id == player_id) {
+                    player = game.game_players[i];
+
+                    game.game_players[i].player_resources.brick += territory.territory_resources[0];
+                    game.game_players[i].player_resources.lumber += territory.territory_resources[1];
+                    game.game_players[i].player_resources.ore += territory.territory_resources[2];
+                    game.game_players[i].player_resources.wool += territory.territory_resources[3];
+                    game.game_players[i].player_resources.grain += territory.territory_resources[4];
+
+                    //player.player_resources = resources;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred adding resources to player'});
+                } else {
+                    console.log('Success: resources from territory ' + territory_id + ' added to player ' + player_id + ' for game ' + game_id);
+                    res.send(null);
+                }
+            });
+
+                //game.game_players.findOne({player_id: player_id}, function(err, player) {
+                    /*
+                    var resources = {
+                        brick: territory.territory_resources[0] + player.player_resources.brick,
+                        lumber: territory.territory_resources[1] + player.player_resources.lumber,
+                        ore: territory.territory_resources[2] + player.player_resources.ore,
+                        wool: territory.territory_resources[3] + player.player_resources.wool,
+                        grain: territory.territory_resources[4] + player.player_resources.grain
+                    };
+
+                    games.update({_id: new BSON.ObjectID(game_id), "game_players.player_id": player_id}, {$set: {"game_players.$.player_resources": resources}}, function(err, result) {
+                        if(err) {
+                            res.send({error: 'An error has occurred adding resources to player'});
+                        } else {
+                            console.log('Success: resources from territory ' + territory_id + ' added to player ' + player_id + ' for game ' + game_id);
+                            res.send(null);
+                        }
+                    });
+                    */
+                //});
+            //});
+        });
+    });
+};
+
+/*
+ * SFunction to add territory's resources to player
+ *  params: (POST) game_id, territory_id and player_id
+ */
+exports.addResourcesFromTerritoryByNumber = function(req, res) {
+    var game_id = req.body.game_id;
+    var territory_number = req.body.territory_number;
+
+    console.log('Adding resources from territory with number ' + territory_number + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            for(var i = 0; i < game.game_territories.length; i++) {
+                var territory = game.game_territories[i];
+                if(territory.territory_random_number == territory_number && territory.territory_ruler != null) {
+                    var player_id = game.game_territories[i].territory_ruler;
+                    var j = 0;
+                    var player = null;
+                    while (!player) {
+                        if (game.game_players[j].player_id == player_id) {
+                            player = game.game_players[j];
+
+                            game.game_players[j].player_resources.brick += territory.territory_resources[0];
+                            game.game_players[j].player_resources.lumber += territory.territory_resources[1];
+                            game.game_players[j].player_resources.ore += territory.territory_resources[2];
+                            game.game_players[j].player_resources.wool += territory.territory_resources[3];
+                            game.game_players[j].player_resources.grain += territory.territory_resources[4];
+                        }
+                        j++;
+                    }
+                }
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred adding resources to player'});
+                } else {
+                    console.log('Success: resources from territory with number ' + territory_number + ' added to thier rulers for game ' + game_id);
+                    res.send(null);
+                }
+            });
         });
     });
 };

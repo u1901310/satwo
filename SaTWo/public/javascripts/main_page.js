@@ -384,17 +384,25 @@ var validate_game = function() {
     }
     /*
     * Nº of player condition:
-    *   1 - Must be between 2 and 6
+    *   1 - Must be a number
+    *   2 - Must be between 2 and 6
     * */
-    if(n_players < 2) {
+    var num_of_players_pattern = /^\d+$/;
+    if(!num_of_players_pattern.test(n_players)) {
         //validation = false;
         //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be greater than 2</span>');
         $('#game_players_number_input').val(2);
-    }
-    if(n_players > 6) {
-        //validation = false;
-        //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be lower than 6</span>');
-        $('#game_players_number_input').val(6);
+    } else {
+        if(n_players < 2) {
+            //validation = false;
+            //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be greater than 2</span>');
+            $('#game_players_number_input').val(2);
+        }
+        if(n_players > 6) {
+            //validation = false;
+            //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be lower than 6</span>');
+            $('#game_players_number_input').val(6);
+        }
     }
     return validation;
 };
