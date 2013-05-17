@@ -1,60 +1,4 @@
-//$(document).ready(function() {
-    /*
-    $.getJSON('/getTerritories/', function(territories) {
-        $.each(territories, function() {
-            $('#territories').append('<span>' + this._id + '</span><br>');
-            $('#territories').append('<span>' + this.territory_image + '</span><br>');
-            $('#territories').append('<span>' + this.territory_size + '</span><br><br>');
-        });
-    });
-    */
-
-    /*
-    $.getJSON('/getGame/' + current_game_id, function(game) {
-        $('#games').append('<span><b>Name: </b>' + game.game_name + '</span><br>');
-        $('#games').append('<span><b>Password: </b>' + game.game_password + '</span><br>');
-        $('#games').append('<span><b>Number of players: </b>' + game.game_num_of_players + '</span><br>');
-        $('#games').append('<span><b>Current number of players: </b>' + game.game_current_num_of_players + '</span><br>');
-        $('#games').append('<span><b>Public: </b>' + game.game_is_public + '</span><br>');
-        $('#games').append('<span><b>Room administrator: </b>' + game.game_room_administrator + '</span><br><br>');
-
-        $('#games').append('<span><b>USERS INFO</b></span><br>');
-        $.each(game.game_users_info, function() {
-            $('#games').append('<span><b>    Id: </b>' + this.user_id + '</span><br>');
-            $('#games').append('<span><b>    Confirmation: </b>' + this.confirmation + '</span><br>');
-            $('#games').append('<span><b>    Faction: </b>' + this.faction + '</span><br><br>');
-        });
-
-        $('#games').append('<span><b>PLAYERS INFO</b></span><br>');
-        $.each(game.game_players, function() {
-            $('#games').append('<span><b>    Id: </b>' + this.player_id + '</span><br>');
-            $('#games').append('<span><b>    Faction: </b>' + this.player_faction+ '</span><br>');
-            $('#games').append('<span><b>    Weapons: </b>' + this.player_weapons.weapon_level_1 + ' (level 1), ' +
-                                                              this.player_weapons.weapon_level_2 + ' (level 2), ' +
-                                                              this.player_weapons.weapon_level_3 + ' (level 3)</span><br>');
-            $('#games').append('<span><b>    Resources: </b>' + this.player_resources.brick + ' (brick), ' +
-                                                                this.player_resources.lumber + ' (lumber), ' +
-                                                                this.player_resources.ore + ' (ore), ' +
-                                                                this.player_resources.wool + ' (wool), ' +
-                                                                this.player_resources.grain + ' (grain)</span><br><br>');
-        });
-
-        $('#games').append('<span><b>TERRITORIES INFO</b></span><br>');
-        $.each(game.game_territories, function() {
-            $('#games').append('<span><b>    Id: </b>' + this.territory_id + '</span><br>');
-            $('#games').append('<span><b>    Random number: </b>' + this.territory_random_number + '</span><br>');
-            $('#games').append('<span><b>    Resources: </b>' + this.territory_resources[0] + ' (brick), ' +
-                                                                this.territory_resources[1] + ' (lumber), ' +
-                                                                this.territory_resources[2] + ' (ore), ' +
-                                                                this.territory_resources[3] + ' (wool), ' +
-                                                                this.territory_resources[4] + ' (grain)</span><br>');
-            $('#games').append('<span><b>    Ruler: </b>' + this.territory_ruler + '</span><br>');
-            $('#games').append('<span><b>    Level: </b>' + this.territory_level + '</span><br>');
-            $('#games').append('<span><b>    Thief: </b>' + this.territory_thief + '</span><br><br>');
-        });
-    });
-    */
-//});
+var socket = io.connect('http://localhost:3000/');
 
 var player_id;
 var resources_conquer = {
@@ -62,14 +6,14 @@ var resources_conquer = {
                             lumber: 0,
                             ore: 0,
                             wool: 0,
-                            grains: 0
+                            grain: 0
                         };
 var resources_update = {
                             brick: 0,
                             lumber: 0,
                             ore: 0,
                             wool: 0,
-                            grains: 0
+                            grain: 0
                         };
 
 $(document).ready(function(){
@@ -79,6 +23,10 @@ $(document).ready(function(){
         });
     });
     $('#Dices_space').text(dices_throwed);
+
+    socket.on('conquer_territory_received', function(image, player_id) {
+        drawFilledImage(image, player_id);
+    });
 });
 
 /*
@@ -98,94 +46,143 @@ $(document).ready(function(){
 * */
 var dices_throwed = false;
 var territories_info = [];
+for (var i = 0; i < 42; i++) {
+    territories_info.push(
+        {
+            neutral: false,
+            enemy: false,
+            own: false
+        }
+    );
+}
 
-function action(territory_id) {
+//function action(territory_id) {
+function action(image) {
+    var territory_id = image.attrs.id;
+    var territory_index = image.attrs.index;
+
     $.getJSON('getGame/' + current_game_id, function(game) {
         if (game.game_turn == player_id) {
             if (game.game_round == 1) { //First round of territory selection from 1 to n_players
-                $.post('/setTerritoryRuler',
-                    {
-                        game_id: current_game_id,
-                        territory_id: territory_id,
-                        player_id: player_id
-                    },
-                    function(data,status){},
-                    "json"
-                );
+                if (game.game_territories[territory_index].territory_ruler == null) {
+                    $.post('/setTerritoryRuler',
+                        {
+                            game_id: current_game_id,
+                            territory_id: territory_id,
+                            player_id: player_id
+                        },
+                        function(data,status){
+                            //socket.emit('conquer_territory_sent', image, player_id);
+                        },
+                        "json"
+                    );
 
-                if (player_id < game.game_num_of_players) {
-                    $.post('/setGameTurn',
-                        {
-                            game_id: current_game_id,
-                            turn: new Number(game.game_turn) + 1
-                            //turn: game.game_turn + 1
-                        },
-                        function(data,status){},
-                        "json"
-                    );
-                } else {
-                    $.post('/setGameRound',
-                        {
-                            game_id: current_game_id,
-                            round: new Number(game.game_round) + 1
-                            //round: game.game_round + 1
-                        },
-                        function(data,status){},
-                        "json"
-                    );
+                    //drawFilledImage(image, player_id);
+                    var imageObj = {
+                        image: image.attrs.image,
+                        desc: image.attrs.desc,
+                        id: image.attrs.id,
+                        index: image.attrs.index,
+                        width: image.attrs.width,
+                        height: image.attrs.height,
+                        x: image.attrs.x,
+                        y: image.attrs.y
+                    };
+                    socket.emit('conquer_territory_sent', imageObj, player_id);
+
+                    if (player_id < game.game_num_of_players) {
+                        $.post('/setGameTurn',
+                            {
+                                game_id: current_game_id,
+                                turn: new Number(game.game_turn) + 1
+                                //turn: game.game_turn + 1
+                            },
+                            function(data,status){},
+                            "json"
+                        );
+                    } else {
+                        $.post('/setGameRound',
+                            {
+                                game_id: current_game_id,
+                                round: new Number(game.game_round) + 1
+                                //round: game.game_round + 1
+                            },
+                            function(data,status){},
+                            "json"
+                        );
+                    }
                 }
             } else if (game.game_round == 2) { //Second round of territory selection from n_player to 1, it territory generates resources
-                $.post('/setTerritoryRuler',
-                    {
-                        game_id: current_game_id,
-                        territory_id: territory_id,
-                        player_id: player_id
-                    },
-                    function(data,status){},
-                    "json"
-                );
-
-                $.ajax({
-                    url: '/addResourcesFromTerritory',
-                    type: 'POST',
-                    data: {
-                        game_id: current_game_id,
-                        territory_id: territory_id,
-                        player_id: player_id
-                    },
-                    async: false
-                }).done(function(data){});
-
-                if (player_id > 1) {
-                    $.post('/setGameTurn',
+                if (game.game_territories[territory_index].territory_ruler == null) {
+                    $.post('/setTerritoryRuler',
                         {
                             game_id: current_game_id,
-                            turn: new Number(game.game_turn) - 1
-                            //turn: game.game_turn - 1
+                            territory_id: territory_id,
+                            player_id: player_id
                         },
-                        function(data,status){},
+                        function(data,status){
+                            //socket.emit('conquer_territory_sent', image, player_id);
+                        },
                         "json"
                     );
-                } else {
-                    $.post('/setGameRound',
-                        {
+
+                    $.ajax({
+                        url: '/addResourcesFromTerritory',
+                        type: 'POST',
+                        data: {
                             game_id: current_game_id,
-                            round: new Number(game.game_round) + 1
-                            //round: game.game_round + 1
+                            territory_id: territory_id,
+                            player_id: player_id
                         },
-                        function(data,status){},
-                        "json"
-                    );
+                        async: false
+                    }).done(function(data){
+                        //socket.emit('conquer_territory_sent', image, player_id);
+                    });
+
+                    //drawFilledImage(image, player_id);
+                    var imageObj = {
+                        image: image.attrs.image,
+                        desc: image.attrs.desc,
+                        id: image.attrs.id,
+                        index: image.attrs.index,
+                        width: image.attrs.width,
+                        height: image.attrs.height,
+                        x: image.attrs.x,
+                        y: image.attrs.y
+                    };
+                    socket.emit('conquer_territory_sent', imageObj, player_id);
+
+                    if (player_id > 1) {
+                        $.post('/setGameTurn',
+                            {
+                                game_id: current_game_id,
+                                turn: new Number(game.game_turn) - 1
+                                //turn: game.game_turn - 1
+                            },
+                            function(data,status){},
+                            "json"
+                        );
+                    } else {
+                        $.post('/setGameRound',
+                            {
+                                game_id: current_game_id,
+                                round: new Number(game.game_round) + 1
+                                //round: game.game_round + 1
+                            },
+                            function(data,status){},
+                            "json"
+                        );
+                    }
                 }
             } else { //Rounds of game (>2) here will be the actions that player could do
                 if(dices_throwed) {
                     //Estaria bé tenir una array d'objectes {neutral:boolean, enemy:boolean, own:boolean} que s'actualitzes al tirar els daus
                     //Aixi podriem actualitzar les imatges i aprofitar per coneixer la informacio
-                    if(territories_info[territory_id].neutral) { //It's a neutral territory
+                    if(territories_info[territory_index].neutral) { //It's a neutral territory
                         alert("Conquer");
-                    } else if(territories_info[territory_id].enemy) { //It's an enemy territory
+                    } else if(territories_info[territory_index].enemy) { //It's an enemy territory
                         alert("Attack");
-                    } else if(territories_info[territory_id].own) { //It's our own territory
+                    } else if(territories_info[territory_index].own) { //It's our own territory
                         alert("Update");
                     }
                 } else {
@@ -213,6 +210,7 @@ function action(territory_id) {
 
                 }*/
             }
+            /*
             else { //Ronda > 2
                 if (daus llançats) {
                     if (territory_id és neutre) {
@@ -227,6 +225,7 @@ function action(territory_id) {
                 }
 
             }
+            */
         }
     });
 };
@@ -298,7 +297,7 @@ var clickable_territories = function() {
         check_attack_lvl2 = weapons_check[1];
         check_attack_lvl3 = weapons_check[2];
 
-        alert("Checking the clicable territories");
+        //alert("Checking the clicable territories (" + game.game_territories.length + ")");
         for(var i = 0; i < game.game_territories.length; i++) {
             /*
             * Per cada territori comprovar si algun adjacent és nostre, en cas afirmatiu:
@@ -308,37 +307,80 @@ var clickable_territories = function() {
             *   En cas afirmatiu i check_update llavors canviar imatge i guardar info
             *   altrament guardar info indicant que no es clicable.
             * */
-            alert("Territory " + (i+1));
             var territory = game.game_territories[i];
-            var trobat = false;
-            var j = 0;
-            alert("Checking neighbours");
-            while(!trobat && j < territory.territory_neighbours.length) {
-                alert("Neighbour territory " + territory.territory_neighbours[j]);
-                if(game.game_territories[territory.territory_neighbours[j]].territory_ruler == game.game_turn) {
-                    trobat = true;
-                    alert("Neighbour is our territory");
-                }
-                j++;
-            }
-            if(trobat && check_conquer) {
-                alert("Neutral territory");
-                territories_info[territory._id] = {neutral: true, enemy: false, own: false};
-                //Actualitzar imatge per mostrar que es neutral
-            } else if(territory.territory_ruler == game.game_turn && check_update) {
-                alert("Own territory");
-                territories_info[territory._id] = {neutral: false, enemy: false, own: true};
+
+            if(territory.territory_ruler == game.game_turn && check_update) {
+                //alert("Own territory");
+                //territories_info[territory._id] = {neutral: false, enemy: false, own: true};
+                territories_info[i].own = true;
+                drawContouredImage(i);
                 //Actualitzar imatge per mostrar que es pot actualitzar
-            } else if(trobat && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
-                alert("Enemy territory");
-                territories_info[territory._id] = {neutral: false, enemy: true, own: false};
-                //Actualitzar imatge per mostrar que es atacable
             } else {
-                alert("Non clicable territory");
-                territories_info[territory._id] = {neutral: false, enemy: false, own: false};
+                var trobat = false;
+                var j = 0;
+                //alert("Checking neighbours");
+                while(!trobat && j < territory.territory_neighbours.length) {
+                    //alert("Neighbour territory " + territory.territory_neighbours[j]);
+                    if(game.game_territories[territory.territory_neighbours[j] - 1].territory_ruler == game.game_turn) {
+                        trobat = true;
+                        //alert("Neighbour is our territory");
+                    }
+                    j++;
+                }
+                if(trobat) {
+                    if(territory.territory_ruler == null && check_conquer) {
+                        //alert("Neutral territory");
+                        //territories_info[territory._id] = {neutral: true, enemy: false, own: false};
+                        territories_info[i].neutral = true;
+                        drawContouredImage(i);
+                    } else if(territory.territory_ruler != null && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
+                        //alert("Enemy territory");
+                        //territories_info[territory._id] = {neutral: false, enemy: true, own: false};
+                        territories_info[i].enemy = true;
+                        drawContouredImage(i);
+                    } else {
+                        //alert("Non clicable territory");
+                        //territories_info[territory._id] = {neutral: false, enemy: false, own: false};
+                        territories_info[i] = {neutral: false, enemy: false, own: false};
+                    }
+                } else {
+                    //alert("Non clicable territory");
+                    //territories_info[territory._id] = {neutral: false, enemy: false, own: false};
+                    territories_info[i] = {neutral: false, enemy: false, own: false};
+                }
             }
+
+//             alert("Territory " + (i+1));
+//
+//            var trobat = false;
+//            var j = 0;
+//            alert("Checking neighbours");
+//            while(!trobat && j < territory.territory_neighbours.length) {
+//                alert("Neighbour territory " + territory.territory_neighbours[j]);
+//                if(game.game_territories[territory.territory_neighbours[j] - 1].territory_ruler == game.game_turn) {
+//                    trobat = true;
+//                    alert("Neighbour is our territory");
+//                }
+//                j++;
+//            }
+//            if(trobat && check_conquer) {
+//                alert("Neutral territory");
+//                territories_info[territory._id] = {neutral: true, enemy: false, own: false};
+//                //Actualitzar imatge per mostrar que es neutral
+//            } else if(territory.territory_ruler == game.game_turn && check_update) {
+//                alert("Own territory");
+//                territories_info[territory._id] = {neutral: false, enemy: false, own: true};
+//                //Actualitzar imatge per mostrar que es pot actualitzar
+//            } else if(trobat && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
+//                alert("Enemy territory");
+//                territories_info[territory._id] = {neutral: false, enemy: true, own: false};
+//                //Actualitzar imatge per mostrar que es atacable
+//            } else {
+//                alert("Non clicable territory");
+//                territories_info[territory._id] = {neutral: false, enemy: false, own: false};
+//            }
         }
-        alert("Territories info:/n " + territories_info);
+        //alert("Territories info:/n " + territories_info);
     });
 }
 
@@ -346,7 +388,11 @@ var clickable_territories = function() {
 * Function to check if A resources are greater than B resources
 * */
 var are_greater = function(a_resources, b_resources) {
-    return (a_resources.brick >= b_resources.brick) && (a_resources.lumber >= b_resources.lumber) && (a_resources.ore >= b_resources.ore) && (a_resources.wool >= b_resources.wool) && (a_resources.grain >= b_resources.grain);
+    return (new Number(a_resources.brick) >= b_resources.brick)
+        && (new Number(a_resources.lumber) >= b_resources.lumber)
+        && (new Number(a_resources.ore) >= b_resources.ore)
+        && (new Number(a_resources.wool) >= b_resources.wool)
+        && (new Number(a_resources.grain) >= b_resources.grain);
 }
 
 /*
@@ -367,6 +413,14 @@ var check_weapons = function(weapons) {
     }
     return result;
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -406,6 +460,8 @@ var layer = new Kinetic.Layer();
     background_rect.setStroke('rgba(149,161,77,0)');
     layer.add(background_rect);
 
+    stage.add(layer);
+
     /*
     var map = new Image();
     map.onload = function() {
@@ -442,27 +498,137 @@ $.ajax({
     });
 });
 
-var imagesDir = '/images/territories/';
+
+
+
+function drawFilledImage(imageObj, player_id) {
+
+    //    layer.removeChildren();
+    //    kinetic_images[9].getImage().src = '/images/territories/filled/player1/territory10.png';
+
+    //alert(JSON.stringify(image));
+    //alert(player_id);
+
+    filled_layers[imageObj.index].removeChildren();
+    //kinetic_images[index].getImage().src = '/images/territories/filled/player1/territory' + (index+1) + '.png';
+
+    var img = new Image();
+    img.onload = function() {
+        var kin_img = new Kinetic.Image({
+            image: img,
+            desc: imageObj.desc,
+            id: imageObj.id,
+            index: imageObj.index,
+            width: imageObj.width,
+            height: imageObj.height,
+            x: imageObj.x,
+            y: imageObj.y
+        });
+
+        kin_img.on('mouseover', function() {
+            $('#test').val(this.attrs.desc);
+            this.setOpacity(0.3);
+            $('#container').css('cursor','pointer')
+            //layer.draw();
+            filled_layers[this.attrs.index].draw();
+            showTerritoryInformation(this);
+        });
+        kin_img.on('mouseout', function() {
+            $('#test').val('');
+            this.setOpacity(1);
+            $('#container').css('cursor','auto')
+            //layer.draw();
+            filled_layers[this.attrs.index].draw();
+            hideTerritoryInformation();
+        });
+        kin_img.on('click', function() {
+            //action(this.attrs.id);
+            action(this);
+        });
+
+        kin_img.createImageHitRegion(function() {
+            //layer.draw();
+            filled_layers[this.attrs.index].draw();
+        });
+
+        filled_layers[imageObj.index].add(kin_img);
+        filled_layers[imageObj.index].draw();
+    };
+    img.src = '/images/territories/filled/player' + player_id + '/territory' + (imageObj.index+1) + '.png';
+};
+
+function drawContouredImage(index) {
+
+    //    layer.removeChildren();
+    //    kinetic_images[9].getImage().src = '/images/territories/filled/player1/territory10.png';
+
+    //alert(JSON.stringify(image));
+    //alert(player_id);
+
+    //contour_layers[index].removeChildren();
+    //kinetic_images[index].getImage().src = '/images/territories/filled/player1/territory' + (index+1) + '.png';
+
+    var img = new Image();
+    img.onload = function() {
+        var kin_img = new Kinetic.Image({
+            image: img,
+            x: 150,
+            y: 125
+        });
+
+        kin_img.createImageHitRegion(function() {
+            //layer.draw();
+            contour_layers[index].draw();
+        });
+
+        contour_layers[index].add(kin_img);
+        contour_layers[index].draw();
+
+        stage.add(contour_layers[index]);
+    };
+    img.src = '/images/territories/contoured/player' + player_id + '/territory' + (index+1) + '.png';
+};
+
+
+
+var imagesDir = '/images/territories/neutral/';
 var images = {};
 var loadedImages = 0;
 for (var src in sources) {
     images[src] = new Image();
     images[src].onload = function() {
         if (++loadedImages >= num_images) {
-            initStage(images);
+            //initStage(images);
+            initStage();
         }
     };
     images[src].src = imagesDir + sources[src];
 }
 
 
-function initStage(images) {
-    var kinetic_images = [];
+
+var kinetic_images = [];
+
+var filled_layers = [];
+var contour_layers = [];
+var thief_layer = new Kinetic.Layer();
+
+for (var i = 0; i < 42; i++) {
+    filled_layers.push(new Kinetic.Layer());
+    contour_layers.push(new Kinetic.Layer());
+}
+
+//function initStage(images) {
+function initStage() {
+    //var kinetic_images = [];
     for (var i = 0; i < num_images; i++) {
         kinetic_images[i] = new Kinetic.Image({
             image: images[i],
             desc: sources[i],
             id: ids[i],
+            index: i,
+            width: images[i].width,
+            height: images[i].height,
             x: 150,
             y: 125
         });
@@ -471,27 +637,34 @@ function initStage(images) {
             $('#test').val(this.attrs.desc);
             this.setOpacity(0.3);
             $('#container').css('cursor','pointer')
-            layer.draw();
+            //layer.draw();
+            filled_layers[this.attrs.index].draw();
             showTerritoryInformation(this);
         });
         kinetic_images[i].on('mouseout', function() {
             $('#test').val('');
             this.setOpacity(1);
             $('#container').css('cursor','auto')
-            layer.draw();
+            //layer.draw();
+            filled_layers[this.attrs.index].draw();
             hideTerritoryInformation();
         });
         kinetic_images[i].on('click', function() {
-            action(this.attrs.id);
+            //action(this.attrs.id);
+            action(this);
         });
 
         kinetic_images[i].createImageHitRegion(function() {
-            layer.draw();
+            //layer.draw();
+            filled_layers[this.attrs.index].draw();
         });
 
-        layer.add(kinetic_images[i]);
+        //layer.add(kinetic_images[i]);
+        filled_layers[i].add(kinetic_images[i]);
+
+        stage.add(filled_layers[i]);
     }
-    stage.add(layer);
+    //stage.add(layer);
 }
 
 
