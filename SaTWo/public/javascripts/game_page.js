@@ -213,20 +213,6 @@ function action(territory_id) {
 
                 }*/
             }
-            else { //Ronda > 2
-                if (daus llançats) {
-                    if (territory_id és neutre) {
-                        acció per a territori neutre
-                    }
-                    else if (territory_id és ocupat) {
-                        acció per a territori ocupat
-                    }
-                    else { //territory_id és meu
-                        acció per a territori meu
-                    }
-                }
-
-            }
         }
     });
 };
