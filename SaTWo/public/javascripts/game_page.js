@@ -3,13 +3,13 @@ var socket = io.connect('http://localhost:3000/');
 var player_id;
 var resources_conquer = {
                             brick: 0,
-                            lumber: 0,
+                            lumber: 1,
                             ore: 0,
                             wool: 0,
                             grain: 0
                         };
 var resources_update = {
-                            brick: 0,
+                            brick: 1,
                             lumber: 0,
                             ore: 0,
                             wool: 0,
@@ -26,6 +26,13 @@ $(document).ready(function(){
 
     socket.on('conquer_territory_received', function(image, player_id) {
         drawFilledImage(image, player_id);
+    });
+    socket.on('enable_dices_received', function(data) {
+        alert('message received to enable dices');
+        $.getJSON('/getGameTurn/' + current_game_id, function(turn) {
+            alert(turn + " and " + player_id);
+            if (player_id == turn) $('#dice_button').removeAttr("disabled");
+        });
     });
 });
 
@@ -44,7 +51,7 @@ $(document).ready(function(){
 *       - (Other accions implemented in future)
 *    3 - Finish turn, this will increment the turn counter and if the player is the last it will increment the round and set the turn to 1
 * */
-var dices_throwed = false;
+var dices_throwed = true;
 var territories_info = [];
 for (var i = 0; i < 42; i++) {
     territories_info.push(
@@ -79,7 +86,7 @@ function action(image) {
 
                     //drawFilledImage(image, player_id);
                     var imageObj = {
-                        image: image.attrs.image,
+                        //image: image.attrs.image,
                         desc: image.attrs.desc,
                         id: image.attrs.id,
                         index: image.attrs.index,
@@ -141,7 +148,7 @@ function action(image) {
 
                     //drawFilledImage(image, player_id);
                     var imageObj = {
-                        image: image.attrs.image,
+                        //image: image.attrs.image,
                         desc: image.attrs.desc,
                         id: image.attrs.id,
                         index: image.attrs.index,
@@ -159,8 +166,7 @@ function action(image) {
                                 turn: new Number(game.game_turn) - 1
                                 //turn: game.game_turn - 1
                             },
-                            function(data,status){},
-                            "json"
+                            function(data,status){}
                         );
                     } else {
                         $.post('/setGameRound',
@@ -169,8 +175,10 @@ function action(image) {
                                 round: new Number(game.game_round) + 1
                                 //round: game.game_round + 1
                             },
-                            function(data,status){},
-                            "json"
+                            function(data,status){
+                                dices_throwed = false;
+                                socket.emit('enable_dices_sent', {info: 'sent'});
+                            }
                         );
                     }
                 }
@@ -179,11 +187,98 @@ function action(image) {
                     //Estaria bé tenir una array d'objectes {neutral:boolean, enemy:boolean, own:boolean} que s'actualitzes al tirar els daus
                     //Aixi podriem actualitzar les imatges i aprofitar per coneixer la informacio
                     if(territories_info[territory_index].neutral) { //It's a neutral territory
-                        alert("Conquer");
+                        //alert("Conquer");
+                        var conf = confirm("Conquer?");
+                        if (conf) {
+                            $.post('/spendResources',
+                                {
+                                    game_id: current_game_id,
+                                    resources: resources_conquer,
+                                    player_id: player_id
+                                },
+                                function(data,status){
+                                    $.post('/setTerritoryRuler',
+                                        {
+                                            game_id: current_game_id,
+                                            territory_id: territory_id,
+                                            player_id: player_id
+                                        },
+                                        function(data,status){
+                                            var imageObj = {
+                                                //image: image.attrs.image,
+                                                desc: image.attrs.desc,
+                                                id: image.attrs.id,
+                                                index: image.attrs.index,
+                                                width: image.attrs.width,
+                                                height: image.attrs.height,
+                                                x: image.attrs.x,
+                                                y: image.attrs.y
+                                            };
+                                            socket.emit('conquer_territory_sent', imageObj, player_id);
+                                            clickable_territories();
+                                        }
+                                    );
+                                }
+                            );
+                        }
                     } else if(territories_info[territory_index].enemy) { //It's an enemy territory
-                        alert("Attack");
+                        //alert("Attack");
+                        var conf = confirm("Attack?");
+                        if (conf) {
+                            $.post('/useWeapons',
+                                {
+                                    game_id: current_game_id,
+                                    weapons: select_weapons(game.game_territories[territory_index].territory_level, game.game_players[player_id - 1].player_weapons),
+                                    player_id: player_id
+                                },
+                                function(data,status){
+                                    $.post('/setTerritoryRuler',
+                                        {
+                                            game_id: current_game_id,
+                                            territory_id: territory_id,
+                                            player_id: player_id
+                                        },
+                                        function(data,status){
+                                            var imageObj = {
+                                                //image: image.attrs.image,
+                                                desc: image.attrs.desc,
+                                                id: image.attrs.id,
+                                                index: image.attrs.index,
+                                                width: image.attrs.width,
+                                                height: image.attrs.height,
+                                                x: image.attrs.x,
+                                                y: image.attrs.y
+                                            };
+                                            socket.emit('conquer_territory_sent', imageObj, player_id);
+                                            clickable_territories();
+                                        }
+                                    );
+                                }
+                            );
+                        }
                     } else if(territories_info[territory_index].own) { //It's our own territory
-                        alert("Update");
+                        //alert("Update");
+                        var conf = confirm("Update?");
+                        if (conf) {
+                            $.post('/spendResources',
+                                {
+                                    game_id: current_game_id,
+                                    resources: resources_update,
+                                    player_id: player_id
+                                },
+                                function(data,status){
+                                    $.post('/updateTerritory',
+                                        {
+                                            game_id: current_game_id,
+                                            territory_id: territory_id
+                                        },
+                                        function(data,status){
+                                            clickable_territories();
+                                        }
+                                    );
+                                }
+                            );
+                        }
                     }
                 } else {
                     alert("You have to throw the dices");
@@ -234,10 +329,12 @@ function action(image) {
 * Function to end the current turn
 * */
 var end_turn = function() {
+    $('#end_turn_button').attr("disabled", "disabled");
     dices_throwed = false;
     $('#Dices_space').text(dices_throwed);
     $.getJSON('/nextGameTurn/' + current_game_id, function(data) {
-       //Netajar els territoris clickable
+        removeContourLayers();
+        socket.emit('enable_dices_sent', {info: 'sent'});
     });
 }
 
@@ -246,11 +343,13 @@ var end_turn = function() {
 * */
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Cal acabar
 var throw_dices = function() {
+    $('#dice_button').attr("disabled", "disabled");
+
     var dice1 = Math.floor(Math.random()*6) + 1;
     var dice2 = Math.floor(Math.random()*6) + 1;
     var result = dice1 + dice2;
 
-    alert(result);
+    //alert(result);
     //Mostrar el resultat de la tirada
     if(result == 7) {
         //Realitzar acció lladre
@@ -269,11 +368,15 @@ var throw_dices = function() {
     }
     //Per sincronisme, poder s'ha de duplicar i posar al retorn del afegir recursos i del lladre.
     dices_throwed = true;
-    $('#Dices_space').text(dices_throwed);
+    $('#Dices_space').text(dices_throwed + ' (' + result + ')');
     //Comprovar territoris clicables (funcio per actualitzar imatges i la variable territories_info) funcio clickable_territories!!!!
     //Haura de comprar si tenim recursos per realitzar les diferents accions i marcar tots els territoris on les poguem fer
     clickable_territories();
+
+    $('#end_turn_button').removeAttr("disabled");
 }
+
+var alrt = false;
 
 /*
 * Function to select all the territories clickables for the current player.
@@ -286,8 +389,10 @@ var clickable_territories = function() {
     var check_attack_lvl2 = false;
     var check_attack_lvl3 = false;
 
+    removeContourLayers();
+
     $.getJSON('getGame/' + current_game_id, function(game) {
-        var player = game.game_players[game.game_turn];
+        var player = game.game_players[game.game_turn - 1];
 
         check_conquer = are_greater(player.player_resources, resources_conquer);
         check_update = are_greater(player.player_resources, resources_update);
@@ -297,7 +402,7 @@ var clickable_territories = function() {
         check_attack_lvl2 = weapons_check[1];
         check_attack_lvl3 = weapons_check[2];
 
-        //alert("Checking the clicable territories (" + game.game_territories.length + ")");
+        if (alrt) alert("Checking the clicable territories (" + game.game_territories.length + ")");
         for(var i = 0; i < game.game_territories.length; i++) {
             /*
             * Per cada territori comprovar si algun adjacent és nostre, en cas afirmatiu:
@@ -309,8 +414,8 @@ var clickable_territories = function() {
             * */
             var territory = game.game_territories[i];
 
-            if(territory.territory_ruler == game.game_turn && check_update) {
-                //alert("Own territory");
+            if(territory.territory_ruler == game.game_turn && check_update && territory.territory_level <= 3) {
+                if (alrt) alert("Own territory");
                 //territories_info[territory._id] = {neutral: false, enemy: false, own: true};
                 territories_info[i].own = true;
                 drawContouredImage(i);
@@ -318,9 +423,9 @@ var clickable_territories = function() {
             } else {
                 var trobat = false;
                 var j = 0;
-                //alert("Checking neighbours");
+                if (alrt) alert("Checking neighbours");
                 while(!trobat && j < territory.territory_neighbours.length) {
-                    //alert("Neighbour territory " + territory.territory_neighbours[j]);
+                    if (alrt) alert("Neighbour territory " + territory.territory_neighbours[j]);
                     if(game.game_territories[territory.territory_neighbours[j] - 1].territory_ruler == game.game_turn) {
                         trobat = true;
                         //alert("Neighbour is our territory");
@@ -329,22 +434,22 @@ var clickable_territories = function() {
                 }
                 if(trobat) {
                     if(territory.territory_ruler == null && check_conquer) {
-                        //alert("Neutral territory");
+                        if (alrt) alert("Neutral territory");
                         //territories_info[territory._id] = {neutral: true, enemy: false, own: false};
                         territories_info[i].neutral = true;
                         drawContouredImage(i);
-                    } else if(territory.territory_ruler != null && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
-                        //alert("Enemy territory");
+                    } else if(territory.territory_ruler != null && territory.territory_ruler != game.game_turn && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
+                        if (alrt) alert("Enemy territory");
                         //territories_info[territory._id] = {neutral: false, enemy: true, own: false};
                         territories_info[i].enemy = true;
                         drawContouredImage(i);
                     } else {
-                        //alert("Non clicable territory");
+                        if (alrt) alert("Non clicable territory");
                         //territories_info[territory._id] = {neutral: false, enemy: false, own: false};
                         territories_info[i] = {neutral: false, enemy: false, own: false};
                     }
                 } else {
-                    //alert("Non clicable territory");
+                    if (alrt) alert("Non clicable territory");
                     //territories_info[territory._id] = {neutral: false, enemy: false, own: false};
                     territories_info[i] = {neutral: false, enemy: false, own: false};
                 }
@@ -413,6 +518,60 @@ var check_weapons = function(weapons) {
     }
     return result;
 }
+
+function select_weapons(level, weapons) {
+    var result = {weapon_level_1: 0, weapon_level_2: 0, weapon_level_3: 0};
+
+    if (level == 1) {
+        if (weapons.weapon_level_1 > 0) {
+            result.weapon_level_1 += 1;
+        }
+        else if (weapons.weapon_level_2 > 0) {
+            result.weapon_level_2 += 1;
+        }
+        else if (weapons.weapon_level_3 > 0) {
+            result.weapon_level_3 += 1;
+        }
+    }
+    else if (level == 2) {
+        if (weapons.weapon_level_2 > 0) {
+            result.weapon_level_2 += 1;
+        }
+        else {
+            if (weapons.weapon_level_1 > 1) {
+                result.weapon_level_1 += 2;
+            }
+            else if (weapons.weapon_level_3 > 0) {
+                result.weapon_level_3 += 1;
+            }
+        }
+    }
+    else {
+        if (weapons.weapon_level_3 > 0) {
+            result.weapon_level_3 += 1;
+        }
+        else {
+            if (weapons.weapon_level_2 > 0) {
+                if (weapons.weapon_level_1 > 0) {
+                    result.weapon_level_2 += 1;
+                    result.weapon_level_1 += 1;
+                }
+                else {
+                    if (weapons.weapon_level_2 > 1) {
+                        result.weapon_level_2 += 2;
+                    }
+                }
+            }
+            else {
+                if (weapons.weapon_level_1 > 2) {
+                    result.weapon_level_1 += 3;
+                }
+            }
+        }
+    }
+
+    return result;
+};
 
 
 
@@ -587,6 +746,13 @@ function drawContouredImage(index) {
         stage.add(contour_layers[index]);
     };
     img.src = '/images/territories/contoured/player' + player_id + '/territory' + (index+1) + '.png';
+};
+
+function removeContourLayers() {
+    for (var i = 0; i < 42; i++) {
+        contour_layers[i].removeChildren();
+        contour_layers[i].draw();
+    }
 };
 
 

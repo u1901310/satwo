@@ -68,6 +68,9 @@ app.post('/setGameRound', routes.setGameRound);
 app.post('/setTerritoryRuler', routes.setTerritoryRuler);
 app.post('/addResourcesFromTerritory', routes.addResourcesFromTerritory);
 app.post('/addResourcesFromTerritoryByNumber', routes.addResourcesFromTerritoryByNumber);
+app.post('/spendResources', routes.spendResources);
+app.post('/updateTerritory', routes.updateTerritory);
+app.post('/useWeapons', routes.useWeapons);
 
 var server = http.createServer(app);
 
@@ -143,7 +146,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('start_game_sent', function (data) {
-        io.sockets.emit('start_game_received', {info: data.game_id});
+        io.sockets.in(socket.room).emit('start_game_received', {info: data.game_id});
     });
 
 
@@ -152,6 +155,11 @@ io.sockets.on('connection', function (socket) {
         console.log(JSON.stringify(image));
         console.log("player_id: " + player_id);
         io.sockets.in(socket.room).emit('conquer_territory_received', image, player_id);
+    });
+
+    socket.on('enable_dices_sent', function(data) {
+        console.log("rebut del servidor");
+        io.sockets.in(socket.room).emit('enable_dices_received', {info: data.info});
     });
 
 

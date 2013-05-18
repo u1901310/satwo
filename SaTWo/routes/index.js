@@ -485,7 +485,7 @@ exports.initGame = function(req, res) {
                             player_user_id: game.game_users_info[i].user_id,
                             player_id: i+1,
                             player_faction: game.game_users_info[i].faction,
-                            player_weapons: {weapon_level_1: 0, weapon_level_2: 0, weapon_level_3: 0},
+                            player_weapons: {weapon_level_1: 1, weapon_level_2: 0, weapon_level_3: 0},
                             player_cards: [],
                             player_resources: {brick: 0, lumber: 0, ore: 0, wool: 0, grain: 0}
                         }
@@ -813,6 +813,7 @@ exports.getGameTurn = function(req, res) {
     console.log('Get turn of the game with id: ' + game_id);
     db.collection('games', function(err, games) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            console.log('Turn sent: ' + game.game_turn);
             res.send(game.game_turn);
         });
     });
@@ -855,16 +856,16 @@ exports.nextGameTurn = function(req, res) {
                         res.send({error: 'An error has occurred setting the turn of a game'});
                     } else {
                         console.log('Success: turn set to 1 to game ' + game_id);
-                        res.send(null);
+                        res.send({info: 'info'});
                     }
                 });
             } else {
-                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: game.game_turn + 1}}, function(err, result) {
+                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: new Number(game.game_turn) + 1}}, function(err, result) {
                     if(err) {
                         res.send({error: 'An error has occurred setting the turn of a game'});
                     } else {
                         console.log('Success: next turn set to game ' + game_id);
-                        res.send(null);
+                        res.send({info: 'info'});
                     }
                 });
             }
@@ -1043,6 +1044,103 @@ exports.addResourcesFromTerritoryByNumber = function(req, res) {
                     res.send({error: 'An error has occurred adding resources to player'});
                 } else {
                     console.log('Success: resources from territory with number ' + territory_number + ' added to thier rulers for game ' + game_id);
+                    res.send(null);
+                }
+            });
+        });
+    });
+};
+
+/*
+ * SFunction to subtract some resources (specified by parameter) to player
+ *  params: (POST) game_id, resources and player_id
+ */
+exports.spendResources = function(req, res) {
+    var game_id = req.body.game_id;
+    var resources = req.body.resources;
+    var player_id = req.body.player_id;
+
+    console.log('Spending some resources from player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            var i = 0;
+            var player;
+            while (!player) {
+                if (game.game_players[i].player_id == player_id) {
+                    player = game.game_players[i];
+
+                    game.game_players[i].player_resources.brick -= resources.brick;
+                    game.game_players[i].player_resources.lumber -= resources.lumber;
+                    game.game_players[i].player_resources.ore -= resources.ore;
+                    game.game_players[i].player_resources.wool -= resources.wool;
+                    game.game_players[i].player_resources.grain -= resources.grain;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred spending resources from player'});
+                } else {
+                    console.log('Success: resources spent from player ' + player_id + ' for game ' + game_id);
+                    res.send(null);
+                }
+            });
+        });
+    });
+};
+
+/*
+ * SFunction to update a territory of a game
+ *  params: (POST) game_id and territory_id
+ */
+exports.updateTerritory = function(req, res) {
+    var game_id = req.body.game_id;
+    var territory_id = req.body.territory_id;
+
+    console.log('Updating territory ' + territory_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.update({_id: new BSON.ObjectID(game_id), "game_territories.territory_id": new BSON.ObjectID(territory_id)}, {$inc: {"game_territories.$.territory_level": 1}}, function(err, result) {
+            if(err) {
+                res.send({error: 'An error has occurred updating the territory'});
+            } else {
+                console.log('Success: territory ' + territory_id + ' updated for game ' + game_id);
+                res.send(null);
+            }
+        });
+    });
+};
+
+/*
+ * SFunction to subtract some weapons (specified by parameter) to player
+ *  params: (POST) game_id, weapons and player_id
+ */
+exports.useWeapons = function(req, res) {
+    var game_id = req.body.game_id;
+    var weapons = req.body.weapons;
+    var player_id = req.body.player_id;
+
+    console.log('Using some weapons from player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            var i = 0;
+            var player;
+            while (!player) {
+                if (game.game_players[i].player_id == player_id) {
+                    player = game.game_players[i];
+
+                    game.game_players[i].player_weapons.weapon_level_1 -= weapons.weapon_level_1;
+                    game.game_players[i].player_weapons.weapon_level_2 -= weapons.weapon_level_2;
+                    game.game_players[i].player_weapons.weapon_level_3 -= weapons.weapon_level_3;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred using weapons from player'});
+                } else {
+                    console.log('Success: weapons used from player ' + player_id + ' for game ' + game_id);
                     res.send(null);
                 }
             });
