@@ -30,6 +30,7 @@
     float: left;
     padding: 0.75%;
     border-radius: 10px;
+    margin-left: 1%;
 }
 
 #Game_management_div #button_new_game {
@@ -231,10 +232,9 @@
     FRIENDS CSS
 */
 #Friend_management_div {
-    /*border: 3px solid black;*/
     border-top: 2px outset tan;
     border-bottom: 2px outset chocolate;
-    background-color: rgba(250, 250, 210, 0.8);/*lightgoldenrodyellow;*/
+    background-color: rgba(250, 250, 210, 0.8);
     border-radius: 15px;
     width: 20%;
     height: 80%;
@@ -292,19 +292,18 @@
     HEADER BUTTONS CSS
 */
 #header_buttons_div{
-    /*border: 3px solid black;*/
     width: 100%;
 }
 
 #header_buttons_positioning_div {
     border-top: 2px outset tan;
     border-bottom: 2px outset chocolate;
-    width: 18.2%;
+    width: 20.2%;
     position: relative;
      left: 72%;
     border-radius: 15px;
     background-color: rgba(250, 250, 210, 0.5);
-    padding: 0.4% 1% 0.2% 4%;
+    padding: 0.4% 1% 0.2% 2%;
 }
 
 #header_buttons_div #requests_list {
@@ -348,7 +347,7 @@
 
 
 #header_buttons_div #button_logout {
-    background-image: url(../images/exit.png);
+    background-image: url(../images/power.png);
     background-color: transparent;
     background-repeat: no-repeat;
     background-position: 0px 0px;
@@ -356,6 +355,24 @@
     cursor: pointer;
     width: 40px;
     height: 40px;
+    vertical-align: middle;
+    margin-top: -3%;
+}
+
+#header_buttons_div #header_username_holder {
+    display: inline-block;
+    width: 60%;
+}
+
+#header_buttons_div #button_request {
+    background-image: url(../images/none_requests.png);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: none;
+    width: 50px;
+    height: 40px;
+    vertical-align: middle;
 }
 
 /*

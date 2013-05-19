@@ -13,33 +13,9 @@ $(document).ready(function() {
     $('#chat_zone').show();
     $('#chat_zone').load('html/chat_zone.html');
 
-    //A user has enter to the game, everyone in the game, except the user who just enter reprint the list
-    /*socket.on('enter_game_received', function (data) {
-        if(current_game_id == data.info1 && user_logged._id != data.info2) {
-            print_room_list_users();
-        }
-    });*/
     socket.on('update_players', function() {
-        //alert("Update player list"); /////////////////////////////////////////////////////////////////////////
         print_room_list_users();
     });
-
-    //A user confirmed his participation to the game, data: {info: game_id whom user confirm}
-    /*socket.on('room_user_confirmation_received', function(data) {
-        if(current_game_id == data.info) {
-            print_room_list_users();
-        }
-    });*/
-
-    //A user leave the room and it could be the room_admin so new admin, data: {info: game_id}
-    /*socket.on('room_leave_received', function(data) {
-        if(current_game_id == data.info) {
-            print_room_list_users();
-            $.getJSON('/getGame/' + current_game_id, function(game) {
-                print_room_buttons(game);
-            });
-        }
-    });*/
     socket.on('leave_update_players', function() {
         alert("Update a player leave");
         print_room_list_users();
@@ -47,20 +23,6 @@ $(document).ready(function() {
             print_room_buttons(game);
         });
     });
-
-    //A user it's been expeled of a game, data: {info1: from whom 'game_id' it's been expeled, info2: whom 'user_id' it's been expeled}
-    /*socket.on('room_user_expelled_received', function(data) {
-        if(user_logged._id == data.info2) {
-            $('#chat_zone').hide();
-            $('#room_page').hide();
-            $('#main_page').show();
-            $('#main_page').load('html/main_page.html');
-        } else {
-            if(current_game_id == data.info1) {
-                print_room_list_users();
-            }
-        }
-    });*/
     socket.on('inform_expelled_player', function(user_expelled_id) {
        if(user_logged._id == user_expelled_id) {
            alert("I've been expelled");
@@ -72,7 +34,6 @@ $(document).ready(function() {
            socket.emit('unsubscribe_game');
        }
     });
-
     socket.on('start_game_received', function (data) {
         if (current_game_id == data.info) {
             $('#chat_zone').removeClass('chat_room').addClass('chat_game');
@@ -112,7 +73,7 @@ function print_room_list_users() {
                 var user_id = game.game_users_info[i].user_id;
                 var user_confirmed = game.game_users_info[i].confirmation;
                 var user_faction = game.game_users_info[i].faction; //If user is confirmed then faction!= null
-                //$.getJSON('/getUserUsername/' + user_id, function(username) {
+
                 $.ajax({
                     url: 'getUserUsername/' + user_id,
                     type: 'GET',
@@ -187,24 +148,9 @@ var confirm_button_behaviour = function(user_id) {
               },
         async: false
     }).done(function() {
-            //socket.emit('room_user_confirmation_sent', {info: current_game_id});
             socket.emit('game_confirmation_player');
             $('#Room_confirm_button').hide();
-        });
-    /*$.post('confirmUserToGame',
-        {
-            user_id: user_id,
-            game_id: current_game_id,
-            user_faction: $('#Room_faction_selector').val()
-        },
-        function() {
-            alert("return from confirmUserToGame");
-            socket.emit('game_user_confirmation_sent', {info: current_game_id});
-            //Enviar peticio per repintar el llistat de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
-            $('#Room_confirm_button').hide();
-        },
-        "json"
-    );*/
+    });
 };
 
 /*
@@ -227,31 +173,10 @@ var leave_button_behaviour = function(user_id) {
             $('#main_page').show();
             $('#main_page').load('html/main_page.html');
 
-//<<<<<<< Temporary merge branch 1
-//            socket.emit('new_game_sent', {info: 'sent'});
-//            socket.emit('room_leave_sent', {info: current_game_id});
-//            socket.emit('unsubscribe', current_game_id);
-//=======
-            //socket.emit('new_game_sent', {info: 'sent'});
             socket.emit('alter_games_list');
-            //socket.emit('room_leave_sent', {info: current_game_id});
             socket.emit('unsubscribe_game');
             socket.emit('unsubscribe', current_game_id);
     });
-    /*$.post('unlinkGameAndUser',
-        {
-            user_id: user_id,
-            game_id: current_game_id
-        },
-        function() {
-            //Enviar peticio per repintar el llista de tots els participants de la sala (poder s'haura de fer directament des de el servidor...)
-            alert("Exit from the room");
-            $('#room_page').hide();
-            $('#main_page').show();
-            $('#main_page').load('html/main_page.html');
-        },
-        "json"
-    );*/
 };
 
 /*
@@ -268,10 +193,7 @@ var expel_button_behaviour = function(user_id) {
         },
         async:false
     }).done(function() {
-            alert("User: " + user_id + " expelled");
-            //socket.emit('room_user_expelled_sent', {info1: current_game_id, info2: user_id});
             socket.emit('expelled_player', user_id);
-            //socket.emit('enter_game_sent', {info: 'sent'});
             socket.emit('alter_games_list');
             socket.emit('removeuser', {info: 'sent'});
         });
@@ -279,7 +201,7 @@ var expel_button_behaviour = function(user_id) {
 
 /*
 * Function to start the current game, to start the game can't be any slot empty and all users have to confirm their participation
-*  params: - (it usesthe current_game_id)
+*  params: - (it uses the current_game_id)
 * */
 var start_button_behaviour = function() {
     $.getJSON('/getGame/' + current_game_id, function(game) {
@@ -294,12 +216,8 @@ var start_button_behaviour = function() {
                     {
                         id: current_game_id
                     },
-                    function(data, status){
-
-                    },
-                    "json"
+                    function(data, status){}
                 );
-
                 socket.emit('start_game_sent', {game_id: game._id});
             }
             else {

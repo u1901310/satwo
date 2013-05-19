@@ -35,14 +35,12 @@ app.get('/clearAllGamesSATWO', routes.clearAllGames);
 app.get('/clearAllFactionsSATWO', routes.clearAllFactions);
 app.get('/games', routes.findAllGames);
 app.get('/users', routes.findAll);
-//----------------------------------
+//User functions
 app.get('/login/:username/:password', routes.login);
 app.get('/userByUsername/:username', routes.findByUsername);
 app.post('/addUser', routes.addUser);
 app.get('/userGames/:user_id', routes.findUserGames);
 app.get('/publicGames', routes.findPublicGames);
-app.post('/addGame', routes.addGame);
-app.post('/initGame', routes.initGame);
 app.post('/sendRequest', routes.sendRequest);
 app.post('/rejectRequest', routes.rejectRequest);
 app.post('/addFriend', routes.addFriend);
@@ -50,6 +48,9 @@ app.post('/removeFriend', routes.removeFriend);
 app.get('/getRequests/:username', routes.getRequests);
 app.get('/getFriends/:username', routes.getFriends);
 app.get('/getUserUsername/:user_id', routes.getUserUsername);
+//Game functions
+app.post('/addGame', routes.addGame);
+app.post('/initGame', routes.initGame);
 app.post('/addGameToUser', routes.addGameToUser);
 app.post('/linkGameAndUser', routes.linkGameAndUser);
 app.post('/unlinkGameAndUser', routes.unlinkGameAndUser);
@@ -58,8 +59,6 @@ app.get('/gameIsSecure/:game_id', routes.gameIsSecure);
 app.post('/validateGamePassword', routes.validateGamePassword);
 app.get('/getGame/:game_id', routes.getGame);
 app.post('/confirmUserToGame', routes.confirmUserToGame);
-app.get('/getFactions', routes.getFactions);
-app.get('/getTerritories', routes.getTerritories);
 app.get('/getGameTurn/:game_id', routes.getGameTurn);
 app.post('/setGameTurn', routes.setGameTurn);
 app.get('/nextGameTurn/:game_id', routes.nextGameTurn);
@@ -75,6 +74,10 @@ app.post('/buyWeapon', routes.buyWeapon);
 app.post('/thiefAction', routes.thiefAction);
 app.get('/hasTerritoryThief/:game_id/:territory_id', routes.hasTerritoryThief);
 app.get('/isWinner/:game_id/:player_id', routes.isWinner);
+//Faction Functions
+app.get('/getFactions', routes.getFactions);
+//Territory Functions
+app.get('/getTerritories', routes.getTerritories);
 
 var server = http.createServer(app);
 
@@ -110,9 +113,6 @@ io.sockets.on('connection', function (socket) {
     });
 
     //When a user enter un a game, info send {info1: game_id, info2: user_id}
-    /*socket.on('enter_game_sent', function (data) {
-        io.sockets.emit('enter_game_received', { info1: data.info1, info2: data.info2});
-    });*/
     socket.on('subscribe_game', function(room) {
         io.sockets.in(room).emit('update_players');
         socket.join(room);
@@ -121,18 +121,12 @@ io.sockets.on('connection', function (socket) {
     });
 
     //When a user confirm his participation to a game, info send {info: game_id}
-    /*socket.on('room_user_confirmation_sent', function (data) {
-        io.sockets.emit('room_user_confirmation_received', { info: data.info});
-    });*/
     socket.on('game_confirmation_player', function() {
         io.sockets.in(socket.room).emit('update_players');
         console.log("Rooms when confirm: " + JSON.stringify(io.sockets.manager.rooms));
     });
 
     //When a user leave a game (it could be the room_admin),info send {info: game_id}
-    /*socket.on('room_leave_sent', function(data) {
-        io.sockets.emit('room_leave_received', {info: data.info});
-    });*/
     socket.on('unsubscribe_game', function() {
         socket.leave(socket.room);
         io.sockets.in(socket.room).emit('leave_update_players');
@@ -141,9 +135,6 @@ io.sockets.on('connection', function (socket) {
     });
 
     //When room administrator expels a user from a game, info send {info1: game_id, info2: user_id}
-    /*socket.on('room_user_expelled_sent', function(data) {
-        io.sockets.emit('room_user_expelled_received', {info1: data.info1, info2: data.info2});
-    });*/
     socket.on('expelled_player' , function(user_expelled) {
         io.sockets.in(socket.room).emit('inform_expelled_player', user_expelled);
         console.log("Rooms when player expelled: " + JSON.stringify(io.sockets.manager.rooms));
@@ -161,11 +152,6 @@ io.sockets.on('connection', function (socket) {
         io.sockets.in(socket.room).emit('conquer_territory_received', image, player_id);
     });
 
-<<<<<<< HEAD
-    socket.on('enable_dices_sent', function(data) {
-        io.sockets.in(socket.room).emit('enable_dices_received', data);
-    });
-=======
     socket.on('thief_sent', function(image) {
         io.sockets.in(socket.room).emit('thief_received', image);
     });
@@ -174,8 +160,6 @@ io.sockets.on('connection', function (socket) {
         console.log("rebut del servidor");
         io.sockets.in(socket.room).emit('enable_dices_received', {info: data.info});
     });
-
->>>>>>> origin/master
 
 
 

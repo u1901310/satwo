@@ -1,0 +1,46 @@
+/* Style sheet for Game Page*/
+#game_buttons {
+    border: 2px outset;
+    border-radius: 10px;
+    background-color: rgba(59, 102, 5, 0.16);
+    width: 52.5%;
+    margin-left: 24%;
+}
+
+#game_buttons #info_space {
+    display: inline-block;
+    width: 50%;
+    margin-left: 5%;
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 10px;
+    text-align: center;
+    color: ghostwhite;
+}
+
+#game_buttons #weapon_buttons {
+    float: right;
+    margin-right: 1%;
+}
+
+#territory_info {
+    float: left;
+    width: 20%;
+    height: 50%;
+    margin-top: 1%;
+    border: 2px outset;
+    border-radius: 10px;
+}
+
+#container {
+    float: left;
+    margin-left: 1%;
+}
+
+#user_info {
+    float: left;
+    width: 19%;
+    height: 50%;
+    margin-top: 1%;
+    border: 2px outset;
+    border-radius: 10px;
+}

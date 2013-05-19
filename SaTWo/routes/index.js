@@ -487,8 +487,8 @@ exports.initGame = function(req, res) {
                             player_faction: game.game_users_info[i].faction,
                             player_weapons: {weapon_level_1: 1, weapon_level_2: 0, weapon_level_3: 0},
                             player_cards: [],
-                            player_resources: {brick: 0, lumber: 0, ore: 0, wool: 0, grain: 0,
-                            player_alive: true}
+                            player_resources: {brick: 0, lumber: 0, ore: 0, wool: 0, grain: 0},
+                            player_alive: true
                         }
                     }}, function(err, result) {
                         if(err) {
@@ -848,6 +848,8 @@ exports.setGameTurn = function(req, res) {
 exports.nextGameTurn = function(req, res) {
     var game_id = req.params.game_id;
 
+    //Cal tenir en compte que els jugadors morts no els pot tocar torn!!!!!!!!!!!
+
     console.log('Setting next turn to game ' + game_id);
     db.collection('games', function(err, games) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
@@ -944,10 +946,6 @@ exports.addResourcesFromTerritory = function(req, res) {
     console.log('Adding resources from territory ' + territory_id + ' to player ' + player_id + ' for game ' + game_id);
     db.collection('games', function(err, games) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
-        //games.findOne({_id: new BSON.ObjectID(game_id), "game_territories.territory_id": new BSON.ObjectID(territory_id)}, function(err, territory){
-            //game.game_territories.findOne({territory_id: new BSON.ObjectID(territory_id)}, function(err, territory){
-            //games.findOne({_id: new BSON.ObjectID(game_id), "game_players.player_id": player_id}, function(err, player){
-
             var i = 0;
             var territory;
             while (!territory) {
@@ -982,28 +980,6 @@ exports.addResourcesFromTerritory = function(req, res) {
                     res.send(null);
                 }
             });
-
-                //game.game_players.findOne({player_id: player_id}, function(err, player) {
-                    /*
-                    var resources = {
-                        brick: territory.territory_resources[0] + player.player_resources.brick,
-                        lumber: territory.territory_resources[1] + player.player_resources.lumber,
-                        ore: territory.territory_resources[2] + player.player_resources.ore,
-                        wool: territory.territory_resources[3] + player.player_resources.wool,
-                        grain: territory.territory_resources[4] + player.player_resources.grain
-                    };
-
-                    games.update({_id: new BSON.ObjectID(game_id), "game_players.player_id": player_id}, {$set: {"game_players.$.player_resources": resources}}, function(err, result) {
-                        if(err) {
-                            res.send({error: 'An error has occurred adding resources to player'});
-                        } else {
-                            console.log('Success: resources from territory ' + territory_id + ' added to player ' + player_id + ' for game ' + game_id);
-                            res.send(null);
-                        }
-                    });
-                    */
-                //});
-            //});
         });
     });
 };
@@ -1355,6 +1331,9 @@ exports.isWinner = function(req, res) {
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * */
+/*
+* SFunction to get the set of factions
+* */
 exports.getFactions = function(req, res) {
     db.collection('factions', function(err, factions) {
         factions.find().toArray(function(err, items) {
@@ -1370,6 +1349,9 @@ exports.getFactions = function(req, res) {
  *       TERRITORIES SERVER FUNCTIONS
  * ----------------------------------------------------------------------------------------------------------------------------------------------
  * ----------------------------------------------------------------------------------------------------------------------------------------------
+ * */
+/*
+ * SFunction to get the set of territories
  * */
 exports.getTerritories = function(req, res) {
     db.collection('territories', function(err, territories) {
