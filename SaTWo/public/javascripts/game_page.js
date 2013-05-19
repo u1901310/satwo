@@ -27,6 +27,12 @@ $(document).ready(function(){
     socket.on('conquer_territory_received', function(image, player_id) {
         drawFilledImage(image, player_id);
     });
+
+    socket.on('enable_dices_received', function(data) {
+        $.getJSON('/getGameTurn/' + current_game_id, function(turn) {
+            if(player_id == turn) $('#dice_button').removeAttr('disabled');
+        });
+    });
 });
 
 /*
@@ -44,7 +50,7 @@ $(document).ready(function(){
 *       - (Other accions implemented in future)
 *    3 - Finish turn, this will increment the turn counter and if the player is the last it will increment the round and set the turn to 1
 * */
-var dices_throwed = false;
+var dices_throwed = false; //true;
 var territories_info = [];
 for (var i = 0; i < 42; i++) {
     territories_info.push(
@@ -79,7 +85,7 @@ function action(image) {
 
                     //drawFilledImage(image, player_id);
                     var imageObj = {
-                        image: image.attrs.image,
+                        //image: image.attrs.image,
                         desc: image.attrs.desc,
                         id: image.attrs.id,
                         index: image.attrs.index,
@@ -97,8 +103,7 @@ function action(image) {
                                 turn: new Number(game.game_turn) + 1
                                 //turn: game.game_turn + 1
                             },
-                            function(data,status){},
-                            "json"
+                            function(data,status){}
                         );
                     } else {
                         $.post('/setGameRound',
@@ -107,8 +112,7 @@ function action(image) {
                                 round: new Number(game.game_round) + 1
                                 //round: game.game_round + 1
                             },
-                            function(data,status){},
-                            "json"
+                            function(data,status){}
                         );
                     }
                 }
@@ -122,8 +126,7 @@ function action(image) {
                         },
                         function(data,status){
                             //socket.emit('conquer_territory_sent', image, player_id);
-                        },
-                        "json"
+                        }
                     );
 
                     $.ajax({
@@ -141,7 +144,7 @@ function action(image) {
 
                     //drawFilledImage(image, player_id);
                     var imageObj = {
-                        image: image.attrs.image,
+                        //image: image.attrs.image,
                         desc: image.attrs.desc,
                         id: image.attrs.id,
                         index: image.attrs.index,
@@ -159,8 +162,7 @@ function action(image) {
                                 turn: new Number(game.game_turn) - 1
                                 //turn: game.game_turn - 1
                             },
-                            function(data,status){},
-                            "json"
+                            function(data,status){}
                         );
                     } else {
                         $.post('/setGameRound',
@@ -169,8 +171,10 @@ function action(image) {
                                 round: new Number(game.game_round) + 1
                                 //round: game.game_round + 1
                             },
-                            function(data,status){},
-                            "json"
+                            function(data,status){
+                                //dices_throwed = false;//Diria que va aqui, cal confirmar
+                                socket.emit('enable_dices_sent', {info: 'sent'});
+                            }
                         );
                     }
                 }
@@ -234,10 +238,12 @@ function action(image) {
 * Function to end the current turn
 * */
 var end_turn = function() {
+    $('#end_turn_button').attr("disabled", "disabled");
     dices_throwed = false;
     $('#Dices_space').text(dices_throwed);
     $.getJSON('/nextGameTurn/' + current_game_id, function(data) {
        //Netajar els territoris clickable
+        socket.emit('enable_dices_sent', {info: 'sent'});
     });
 }
 
@@ -246,6 +252,8 @@ var end_turn = function() {
 * */
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Cal acabar
 var throw_dices = function() {
+    $('#dice_button').attr("disabled", "disabled");
+
     var dice1 = Math.floor(Math.random()*6) + 1;
     var dice2 = Math.floor(Math.random()*6) + 1;
     var result = dice1 + dice2;
@@ -257,14 +265,14 @@ var throw_dices = function() {
     } else {
         //Assignar recursos als jugadors dominadors d'un territori amb el numero = result (peticio servidor)
         $.post('/addResourcesFromTerritoryByNumber',
-                {
-                    game_id: current_game_id,
-                    territory_number: result
-                },
-                function(data) {
-                    //Actualitzar els comptadors (sockets)
-                },
-                "json"
+            {
+                game_id: current_game_id,
+                territory_number: result
+            },
+            function(data) {
+                //Actualitzar els comptadors (sockets)
+            },
+            "json"
         );
     }
     //Per sincronisme, poder s'ha de duplicar i posar al retorn del afegir recursos i del lladre.
@@ -273,6 +281,8 @@ var throw_dices = function() {
     //Comprovar territoris clicables (funcio per actualitzar imatges i la variable territories_info) funcio clickable_territories!!!!
     //Haura de comprar si tenim recursos per realitzar les diferents accions i marcar tots els territoris on les poguem fer
     clickable_territories();
+
+    $('#end_turn_button').removeAttr("disabled");
 }
 
 /*
@@ -634,11 +644,12 @@ function initStage() {
         });
 
         kinetic_images[i].on('mouseover', function() {
-            $('#test').val(this.attrs.desc);
+            //alert(JSON.stringify(this.getAttrs()));
+            $('#test').val(this.getAttrs().desc);
             this.setOpacity(0.3);
             $('#container').css('cursor','pointer')
             //layer.draw();
-            filled_layers[this.attrs.index].draw();
+            filled_layers[this.getAttrs().index].draw();
             showTerritoryInformation(this);
         });
         kinetic_images[i].on('mouseout', function() {
@@ -646,7 +657,7 @@ function initStage() {
             this.setOpacity(1);
             $('#container').css('cursor','auto')
             //layer.draw();
-            filled_layers[this.attrs.index].draw();
+            filled_layers[this.getAttrs().index].draw();
             hideTerritoryInformation();
         });
         kinetic_images[i].on('click', function() {
@@ -656,7 +667,7 @@ function initStage() {
 
         kinetic_images[i].createImageHitRegion(function() {
             //layer.draw();
-            filled_layers[this.attrs.index].draw();
+            filled_layers[this.getAttrs().index].draw();
         });
 
         //layer.add(kinetic_images[i]);

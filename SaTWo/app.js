@@ -154,6 +154,9 @@ io.sockets.on('connection', function (socket) {
         io.sockets.in(socket.room).emit('conquer_territory_received', image, player_id);
     });
 
+    socket.on('enable_dices_sent', function(data) {
+        io.sockets.in(socket.room).emit('enable_dices_received', data);
+    });
 
 
 

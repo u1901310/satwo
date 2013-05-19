@@ -49,8 +49,7 @@ var register_submit_button_behaviour = function() {
             },
             function(data,status){
 
-            },
-            "json"
+            }
         );
         $('#register_div').hide();
         $('#login_div').show();

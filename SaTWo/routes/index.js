@@ -859,7 +859,7 @@ exports.nextGameTurn = function(req, res) {
                     }
                 });
             } else {
-                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: game.game_turn + 1}}, function(err, result) {
+                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: new Number(game.game_turn) + 1}}, function(err, result) {
                     if(err) {
                         res.send({error: 'An error has occurred setting the turn of a game'});
                     } else {

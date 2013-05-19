@@ -170,8 +170,7 @@ var remove_friend_button_behaviour = function(name){
                 user: user_logged.user_username,
                 friend: name
             },
-            function(data,status){},
-            "json"
+            function(data,status){}
         );
 
         socket.emit('friend_sent', {info: 'sent'});
@@ -218,8 +217,7 @@ var reject_request_button_behaviour = function(name){
             user: user_logged.user_username,
             friend: name
         },
-        function(data,status){},
-        "json"
+        function(data,status){}
     );
 
     reload_requests();
@@ -337,8 +335,7 @@ var submit_new_game_button_behaviour = function() {
                     },
                     function(data, status){
 
-                    },
-                    "json"
+                    }
                 );
             });
 
@@ -475,8 +472,7 @@ var access_secure_game = function() {
                         user: user_logged._id,
                         game: current_game_id
                     },
-                    function(data, status){},
-                    "json"
+                    function(data, status){}
                 );
                 $('#access_secure_games_div').hide();
                 $('#Game_management_div').show();
