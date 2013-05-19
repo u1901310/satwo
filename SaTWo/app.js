@@ -49,7 +49,6 @@ app.post('/addFriend', routes.addFriend);
 app.post('/removeFriend', routes.removeFriend);
 app.get('/getRequests/:username', routes.getRequests);
 app.get('/getFriends/:username', routes.getFriends);
-app.get('/getUserUsername/:user_id', routes.getUserUsername);
 app.post('/addGameToUser', routes.addGameToUser);
 app.post('/linkGameAndUser', routes.linkGameAndUser);
 app.post('/unlinkGameAndUser', routes.unlinkGameAndUser);
