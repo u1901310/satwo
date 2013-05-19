@@ -485,9 +485,10 @@ exports.initGame = function(req, res) {
                             player_user_id: game.game_users_info[i].user_id,
                             player_id: i+1,
                             player_faction: game.game_users_info[i].faction,
-                            player_weapons: {weapon_level_1: 0, weapon_level_2: 0, weapon_level_3: 0},
+                            player_weapons: {weapon_level_1: 1, weapon_level_2: 0, weapon_level_3: 0},
                             player_cards: [],
-                            player_resources: {brick: 0, lumber: 0, ore: 0, wool: 0, grain: 0}
+                            player_resources: {brick: 0, lumber: 0, ore: 0, wool: 0, grain: 0,
+                            player_alive: true}
                         }
                     }}, function(err, result) {
                         if(err) {
@@ -813,6 +814,7 @@ exports.getGameTurn = function(req, res) {
     console.log('Get turn of the game with id: ' + game_id);
     db.collection('games', function(err, games) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            console.log('Turn sent: ' + game.game_turn);
             res.send(game.game_turn);
         });
     });
@@ -855,7 +857,7 @@ exports.nextGameTurn = function(req, res) {
                         res.send({error: 'An error has occurred setting the turn of a game'});
                     } else {
                         console.log('Success: turn set to 1 to game ' + game_id);
-                        res.send(null);
+                        res.send({info: 'info'});
                     }
                 });
             } else {
@@ -864,7 +866,7 @@ exports.nextGameTurn = function(req, res) {
                         res.send({error: 'An error has occurred setting the turn of a game'});
                     } else {
                         console.log('Success: next turn set to game ' + game_id);
-                        res.send(null);
+                        res.send({info: 'info'});
                     }
                 });
             }
@@ -1019,7 +1021,7 @@ exports.addResourcesFromTerritoryByNumber = function(req, res) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
             for(var i = 0; i < game.game_territories.length; i++) {
                 var territory = game.game_territories[i];
-                if(territory.territory_random_number == territory_number && territory.territory_ruler != null) {
+                if(territory.territory_random_number == territory_number && territory.territory_ruler != null && !territory.territory_thief) {
                     var player_id = game.game_territories[i].territory_ruler;
                     var j = 0;
                     var player = null;
@@ -1027,11 +1029,11 @@ exports.addResourcesFromTerritoryByNumber = function(req, res) {
                         if (game.game_players[j].player_id == player_id) {
                             player = game.game_players[j];
 
-                            game.game_players[j].player_resources.brick += territory.territory_resources[0];
-                            game.game_players[j].player_resources.lumber += territory.territory_resources[1];
-                            game.game_players[j].player_resources.ore += territory.territory_resources[2];
-                            game.game_players[j].player_resources.wool += territory.territory_resources[3];
-                            game.game_players[j].player_resources.grain += territory.territory_resources[4];
+                            if (territory.territory_resources[0] > 0) game.game_players[j].player_resources.brick += (territory.territory_resources[0] + territory.territory_level - 1);
+                            if (territory.territory_resources[1] > 0) game.game_players[j].player_resources.lumber += (territory.territory_resources[1] + territory.territory_level - 1);
+                            if (territory.territory_resources[2] > 0) game.game_players[j].player_resources.ore += (territory.territory_resources[2] + territory.territory_level - 1);
+                            if (territory.territory_resources[3] > 0) game.game_players[j].player_resources.wool += (territory.territory_resources[3] + territory.territory_level - 1);
+                            if (territory.territory_resources[4] > 0) game.game_players[j].player_resources.grain += (territory.territory_resources[4] + territory.territory_level - 1);
                         }
                         j++;
                     }
@@ -1046,6 +1048,302 @@ exports.addResourcesFromTerritoryByNumber = function(req, res) {
                     res.send(null);
                 }
             });
+        });
+    });
+};
+
+/*
+ * SFunction to subtract some resources (specified by parameter) to player
+ *  params: (POST) game_id, resources and player_id
+ */
+exports.spendResources = function(req, res) {
+    var game_id = req.body.game_id;
+    var resources = req.body.resources;
+    var player_id = req.body.player_id;
+
+    console.log('Spending some resources from player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            var i = 0;
+            var player;
+            while (!player) {
+                if (game.game_players[i].player_id == player_id) {
+                    player = game.game_players[i];
+
+                    game.game_players[i].player_resources.brick -= resources.brick;
+                    game.game_players[i].player_resources.lumber -= resources.lumber;
+                    game.game_players[i].player_resources.ore -= resources.ore;
+                    game.game_players[i].player_resources.wool -= resources.wool;
+                    game.game_players[i].player_resources.grain -= resources.grain;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred spending resources from player'});
+                } else {
+                    console.log('Success: resources spent from player ' + player_id + ' for game ' + game_id);
+                    res.send(null);
+                }
+            });
+        });
+    });
+};
+
+/*
+ * SFunction to update a territory of a game
+ *  params: (POST) game_id and territory_id
+ */
+exports.updateTerritory = function(req, res) {
+    var game_id = req.body.game_id;
+    var territory_id = req.body.territory_id;
+
+    console.log('Updating territory ' + territory_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.update({_id: new BSON.ObjectID(game_id), "game_territories.territory_id": new BSON.ObjectID(territory_id)}, {$inc: {"game_territories.$.territory_level": 1}}, function(err, result) {
+            if(err) {
+                res.send({error: 'An error has occurred updating the territory'});
+            } else {
+                console.log('Success: territory ' + territory_id + ' updated for game ' + game_id);
+                res.send(null);
+            }
+        });
+    });
+};
+
+/*
+ * SFunction to subtract some weapons (specified by parameter) to player
+ *  params: (POST) game_id, weapons and player_id
+ */
+exports.useWeapons = function(req, res) {
+    var game_id = req.body.game_id;
+    var weapons = req.body.weapons;
+    var player_id = req.body.player_id;
+
+    console.log('Using some weapons from player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            var i = 0;
+            var player;
+            while (!player) {
+                if (game.game_players[i].player_id == player_id) {
+                    player = game.game_players[i];
+
+                    game.game_players[i].player_weapons.weapon_level_1 -= weapons.weapon_level_1;
+                    game.game_players[i].player_weapons.weapon_level_2 -= weapons.weapon_level_2;
+                    game.game_players[i].player_weapons.weapon_level_3 -= weapons.weapon_level_3;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result){
+                if(err) {
+                    res.send({error: 'An error has occurred using weapons from player'});
+                } else {
+                    console.log('Success: weapons used from player ' + player_id + ' for game ' + game_id);
+                    res.send(null);
+                }
+            });
+        });
+    });
+};
+
+/*
+ * SFunction to buy a weapon
+ *  params: (POST) game_id, player_id and level
+ */
+exports.buyWeapon = function(req, res) {
+    var game_id = req.body.game_id;
+    var player_id = req.body.player_id;
+    var level = req.body.level;
+
+    console.log('Buying weapon of level ' + level + ' for player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game){
+            var i = 0;
+            var trobat = false;
+            while (!trobat) {
+                if (game.game_players[i].player_id == player_id) {
+                    if (level == 1) game.game_players[i].player_weapons.weapon_level_1++;
+                    else if (level == 2) game.game_players[i].player_weapons.weapon_level_2++;
+                    else game.game_players[i].player_weapons.weapon_level_3++;
+                    trobat = true;
+                }
+                i++;
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                if(err) {
+                    res.send({error: 'An error has occurred buying a weapon'});
+                } else {
+                    console.log('Success: weapon of level ' + level + ' bought to player ' + player_id + ' for game ' + game_id);
+                    res.send({info: 'ok'});
+                }
+            });
+        });
+    });
+};
+
+/*
+ * SFunction to do the thief action (steal a resource from a player to give it to another, and set
+ *  the 'thief' attribute of the territory to 'true'
+ *  params: (POST) game_id, player_id and territory_id
+ */
+exports.thiefAction = function(req, res) {
+    var game_id = req.body.game_id;
+    var player_id = req.body.player_id;
+    var territory_id = req.body.territory_id;
+
+    console.log('Doing the thief action for territory ' + territory_id + ' from player ' + player_id + ' for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game){
+            var i = 0;
+            var ruler;
+            var old_thief = false;
+            while ((!ruler || !old_thief) && i < game.game_territories.length) {
+                if (game.game_territories[i].territory_thief) {
+                    game.game_territories[i].territory_thief = false;
+                    old_thief = true;
+                }
+                if (game.game_territories[i].territory_id == territory_id) {
+                    ruler = game.game_territories[i].territory_ruler;
+                    game.game_territories[i].territory_thief = true;
+                }
+                i++;
+            }
+
+            if (ruler != null) {
+                var player_index;
+                var ruler_index;
+                for (var i = 0; i < game.game_players.length; i++) {
+                    if (game.game_players[i].player_id == player_id) {
+                        player_index = i;
+                    }
+                    if (game.game_players[i].player_id == ruler) {
+                        ruler_index = i;
+                    }
+                }
+
+                var available_resources = [];
+                if (game.game_players[ruler_index].player_resources.brick > 0) available_resources.push('brick');
+                if (game.game_players[ruler_index].player_resources.lumber > 0) available_resources.push('lumber');
+                if (game.game_players[ruler_index].player_resources.ore > 0) available_resources.push('ore');
+                if (game.game_players[ruler_index].player_resources.wool > 0) available_resources.push('wool');
+                if (game.game_players[ruler_index].player_resources.grain > 0) available_resources.push('grain');
+
+                if (available_resources.length > 0) {
+                    var random_resource = available_resources[Math.floor(Math.random() * available_resources.length)];
+
+                    if (random_resource == 'brick') {
+                        game.game_players[ruler_index].player_resources.brick--;
+                        game.game_players[player_index].player_resources.brick++;
+                    }
+                    else if (random_resource == 'lumber') {
+                        game.game_players[ruler_index].player_resources.lumber--;
+                        game.game_players[player_index].player_resources.lumber++;
+                    }
+                    else if (random_resource == 'ore') {
+                        game.game_players[ruler_index].player_resources.ore--;
+                        game.game_players[player_index].player_resources.ore++;
+                    }
+                    else if (random_resource == 'wool') {
+                        game.game_players[ruler_index].player_resources.wool--;
+                        game.game_players[player_index].player_resources.wool++;
+                    }
+                    else {
+                        game.game_players[ruler_index].player_resources.grain--;
+                        game.game_players[player_index].player_resources.grain++;
+                    }
+                }
+            }
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                if(err) {
+                    res.send({error: 'An error has occurred doing the thief action'});
+                } else {
+                    console.log('Success: thief action has been done for territory ' + territory_id + ' from player ' + player_id + ' for game ' + game_id);
+                    res.send({info: 'ok'});
+                }
+            });
+        });
+    });
+};
+
+/*
+ * SFunction to check whether a territory has a thief or not
+ *  params: game_id and territory_id
+ * */
+exports.hasTerritoryThief = function(req, res) {
+    var game_id = req.params.game_id;
+    var territory_id = req.params.territory_id;
+
+    console.log('Checking if territory ' + territory_id + ' has the thief for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            for (var i = 0; i < game.game_territories.length; i++) {
+                if (game.game_territories[i].territory_id == territory_id) {
+                    if(game.game_territories[i].territory_thief) {
+                        console.log('The territory has the thief');
+                        res.send({thief: true});
+                    } else {
+                        console.log('The territory has not the thief');
+                        res.send({thief: false});
+                    }
+                }
+            }
+        });
+    });
+};
+
+/*
+ * SFunction to check whether a player has won
+ *  params: game_id and player_id
+ * */
+exports.isWinner = function(req, res) {
+    var game_id = req.params.game_id;
+    var player_id = req.params.player_id;
+
+    console.log('Checking if player ' + player_id + ' has won for game ' + game_id);
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+            var owned_territories = [];
+            for (var i = 0; i < game.game_players.length; i++) owned_territories.push(0);
+
+            for (var i = 0; i < game.game_territories.length; i++) {
+                owned_territories[game.game_territories[i].territory_ruler - 1]++;
+            }
+
+            if (owned_territories[player_id - 1] >= Math.round(game.game_territories.length * 0.8)) {
+                console.log('Player ' + player_id + ' has won the game by conquering 80% of the territories');
+                res.send({win: true, way: 'domination'});
+            }
+            else {
+                var submission = true;
+                for (var i = 0; i < game.game_players.length; i++) {
+                    if (game.game_players[i].player_id != player_id) {
+                        if (owned_territories[game.game_players[i].player_id - 1] == 0) {
+                            game.game_players[i].player_alive = false;
+                        }
+                        else submission = false;
+                    }
+                }
+
+                if (submission) {
+                    console.log('Player ' + player_id + ' has won the game by defeating the other players');
+                    res.send({win: true, way: 'submission'});
+                }
+                else {
+                    games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                        if(err) {
+                            res.send({error: 'An error has occurred updating players survival'});
+                        } else {
+                            console.log('Success: players survival updated for game ' + game_id);
+                            res.send({win: false, way: 'try_again'});
+                        }
+                    });
+                }
+            }
         });
     });
 };
