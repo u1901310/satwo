@@ -9,9 +9,12 @@
 
     <div>
         <div id="Game_buttons">
-            <input id="dice_button" type="button" disabled="disabled" value="dices" onclick="javascript:throw_dices()"/>
-            <input id="end_turn_button" type="button" disabled="disabled" value="End turn" onclick="javascript:end_turn()"/>
+            <input id="dice_button" type="button" value="dices" onclick="javascript:throw_dices()"/>
+            <input id="end_turn_button" type="button" value="End turn" onclick="javascript:end_turn()"/>
             <span id="Dices_space"></span>
+            <input id="weapon_lvl1_button" type="button" disabled="disabled" value="W1" onclick="javascript:buyWeapon(1)"/>
+            <input id="weapon_lvl2_button" type="button" disabled="disabled" value="W2" onclick="javascript:buyWeapon(2)"/>
+            <input id="weapon_lvl3_button" type="button" disabled="disabled" value="W3" onclick="javascript:buyWeapon(3)"/>
         </div>
         <div id="container" style="position:relative; width:800px; height:600px; margin:0 auto"></div>
         <input id='test'>
