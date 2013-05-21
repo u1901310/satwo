@@ -74,6 +74,7 @@ app.post('/buyWeapon', routes.buyWeapon);
 app.post('/thiefAction', routes.thiefAction);
 app.get('/hasTerritoryThief/:game_id/:territory_id', routes.hasTerritoryThief);
 app.get('/isWinner/:game_id/:player_id', routes.isWinner);
+app.post('/setGameNoPublic', routes.setGameNoPublic);
 //Faction Functions
 app.get('/getFactions', routes.getFactions);
 //Territory Functions
@@ -147,8 +148,8 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('conquer_territory_sent', function(image, player_id) {
-        console.log(JSON.stringify(image));
-        console.log("player_id: " + player_id);
+        //console.log(JSON.stringify(image));
+        //console.log("player_id: " + player_id);
         io.sockets.in(socket.room).emit('conquer_territory_received', image, player_id);
     });
 
@@ -157,8 +158,12 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('enable_dices_sent', function(data) {
-        console.log("rebut del servidor");
+        //console.log("rebut del servidor");
         io.sockets.in(socket.room).emit('enable_dices_received', {info: data.info});
+    });
+
+    socket.on('game_won_sent', function(data) {
+        io.sockets.in(socket.room).emit('game_won_received', data);
     });
 
 

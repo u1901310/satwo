@@ -216,9 +216,19 @@ var start_button_behaviour = function() {
                     {
                         id: current_game_id
                     },
-                    function(data, status){}
+                    function(data, status){
+                        $.post('/setGameNoPublic',
+                            {
+                                game_id: current_game_id
+                            },
+                            function(data, status) {
+                                socket.emit('start_game_sent', {game_id: game._id});
+                                socket.emit('alter_games_list');
+                            }
+                        );
+                    }
                 );
-                socket.emit('start_game_sent', {game_id: game._id});
+                //socket.emit('start_game_sent', {game_id: game._id});
             }
             else {
                 alert("There are some players who have not confirmed yet");
