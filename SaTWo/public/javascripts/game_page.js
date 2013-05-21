@@ -45,6 +45,10 @@ $(document).ready(function(){
             if (player_id == turn) $('#dice_button').removeAttr("disabled");
         });
     });
+    socket.on('game_won_received', function(data) {
+        alert('Player ' + data.winner + ' has won by ' + data.way);
+        //Aqui redirigir a main_page
+    });
 });
 
 /*
@@ -396,7 +400,8 @@ var clickable_territories = function() {
 
     $.getJSON('isWinner/' + current_game_id + '/' + player_id, function(data) {
         if (data.win) {
-            alert("I have won!");
+            socket.emit('game_won_sent',{winner: player_id, way: data.way});
+            //alert("I have won!");
         }
         else {
             $.getJSON('getGame/' + current_game_id, function(game) {

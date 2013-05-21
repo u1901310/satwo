@@ -283,14 +283,16 @@ function list_public_games() {
     }).done(function(data) {
             if(data.result == 'ok') {
                 $.each(data.games_list, function() {
-                    if(this.game_password != "") {
-                        $('#public_games_list').append(
-                            '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><img class="game_list_secure" src="/images/lock_key.png" alt="this game need a password"> <input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/></p>'
-                        );
-                    }else {
-                        $('#public_games_list').append(
-                            '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><span class="game_list_no_secure"></span><input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/></p>'
-                        );
+                    if(this.game_is_public) {
+                        if(this.game_password != "") {
+                            $('#public_games_list').append(
+                                '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><img class="game_list_secure" src="/images/lock_key.png" alt="this game need a password"> <input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/></p>'
+                            );
+                        }else {
+                            $('#public_games_list').append(
+                                '<p class="game_list_element"><span class="game_list_name">' + this.game_name + '</span><span class="game_list_ocupation">' + this.game_current_num_of_players + '/' + this.game_num_of_players + '</span><span class="game_list_no_secure"></span><input class="enter_game_button" type="button" value="Enter" onclick="javascript:enter_game_button_behaviour(\'' + this._id + '\')"/></p>'
+                            );
+                        }
                     }
                 });
             } else {

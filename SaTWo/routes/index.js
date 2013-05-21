@@ -853,25 +853,96 @@ exports.nextGameTurn = function(req, res) {
     console.log('Setting next turn to game ' + game_id);
     db.collection('games', function(err, games) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
-            if(game.game_turn == game.game_num_of_players) {
-                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: 1}}, function(err, result) {
-                    if(err) {
-                        res.send({error: 'An error has occurred setting the turn of a game'});
-                    } else {
-                        console.log('Success: turn set to 1 to game ' + game_id);
-                        res.send({info: 'info'});
+            game.game_turn++;
+            var trobat = false;
+            var player;
+            console.log("First turn " + game.game_turn);
+            while(!trobat) {
+                if(game.game_turn > game.game_num_of_players) {
+                    console.log("Num of players exceeded return to 1");
+                    game.game_turn = 1;
+                } else {
+                    player = null;
+                    var i = 0;
+                    console.log("Lets look for the player");
+                    while(!player) {
+                        if(game.game_players[i].player_id == game.game_turn) {
+                            player = game.game_players[i];
+                            console.log("Player found with id " + player.player_id);
+                        }
+                        i++;
                     }
-                });
-            } else {
-                games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: new Number(game.game_turn) + 1}}, function(err, result) {
-                    if(err) {
-                        res.send({error: 'An error has occurred setting the turn of a game'});
+                    if(player.player_alive) {
+                        console.log("Player is alive");
+                        trobat = true;
                     } else {
-                        console.log('Success: next turn set to game ' + game_id);
-                        res.send({info: 'info'});
+                        console.log("Player was murdered so next one");
+                        game.game_turn++;
                     }
-                });
+                }
             }
+            games.update({ _id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                if(err) {
+                    res.send({error: 'An error has occurred setting the turn of a game'});
+                } else {
+                    console.log('Success: next turn set to game ' + game_id);
+                    res.send({info: 'info'});
+                }
+            });
+
+
+//            if(game.game_turn == game.game_num_of_players) {
+//                game.game_turn = 1;
+//                var trobat = false;
+//                while(!trobat) {
+//                    var player;
+//                    var i = 0;
+//                    while(!player) {
+//                        if(game.game_players[i] == game.game_turn) player = game.game_players[i];
+//                        i++;
+//                    }
+//                    if(player.player_alive){
+//                        trobat = true;
+//                    } else {
+//                        game.game_turn++;
+//                    }
+//                }
+//                //games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: 1}}, function(err, result) {
+//                games.update({ _id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+//                    if(err) {
+//                        res.send({error: 'An error has occurred setting the turn of a game'});
+//                    } else {
+//                        console.log('Success: turn set to 1 to game ' + game_id);
+//                        res.send({info: 'info'});
+//                    }
+//                });
+//            } else {
+//                game.game_turn++;
+//                var trobat = false;
+//                while(!trobat) {
+//                    var player;
+//                    var i = 0;
+//                    while(!player) {
+//                        if(game.game_players[i] == game.game_turn) player = game.game_players[i];
+//                        i++;
+//                    }
+//                    if(player.player_alive){
+//                        trobat = true;
+//                    } else {
+//                        game.game_turn++;
+//                        if(game.game_turn > game.game_num_of_players) game.game_turn = 1;
+//                    }
+//                }
+//                //games.update({ _id: new BSON.ObjectID(game_id)}, {$set: {game_turn: new Number(game.game_turn) + 1}}, function(err, result) {
+//                games.update({ _id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+//                    if(err) {
+//                        res.send({error: 'An error has occurred setting the turn of a game'});
+//                    } else {
+//                        console.log('Success: next turn set to game ' + game_id);
+//                        res.send({info: 'info'});
+//                    }
+//                });
+//            }
         });
     });
 };
@@ -1324,6 +1395,29 @@ exports.isWinner = function(req, res) {
     });
 };
 
+/*
+* SFunction to set a game as no public to avoid of print it in the public list games
+*  params: (POST) game_id
+* */
+exports.setGameNoPublic = function(req, res) {
+    var game_id = req.body.game_id;
+
+    console.log('Setting the game ' + game_id + ' as no public');
+    db.collection('games', function(err, games) {
+        games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+           game.game_is_public = false;
+
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                if(err) {
+                    res.send({error: 'An erro has occurred setting the game to non public'});
+                } else {
+                    console.log('Success: game ' + game_id + ' is no public now');
+                    res.send({result: 'ok'});
+                }
+            });
+        });
+    });
+};
 
 /* ---------------------------------------------------------------------------------------------------------------------------------------------
  *  ---------------------------------------------------------------------------------------------------------------------------------------------
