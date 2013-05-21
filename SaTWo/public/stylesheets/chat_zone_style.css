@@ -1,16 +1,16 @@
 /* Style sheet for Chat Zone*/
-#Chat_users_div {
+.chat_room #Chat_users_div {
     float: left;
     width: 29%;
     height: 45%;
     padding: 1%;
 }
 
-#Chat_users_div #Chat_users_label {
+.chat_room #Chat_users_div #Chat_users_label {
     padding-left: 28%;
 }
 
-#Chat_users_div #users {
+.chat_room #Chat_users_div #users {
     margin-top: 2%;
     padding: 4% 0% 4% 4%;
     height: 65%;
@@ -20,14 +20,14 @@
     color: whitesmoke;
 }
 
-#Chat_conversation_div {
+.chat_room #Chat_conversation_div {
     float: right;
     width: 63%;
     height: 85%;
     padding: 1%;
 }
 
-#Chat_conversation_div #conversation {
+.chat_room #Chat_conversation_div #conversation {
     max-width: 94%;
     height: 85%;
     max-height: 85%;
@@ -38,14 +38,70 @@
     border-radius: 10px;
 }
 
-#Chat_conversation_div #data {
+.chat_room #Chat_conversation_div #data {
     margin-top: 4%;
     width: 70%;
     padding-left: 4%;
     border-radius: 15px;
 }
 
-#Chat_conversation_div #datasend {
+.chat_room #Chat_conversation_div #datasend {
     margin-left: 2%;
     border-radius: 15px;
 }
+
+.chat_game h2 {
+    display: none;
+}
+
+.chat_game #Chat_users_div {
+    float: left;
+    width: 29%;
+    height: 90%;
+}
+
+.chat_game #Chat_users_div #Chat_users_label {
+    padding-left: 28%;
+}
+
+.chat_game #Chat_users_div #users {
+    margin-top: 2%;
+    padding: 4% 0% 4% 4%;
+    height: 65%;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px inset blanchedalmond;
+    border-radius: 10px;
+    color: whitesmoke;
+    font-size: 80%;
+}
+
+.chat_game #Chat_conversation_div {
+    float: right;
+    width: 63%;
+    height: 90%;
+    padding: 1%;
+}
+
+.chat_game #Chat_conversation_div #conversation {
+    max-width: 94%;
+    height: 73%;
+    max-height: 73%;
+    overflow-y: auto;
+    padding: 0.5%;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 2px outset white;
+    border-radius: 10px;
+}
+
+.chat_game #Chat_conversation_div #data {
+    margin-top: 4%;
+    width: 70%;
+    padding-left: 4%;
+    border-radius: 15px;
+}
+
+.chat_game #Chat_conversation_div #datasend {
+    margin-left: 9%;
+    border-radius: 15px;
+}
+

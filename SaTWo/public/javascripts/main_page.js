@@ -4,26 +4,20 @@ var socket = io.connect('http://localhost:3000/');
 $(document).ready(function() {
     $('#header_username_holder').text(user_logged.user_username);
 
+    $('#button_own_games').css('background-color', 'rgba(0,0,0,0.8)');
+    $('#button_own_games').css('color', 'whitesmoke');
+
     list_user_games();
-    //Substituir reload_request per advice_requests
     advice_requests();
-    //reload_requests();
     reload_friends();
 
     socket.on('request_received', function (data) {
-        //reload_requests(); //Substituir per que ens avisi que hi han noves peticions
         advice_requests();
         reload_requests();
     });
     socket.on('friend_received', function (data) {
         reload_friends();
     });
-    /*socket.on('new_game_received', function (data) {
-        list_public_games();
-    });
-    socket.on('enter_game_received', function (data) {
-        list_public_games();
-    });*/
     socket.on('update_games_list', function() {
        list_public_games();
     });
@@ -84,7 +78,7 @@ var add_friend_button_behaviour = function(){
 
                 socket.emit('request_sent', {info: 'sent'});
 
-                alert("Friendship request sent");
+                //alert("Friendship request sent");
             } else {
                 alert("This user does not exist");
             }
@@ -115,7 +109,7 @@ function reload_requests(){
                     );
                 });
             } else {
-                $('#button_request').val('Requests');
+                $('#button_request').css('background-image', 'url(../images/none_requests.png)');
             }
         }
     });
@@ -131,9 +125,9 @@ function advice_requests() {
         async: false
     }).done(function(data) {
         if(data.requests.length == 0) {
-            $('#button_request').val('Requests');
+            $('#button_request').css('background-image', 'url(../images/none_requests.png)');
         } else {
-            $('#button_request').val('Requests !');
+            $('#button_request').css('background-image', 'url(../images/requests.png)');
         }
     });
 };
@@ -170,13 +164,10 @@ var remove_friend_button_behaviour = function(name){
                 user: user_logged.user_username,
                 friend: name
             },
-            function(data,status){},
-            "json"
+            function(data,status){}
         );
 
         socket.emit('friend_sent', {info: 'sent'});
-
-        //reload_friends();
     }
 };
 
@@ -199,7 +190,6 @@ var accept_request_button_behaviour = function(name){
                 socket.emit('friend_sent', {info: 'sent'});
 
                 reload_requests();
-                //reload_friends();
             } else {
                 alert("This user does not exist");
             }
@@ -218,8 +208,7 @@ var reject_request_button_behaviour = function(name){
             user: user_logged.user_username,
             friend: name
         },
-        function(data,status){},
-        "json"
+        function(data,status){}
     );
 
     reload_requests();
@@ -229,11 +218,17 @@ var reject_request_button_behaviour = function(name){
 * Function to define the behaviour of the own games button
 * */
 var own_games_button_behaviuour = function() {
+    $('#button_own_games').css('background-color', 'rgba(0,0,0,0.8)');
+    $('#button_own_games').css('color', 'whitesmoke');
+    $('#button_public_games').css('background-color', '');
+    $('#button_public_games').css('color', '');
+    $('#button_new_game').css('background-color', '');
+    $('#button_new_game').css('color', '');
+
     $('#public_games_list').hide();
     $('#new_game_info').hide();
     $('#my_games_list').show();
     list_user_games();
-    //Resaltar el boto per remarcar que hem apretat
 };
 
 /*
@@ -262,11 +257,17 @@ function list_user_games() {
  * Function to define the behaviour of the public games button
  * */
 var public_games_button_behaviuour = function() {
+    $('#button_own_games').css('background-color', '');
+    $('#button_own_games').css('color', '');
+    $('#button_public_games').css('background-color', 'rgba(0,0,0,0.8)');
+    $('#button_public_games').css('color', 'whitesmoke');
+    $('#button_new_game').css('background-color', '');
+    $('#button_new_game').css('color', '');
+
     $('#my_games_list').hide();
     $('#new_game_info').hide();
     $('#public_games_list').show();
     list_public_games();
-    //Resaltar el boto per remarcar que hem apretat
 };
 
 /*
@@ -302,6 +303,13 @@ function list_public_games() {
  * Function to define the behaviour of the new game button
  * */
 var new_game_button_behaviuour = function() {
+    $('#button_own_games').css('background-color', '');
+    $('#button_own_games').css('color', '');
+    $('#button_public_games').css('background-color', '');
+    $('#button_public_games').css('color', '');
+    $('#button_new_game').css('background-color', 'rgba(0,0,0,0.8)');
+    $('#button_new_game').css('color', 'whitesmoke');
+
     clear_inputs('new_game_info');
     $('#my_games_list').hide();
     $('#public_games_list').hide();
@@ -337,8 +345,7 @@ var submit_new_game_button_behaviour = function() {
                     },
                     function(data, status){
 
-                    },
-                    "json"
+                    }
                 );
             });
 
@@ -349,13 +356,9 @@ var submit_new_game_button_behaviour = function() {
         $('#main_page').hide();
         $('#room_page').show();
         $('#room_page').load('html/room_page.html');
-        //own_games_button_behaviuour();
 
-        //socket.emit('new_game_sent', {info: 'sent'});
         socket.emit('subscribe_game', current_game_id);
         socket.emit('alter_games_list');
-
-        //alert("Game created");
     }
 };
 
@@ -389,19 +392,13 @@ var validate_game = function() {
     * */
     var num_of_players_pattern = /^\d+$/;
     if(!num_of_players_pattern.test(n_players)) {
-        //validation = false;
-        //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be greater than 2</span>');
         $('#game_players_number_input').val(2);
     } else {
         if(n_players < 2) {
-            //validation = false;
-            //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be greater than 2</span>');
             $('#game_players_number_input').val(2);
         }
         if(n_players > 6) {
-            //validation = false;
-            //$('#game_players_number_input').after('<span class="error_new_game_validation">*Number of players have to be lower than 6</span>');
-            $('#game_players_number_input').val(6);
+             $('#game_players_number_input').val(6);
         }
     }
     return validation;
@@ -442,7 +439,6 @@ var enter_game_button_behaviour = function(game_id) {
                     $('#room_page').show();
                     $('#room_page').load('html/room_page.html');
 
-                    //socket.emit('enter_game_sent', {info1: game_id, info2: user_logged._id});
                     socket.emit('subscribe_game', current_game_id);
                     socket.emit('alter_games_list');
                 }
@@ -475,8 +471,7 @@ var access_secure_game = function() {
                         user: user_logged._id,
                         game: current_game_id
                     },
-                    function(data, status){},
-                    "json"
+                    function(data, status){}
                 );
                 $('#access_secure_games_div').hide();
                 $('#Game_management_div').show();
@@ -484,7 +479,6 @@ var access_secure_game = function() {
                 $('#room_page').show();
                 $('#room_page').load('html/room_page.html');
 
-                //socket.emit('enter_game_sent', {info1: current_game_id, info2: user_logged._id});
                 socket.emit('subscribe_game', current_game_id);
                 socket.emit('alter_games_list');
             } else {

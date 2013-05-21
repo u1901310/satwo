@@ -6,20 +6,18 @@
     <script src="/javascripts/main_page.js"></script>
 </head>
 <body>
-    <!--<h1>MAIN PAGE</h1>-->
     <div id="header_buttons_div">
         <div id="header_buttons_positioning_div">
             <span id="header_username_holder"></span>
             <input id="button_logout" type="button" value="" onclick="javascript:logout()"/>
-            <input id="button_request" type="button" value="request" onclick="javascript:request_button_behaviour()"/>
+            <input id="button_request" type="button" value="" onclick="javascript:request_button_behaviour()"/>
             <!-- Aqui la resta de botons com el d'opcions, etc. -->
         </div>
         <div id="requests_list" hidden></div>
     </div>
-    <!-- <input id="button_chat" type="button" value="Chat" onclick="javascript:chat_button_behaviour()"/> -->
     <div id="Game_management_div">
         <img id="Game_rooms_label" src="/images/game_rooms_label.png" alt="Game rooms"/>
-        <input id="button_own_games" type="button" value="My Games" onclick="javascript:own_games_button_behaviuour()"/>
+        <input id="button_own_games" type="button" value="My Games" onclick="javascript:own_games_button_behaviuour()" onmouseover="javascript"/>
         <input id="button_public_games" type="button" value="Public Games" onclick="javascript:public_games_button_behaviuour()"/>
         <input id="button_new_game" type="button" value="New Game" onclick="javascript:new_game_button_behaviuour()"/>
         <div id="my_games_list">My games list</div>
@@ -27,17 +25,14 @@
         <div id="new_game_info" hidden>
             <img id="new_game_img" src="/images/new_game_white.png" alt="New Game"/>
             <p class="new_game_element">
-                <!--<span>Game name:</span>-->
                 <img id="game_name_img" src="/images/game_name_white.png" alt="Game Name"/>
                 <input id="game_name_input" type="text"/>
             </p>
             <p class="new_game_element">
-                <!--<span>Password (Optional):</span>-->
                 <img id="game_pass_img" src="/images/optional_password_white.png" alt="Optional password"/>
                 <input id="game_pass_input" type="password"/>
             </p>
             <p class="new_game_element">
-                <!--<span>Number of players:</span>-->
                 <img id="game_players_number_img" src="/images/number_of_players_white.png" alt="Number of Players"/>
                 <input id="game_players_number_input" type="number" min="2" max="6" value="2"/>
             </p>
@@ -59,10 +54,6 @@
         <br>
         <input id="friend_username"/>
         <input id="button_add_friend" type="button" value="Add friend" onclick="javascript:add_friend_button_behaviour()"/>
-
-        <!--<p>Requests:</p>-->
-        <!--<div id="requests_list"></div>-->
-        <!--<p id="friends_label">Friends:</p>-->
         <div id="friends_list"></div>
     </div>
 </body>

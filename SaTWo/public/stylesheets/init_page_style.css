@@ -14,7 +14,7 @@
 }
 
 #log_and_reg_frame img {
-    width: 25%;/*Cal modificar la imatge per no haver d'escalar i reduir temps de transferencia de la imatge*/
+    width: 25%;
 }
 
 /*
