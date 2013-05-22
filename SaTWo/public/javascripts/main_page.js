@@ -26,6 +26,9 @@ $(document).ready(function() {
     socket.on('update_games_list', function() {
        list_public_games();
     });
+    socket.on('update_my_games_list', function() {
+        list_user_games();
+    });
 });
 
 

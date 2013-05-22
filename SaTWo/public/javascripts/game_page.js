@@ -76,8 +76,8 @@ $(document).ready(function(){
             function(data) {
                 $('#game_page').hide();
                 $('#chat_zone').hide();
-                $('#main_page').show();
-                $('#main_page').load('html/main_page.html');
+                socket.emit('init_main_page_sent');
+                socket.emit('alter_my_games_list');
             }
         );
     });
@@ -448,7 +448,6 @@ var clickable_territories = function() {
     removeContourLayers();
 
     $.getJSON('isWinner/' + current_game_id + '/' + player_id, function(data) {
-        alert("Checking territories");
         if (data.win) {
             socket.emit('game_won_sent',{winner: player_id, way: data.way});
             //alert("I have won!");
@@ -743,14 +742,14 @@ function drawFilledImage(imageObj, player_id) {
         });
 
         kin_img.on('mouseover', function() {
-            $('#test').val(this.attrs.desc);
+            //$('#test').val(this.attrs.desc);
             this.setOpacity(0.3);
             $('#container').css('cursor','pointer')
             filled_layers[this.attrs.index].draw();
             showTerritoryInformation(this);
         });
         kin_img.on('mouseout', function() {
-            $('#test').val('');
+            //$('#test').val('');
             this.setOpacity(1);
             $('#container').css('cursor','auto')
             filled_layers[this.attrs.index].draw();
@@ -817,7 +816,7 @@ function drawThiefImage(imageObj) {
         });
 
         kin_img.on('mouseover', function() {
-            $('#test').val(this.attrs.desc);
+            //$('#test').val(this.attrs.desc);
             filled_layers[this.attrs.index].setOpacity(0.3);
             filled_layers[this.attrs.index].draw();
             $('#container').css('cursor','pointer')
@@ -825,7 +824,7 @@ function drawThiefImage(imageObj) {
             showTerritoryInformation(this);
         });
         kin_img.on('mouseout', function() {
-            $('#test').val('');
+            //$('#test').val('');
             filled_layers[this.attrs.index].setOpacity(1);
             filled_layers[this.attrs.index].draw();
             $('#container').css('cursor','auto')
@@ -866,14 +865,14 @@ function initStage() {
         });
 
         kinetic_images[i].on('mouseover', function() {
-            $('#test').val(this.getAttrs().desc);
+            //$('#test').val(this.getAttrs().desc);
             this.setOpacity(0.3);
             $('#container').css('cursor','pointer')
             filled_layers[this.getAttrs().index].draw();
             showTerritoryInformation(this);
         });
         kinetic_images[i].on('mouseout', function() {
-            $('#test').val('');
+            //$('#test').val('');
             this.setOpacity(1);
             $('#container').css('cursor','auto')
             filled_layers[this.getAttrs().index].draw();
@@ -895,24 +894,80 @@ function initStage() {
 
 
 function showTerritoryInformation(image) {
+    //$('#territories').empty();
+//    $('#territory_random_number').empty();
+//    $('#territory_resources').empty();
+//    $('#territory_level').empty();
+
+    $('#territory_msg').hide();
+
     $.getJSON('/getGame/' + current_game_id, function(game) {
         $.each(game.game_territories, function() {
             if (this.territory_id == image.attrs.id) {
-                $('#territories').append('<span><b>    Territory ' + image.attrs.index + '</b></span><br>');
-                $('#territories').append('<span><b>    Random number: </b>' + this.territory_random_number + '</span><br>');
-                $('#territories').append('<span><b>    Resources: </b><br>' + this.territory_resources[0] + ' (brick)<br> ' +
-                    this.territory_resources[1] + ' (lumber)<br> ' +
-                    this.territory_resources[2] + ' (ore)<br> ' +
-                    this.territory_resources[3] + ' (wool)<br> ' +
-                    this.territory_resources[4] + ' (grain)</span><br>');
-                $('#territories').append('<span><b>    Ruler: </b>' + this.territory_ruler + '</span><br>');
-                $('#territories').append('<span><b>    Level: </b>' + this.territory_level + '</span><br>');
-                $('#territories').append('<span><b>    Thief: </b>' + this.territory_thief + '</span><br><br>');
+                $('#territory_random_number').html(this.territory_random_number);
+
+                if (this.territory_resources[0] > 0) {
+                    $('#brick_resources').text(this.territory_resources[0]);
+                    $('#brick_div').show();
+                }
+                else $('#brick_div').hide();
+
+                if (this.territory_resources[1] > 0) {
+                    $('#lumber_resources').text(this.territory_resources[1]);
+                    $('#lumber_div').show();
+                }
+                else $('#lumber_div').hide();
+
+                if (this.territory_resources[2] > 0) {
+                    $('#ore_resources').text(this.territory_resources[2]);
+                    $('#ore_div').show();
+                }
+                else $('#ore_div').hide();
+
+                if (this.territory_resources[3] > 0) {
+                    $('#wool_resources').text(this.territory_resources[3]);
+                    $('#wool_div').show();
+                }
+                else $('#wool_div').hide();
+
+                if (this.territory_resources[4] > 0) {
+                    $('#grain_resources').text(this.territory_resources[4]);
+                    $('#grain_div').show();
+                }
+                else $('#grain_div').hide();
+
+                $('#territory_level').html('Level ' + this.territory_level);
+
+
+                $('#territory_random_number').show();
+                $('#territory_resources').show();
+                $('#territory_level').show();
+
+
+//                $('#territories').append('<span><b>    Territory ' + image.attrs.index + '</b></span><br>');
+//                $('#territories').append('<span><b>    Random number: </b>' + this.territory_random_number + '</span><br>');
+//                $('#territories').append('<span><b>    Resources: </b><br>' + this.territory_resources[0] + ' (brick)<br> ' +
+//                    this.territory_resources[1] + ' (lumber)<br> ' +
+//                    this.territory_resources[2] + ' (ore)<br> ' +
+//                    this.territory_resources[3] + ' (wool)<br> ' +
+//                    this.territory_resources[4] + ' (grain)</span><br>');
+//                $('#territories').append('<span><b>    Ruler: </b>' + this.territory_ruler + '</span><br>');
+//                $('#territories').append('<span><b>    Level: </b>' + this.territory_level + '</span><br>');
+//                $('#territories').append('<span><b>    Thief: </b>' + this.territory_thief + '</span><br><br>');
             }
         });
     });
 };
 
 function hideTerritoryInformation() {
-    $('#territories').empty();
+    //$('#territories').empty();
+//    $('#territory_random_number').empty();
+//    $('#territory_resources').empty();
+//    $('#territory_level').empty();
+
+    $('#territory_random_number').hide();
+    $('#territory_resources').hide();
+    $('#territory_level').hide();
+
+    $('#territory_msg').show();
 };

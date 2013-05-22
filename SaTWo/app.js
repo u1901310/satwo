@@ -128,6 +128,10 @@ io.sockets.on('connection', function (socket) {
        io.sockets.emit('update_games_list');
     });
 
+    socket.on('alter_my_games_list', function() {
+        io.sockets.emit('update_my_games_list');
+    });
+
     //When a user enter un a game, info send {info1: game_id, info2: user_id}
     socket.on('subscribe_game', function(room) {
         io.sockets.in(room).emit('update_players');

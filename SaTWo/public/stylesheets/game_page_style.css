@@ -24,11 +24,13 @@
 
 #territory_info {
     float: left;
-    width: 20%;
+    width: 15%;
     height: 50%;
     margin-top: 1%;
     border: 2px outset;
     border-radius: 10px;
+    position: relative;
+    background-color: rgba(250,250,210,0.7);
 }
 
 #container {
@@ -38,9 +40,49 @@
 
 #user_info {
     float: left;
-    width: 19%;
+    width: 15%;
     height: 50%;
     margin-top: 1%;
     border: 2px outset;
     border-radius: 10px;
+}
+
+#territory_random_number {
+    border: 2px inset;
+    text-align: center;
+    font-size: 130%;
+    font-weight: bold;
+    color: rgb(200, 0, 0);
+    border-radius: 20px;
+    width: 12%;
+    margin-left: 45%;
+    background-color: white;
+}
+
+#territory_level {
+    margin-right: 7%;
+    position: absolute;
+    bottom: 7%;
+    right: 0;
+    font-weight: bold;
+    color: white;
+    background-color: black;
+    padding: 1% 2%;
+    border-radius: 10px;
+    border: 2px inset white;
+}
+
+.territory_resources_element img {
+    width: 15%;
+    vertical-align: middle;
+}
+
+.territory_resources_element {
+    float: left;
+}
+
+#territory_msg {
+    text-align: center;
+    position: relative;
+    top: 45%;
 }
