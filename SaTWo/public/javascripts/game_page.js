@@ -68,7 +68,18 @@ $(document).ready(function(){
     });
     socket.on('game_won_received', function(data) {
         alert('Player ' + data.winner + ' has won by ' + data.way);
-        //Aqui redirigir a main_page
+        $.post('/confirmEndGame',
+            {
+                game_id: current_game_id,
+                player_id: player_id
+            },
+            function(data) {
+                $('#game_page').hide();
+                $('#chat_zone').hide();
+                $('#main_page').show();
+                $('#main_page').load('html/main_page.html');
+            }
+        );
     });
 });
 
@@ -437,11 +448,11 @@ var clickable_territories = function() {
     removeContourLayers();
 
     $.getJSON('isWinner/' + current_game_id + '/' + player_id, function(data) {
+        alert("Checking territories");
         if (data.win) {
             socket.emit('game_won_sent',{winner: player_id, way: data.way});
             //alert("I have won!");
-        }
-        else {
+        } else {
             $.getJSON('getGame/' + current_game_id, function(game) {
                 var player;
                 var i = 0;

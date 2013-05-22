@@ -444,7 +444,8 @@ exports.addGame = function(req, res) {
         game_players: [],
         game_territories: [],
         game_turn: 1,
-        game_round: 1
+        game_round: 1,
+        game_winner: null
         //Altres atributs necessaris per defecte
     };
 
@@ -1355,6 +1356,7 @@ exports.isWinner = function(req, res) {
     db.collection('games', function(err, games) {
         games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
             var owned_territories = [];
+            var resultat;
             for (var i = 0; i < game.game_players.length; i++) owned_territories.push(0);
 
             for (var i = 0; i < game.game_territories.length; i++) {
@@ -1363,9 +1365,10 @@ exports.isWinner = function(req, res) {
 
             if (owned_territories[player_id - 1] >= Math.round(game.game_territories.length * 0.8)) {
                 console.log('Player ' + player_id + ' has won the game by conquering 80% of the territories');
-                res.send({win: true, way: 'domination'});
-            }
-            else {
+                //res.send({win: true, way: 'domination'});
+                resultat = {win: true, way: 'domination'};
+                game.game_winner = {winner: player_id, way: 'domination'};
+            } else {
                 var submission = true;
                 for (var i = 0; i < game.game_players.length; i++) {
                     if (game.game_players[i].player_id != player_id) {
@@ -1378,19 +1381,24 @@ exports.isWinner = function(req, res) {
 
                 if (submission) {
                     console.log('Player ' + player_id + ' has won the game by defeating the other players');
-                    res.send({win: true, way: 'submission'});
+                    //res.send({win: true, way: 'submission'});
+                    resultat = {win: true, way: 'submission'};
+                    game.game_winner = {winner: player_id, way: 'submission'};
                 }
                 else {
-                    games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
-                        if(err) {
-                            res.send({error: 'An error has occurred updating players survival'});
-                        } else {
-                            console.log('Success: players survival updated for game ' + game_id);
-                            res.send({win: false, way: 'try_again'});
-                        }
-                    });
+                    console.log('Success: players survival updated for game ' + game_id);
+                    //res.send({win: false, way: 'try_again'});
+                    resultat = {win: false, way: 'try_again'};
                 }
             }
+            games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                if(err) {
+                    res.send({error: 'An error has occurred updating players survival'});
+                } else {
+                    console.log('Retorn de isWinner var result = ' + JSON.stringify(resultat));
+                    res.send(resultat);
+                }
+            });
         });
     });
 };
@@ -1416,6 +1424,47 @@ exports.setGameNoPublic = function(req, res) {
                 }
             });
         });
+    });
+};
+
+/*
+* SFunction to confirm end game for a player, if everybody have confirmed then we'll delete the game.
+*  params: (POST) game_id and player_id
+* */
+exports.confirmEndGame = function(req, res) {
+    var game_id = req.body.game_id;
+    var player_id = req.body.player_id;
+
+    console.log('Confirming the end of the game ' + game_id + ' for player ' + player_id);
+    db.collection('games', function(err, games) {
+       games.findOne({_id: new BSON.ObjectID(game_id)}, function(err, game) {
+           var i = 0;
+           var player;
+           while(!player) {
+               if(game.game_players[i].player_id == player_id) player = game.game_players[i];
+               i++;
+           }
+           var tots_confirmats = true;
+           for(var i = 0; i < game.game_users_info.length; i++) {
+               if(game.game_users_info[i].user_id == player.player_user_id) game.game_users_info[i].confirmation = false;
+               if(game.game_users_info[i].confirmation) {
+                   tots_confirmats = false;
+               }
+           }
+           if(tots_confirmats) {
+               games.remove({_id: new BSON.ObjectID(game_id)});
+               res.send({result: 'ok'});
+           } else {
+               games.update({_id: new BSON.ObjectID(game_id)}, game, function(err, result) {
+                   if(err) {
+                       res.send({error: 'An erro has occurred setting the game to non public'});
+                   } else {
+                       console.log('Success: game ' + game_id + ' is no public now');
+                       res.send({result: 'ok'});
+                   }
+               });
+           }
+       });
     });
 };
 

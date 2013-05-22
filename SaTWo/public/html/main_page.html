@@ -36,8 +36,10 @@
                 <img id="game_players_number_img" src="/images/number_of_players_white.png" alt="Number of Players"/>
                 <input id="game_players_number_input" type="number" min="2" max="6" value="2"/>
             </p>
-            <input id="button_game_submit" type="button" value="Submit" onclick="javascript:submit_new_game_button_behaviour()"/>
-            <input id="button_game_cancel" type="button" value="Cancel" onclick="javascript:cancel_new_game_button_behaviour()"/>
+            <div id="new_game_buttons">
+                <input id="button_game_submit" type="button" value="Submit" onclick="javascript:submit_new_game_button_behaviour()"/>
+                <input id="button_game_cancel" type="button" value="Cancel" onclick="javascript:cancel_new_game_button_behaviour()"/>
+            </div>
         </div>
     </div>
     <div id="access_secure_games_div" hidden>
