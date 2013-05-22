@@ -75,6 +75,7 @@ app.post('/thiefAction', routes.thiefAction);
 app.get('/hasTerritoryThief/:game_id/:territory_id', routes.hasTerritoryThief);
 app.get('/isWinner/:game_id/:player_id', routes.isWinner);
 app.post('/setGameNoPublic', routes.setGameNoPublic);
+app.post('/confirmEndGame', routes.confirmEndGame);
 //Faction Functions
 app.get('/getFactions', routes.getFactions);
 //Territory Functions

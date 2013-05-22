@@ -216,14 +216,20 @@
     border-radius: 5px;
 }
 
+#Game_management_div #new_game_buttons {
+    float: right;
+    margin-right: 1%;
+    width: 30%;
+}
+
 #Game_management_div #button_game_submit {
-    margin-left: 55%;
+    /*margin-left: 55%;*/
     padding: 2% 4%;
     border-radius: 10px;
 }
 
 #Game_management_div #button_game_cancel {
-    margin-left: 5%;
+    margin-left: 3%;
     padding: 2% 4%;
     border-radius: 10px;
 }
@@ -250,13 +256,13 @@
 
 #Friend_management_div #friend_username {
     width: 60%;
-    margin-right: 6%;
     padding-left: 2%;
     border-radius: 10px;
 }
 
 #Friend_management_div #button_add_friend {
     border-radius: 8px;
+    float: right;
 }
 
 #Friend_management_div #friends_list {
