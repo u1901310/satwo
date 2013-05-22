@@ -1,12 +1,19 @@
 
+var user_logged = null;
+var current_game_id = null;
+var main_page_loaded = false;
+var room_page_loaded = false;
+var game_page_loaded = false;
+var chat_zone_loaded = false;
+
 $(document).ready(function() {
     // Clean all possible information in inputs fields
     clear_inputs('login_div');
     clear_inputs('register_div');
 
     //Session params
-    var user_logged = null;
-    var current_game_id = null;
+    //var user_logged = null;
+    //var current_game_id = null;
 });
 
 /*

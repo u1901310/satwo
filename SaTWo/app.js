@@ -97,6 +97,20 @@ io.set('log level', 1);
 var usernames = {};
 
 io.sockets.on('connection', function (socket) {
+    socket.on('init_main_page_sent', function() {
+        socket.emit('init_main_page_received');
+    });
+    socket.on('init_room_page_sent', function() {
+        socket.emit('init_room_page_received');
+    });
+    socket.on('init_chat_zone_sent', function() {
+        socket.emit('init_chat_zone_received');
+    });
+    socket.on('init_game_page_sent', function() {
+        socket.emit('init_game_page_received');
+    });
+
+
     socket.on('request_sent', function (data) {
         io.sockets.emit('request_received', { info: 'received'});
     });
@@ -131,6 +145,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('unsubscribe_game', function() {
         socket.leave(socket.room);
         io.sockets.in(socket.room).emit('leave_update_players');
+        io.sockets.in(socket.room).emit('userdisconnected', socket.username);
         socket.room = null;
         console.log("Rooms when unsubcribe: " + JSON.stringify(io.sockets.manager.rooms));
     });
@@ -170,10 +185,11 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('subscribe', function(room, username) {
         io.sockets.in(room).emit('userconnected', username);
+        console.log("SUBSCRIBE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         socket.emit('updatechat', 'SERVER', 'you have connected');
-        socket.join(room);
+        //socket.join(room);
         socket.username = username;
-        socket.room = room;
+        //socket.room = room;
     });
 
     socket.on('unsubscribe', function(room) {

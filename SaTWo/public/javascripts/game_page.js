@@ -23,13 +23,34 @@ var resources_weapon = {
                             grain: 0  //0
                         };
 
+var dices_throwed;
+var thief_enabled;
+var territories_info;
+var position_x_img;
+var position_y_img;
+var stage;
+var num_images;
+var sources;
+var ids;
+var images;
+var kinetic_images;
+var filled_layers;
+var contour_layers;
+var thief_layer;
+
 $(document).ready(function(){
-    $.getJSON('getGame/' + current_game_id, function(game) {
-        $.each(game.game_players, function() {
-            if (this.player_user_id == user_logged._id) player_id = this.player_id;
-        });
+//    $.getJSON('getGame/' + current_game_id, function(game) {
+//        $.each(game.game_players, function() {
+//            if (this.player_user_id == user_logged._id) player_id = this.player_id;
+//        });
+//    });
+//    $('#info_space').text(' ');
+
+    init_game_page();
+
+    socket.on('init_game_page_sent', function() {
+        init_game_page();
     });
-    $('#info_space').text(' ');
 
     socket.on('conquer_territory_received', function(image, player_id) {
         drawFilledImage(image, player_id);
@@ -52,6 +73,34 @@ $(document).ready(function(){
 });
 
 /*
+ * Function to initialize the game page
+ * */
+function init_game_page() {
+    $.getJSON('getGame/' + current_game_id, function(game) {
+        $.each(game.game_players, function() {
+            if (this.player_user_id == user_logged._id) player_id = this.player_id;
+        });
+    });
+    $('#info_space').text(' ');
+
+    dices_throwed = true;
+    thief_enabled = false;
+
+    territories_info = [];
+    for (var i = 0; i < 42; i++) {
+        territories_info.push(
+            {
+                neutral: false,
+                enemy: false,
+                own: false
+            }
+        );
+    }
+
+    init_map();
+};
+
+/*
 * Action defines all possible actions during the game.
 *   in round 1 and 2 is to assign the first territories to each user
 *   in Round 1 the selection is from 1 to num_of_players
@@ -67,20 +116,9 @@ $(document).ready(function(){
 *    3 - Finish turn, this will increment the turn counter and if the player is the last it will increment the round and set the turn to 1
 * */
 
-var dices_throwed = true;
 
-var territories_info = [];
-for (var i = 0; i < 42; i++) {
-    territories_info.push(
-        {
-            neutral: false,
-            enemy: false,
-            own: false
-        }
-    );
-}
 
-var thief_enabled = false;
+
 function action(image) {
     var territory_id = image.attrs.id;
     var territory_index = image.attrs.index;
@@ -593,9 +631,7 @@ function buyWeapon(level) {
     );
 }
 
-
-
-var roundRect = function (x, y, w, h, r) {
+function roundRect(x, y, w, h, r) {
     if (w < 2 * r) r = w / 2;
     if (h < 2 * r) r = h / 2;
 
@@ -614,40 +650,68 @@ var roundRect = function (x, y, w, h, r) {
     });
 };
 
-var position_x_img = 100;
-var position_y_img = 15;
-var stage = new Kinetic.Stage({
-    container: 'container',
-    width: 800,
-    height: 340
-});
 
-var layer = new Kinetic.Layer();
-
-var background_rect = roundRect(40, 10, 720, 320, 15);
-background_rect.setFill('rgba(149,161,77,0.25)');
-background_rect.setStroke('rgba(149,161,77,0)');
-layer.add(background_rect);
-
-stage.add(layer);
-
-
-var num_images;
-var sources = [];
-var ids = [];
-
-$.ajax({
-    url: 'getTerritories/',
-    type: 'GET',
-    async: false
-}).done(function(territories) {
-    num_images = territories.length;
-    $.each(territories, function() {
-        sources.push(this.territory_image);
-        ids.push(this._id);
+function init_map() {
+    position_x_img = 100;
+    position_y_img = 15;
+    stage = new Kinetic.Stage({
+        container: 'container',
+        width: 800,
+        height: 340
     });
-});
 
+    var layer = new Kinetic.Layer();
+
+    var background_rect = roundRect(40, 10, 720, 320, 15);
+    background_rect.setFill('rgba(149,161,77,0.25)');
+    background_rect.setStroke('rgba(149,161,77,0)');
+    layer.add(background_rect);
+
+    stage.add(layer);
+
+
+    //var num_images;
+    sources = [];
+    ids = [];
+
+    $.ajax({
+        url: 'getTerritories/',
+        type: 'GET',
+        async: false
+    }).done(function(territories) {
+        num_images = territories.length;
+        $.each(territories, function() {
+            sources.push(this.territory_image);
+            ids.push(this._id);
+        });
+    });
+
+
+    kinetic_images = [];
+
+    filled_layers = [];
+    contour_layers = [];
+    thief_layer = new Kinetic.Layer();
+
+    for (var i = 0; i < 42; i++) {
+        filled_layers.push(new Kinetic.Layer());
+        contour_layers.push(new Kinetic.Layer());
+    }
+
+
+    var imagesDir = '/images/territories/neutral/';
+    images = {};
+    var loadedImages = 0;
+    for (var src in sources) {
+        images[src] = new Image();
+        images[src].onload = function() {
+            if (++loadedImages >= num_images) {
+                initStage();
+            }
+        };
+        images[src].src = imagesDir + sources[src];
+    }
+}
 
 
 
@@ -775,31 +839,7 @@ function drawThiefImage(imageObj) {
 
 
 
-var imagesDir = '/images/territories/neutral/';
-var images = {};
-var loadedImages = 0;
-for (var src in sources) {
-    images[src] = new Image();
-    images[src].onload = function() {
-        if (++loadedImages >= num_images) {
-            initStage();
-        }
-    };
-    images[src].src = imagesDir + sources[src];
-}
 
-
-
-var kinetic_images = [];
-
-var filled_layers = [];
-var contour_layers = [];
-var thief_layer = new Kinetic.Layer();
-
-for (var i = 0; i < 42; i++) {
-    filled_layers.push(new Kinetic.Layer());
-    contour_layers.push(new Kinetic.Layer());
-}
 
 function initStage() {
     for (var i = 0; i < num_images; i++) {

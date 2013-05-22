@@ -1,6 +1,9 @@
 /*
  * Function to define the behaviour of the login button
  * */
+
+var socket = io.connect('http://localhost:3000/');
+
 var login_button_behaviour = function() {
     var username = $('#login_user').val();
     var password = $('#login_pass').val();
@@ -8,8 +11,15 @@ var login_button_behaviour = function() {
         if(data.result == 'ok') {
             user_logged = data;
             $('#init_page').hide();
-            $('#main_page').show();
-            $('#main_page').load('html/main_page.html');
+
+            if (!main_page_loaded) {
+                $('#main_page').show();
+                $('#main_page').load('html/main_page.html');
+                main_page_loaded = true;
+            }
+            else {
+                socket.emit('init_main_page_sent');
+            }
         } else {
             alert("Username or password incorrect");
         }

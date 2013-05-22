@@ -2,16 +2,23 @@
 var socket = io.connect('http://localhost:3000/');
 
 $(document).ready(function() {
-    $.getJSON('/getGame/' + current_game_id, function(game) {
-       $('#Room_name_div').text("Room of " + game.game_name);
-       print_room_buttons(game);
-    });
-    print_room_user_info();
-    print_room_list_users();
+//    $.getJSON('/getGame/' + current_game_id, function(game) {
+//       $('#Room_name_div').text("Room of " + game.game_name);
+//       print_room_buttons(game);
+//    });
+//    print_room_user_info();
+//    print_room_list_users();
+//
+//    $('#chat_zone').removeClass('chat_game').addClass('chat_room'); //Alerta per si no funciona al no tenir class chat_game!!!
+//    $('#chat_zone').show();
+//    $('#chat_zone').load('html/chat_zone.html');
 
-    $('#chat_zone').removeClass('chat_game').addClass('chat_room'); //Alerta per si no funciona al no tenir class chat_game!!!
-    $('#chat_zone').show();
-    $('#chat_zone').load('html/chat_zone.html');
+    init_room_page();
+
+    socket.on('init_room_page_received', function() {
+        init_room_page();
+        $('#room_page').show();
+    });
 
     socket.on('update_players', function() {
         print_room_list_users();
@@ -38,11 +45,41 @@ $(document).ready(function() {
         if (current_game_id == data.info) {
             $('#chat_zone').removeClass('chat_room').addClass('chat_game');
             $('#room_page').hide();
-            $('#game_page').show();
-            $('#game_page').load('html/game_page.html');
+
+            if (!game_page_loaded) {
+                $('#game_page').show();
+                $('#game_page').load('html/game_page.html');
+                game_page_loaded = true;
+            }
+            else {
+                socket.emit('init_game_page_sent');
+            }
         }
     });
 });
+
+/*
+ * Function to initialize the room page
+ * */
+function init_room_page() {
+    $.getJSON('/getGame/' + current_game_id, function(game) {
+        $('#Room_name_div').text("Room of " + game.game_name);
+        print_room_buttons(game);
+    });
+    print_room_user_info();
+    print_room_list_users();
+
+    $('#chat_zone').removeClass('chat_game').addClass('chat_room'); //Alerta per si no funciona al no tenir class chat_game!!!
+
+    if (!chat_zone_loaded) {
+        $('#chat_zone').show();
+        $('#chat_zone').load('html/chat_zone.html');
+        chat_zone_loaded = true;
+    }
+    else {
+        socket.emit('init_chat_zone_sent');
+    }
+}
 
 /*
 * Function to print the input schedule for the user
@@ -195,7 +232,7 @@ var expel_button_behaviour = function(user_id) {
     }).done(function() {
             socket.emit('expelled_player', user_id);
             socket.emit('alter_games_list');
-            socket.emit('removeuser', {info: 'sent'});
+            //socket.emit('removeuser', {info: 'sent'});
         });
 };
 
@@ -239,3 +276,12 @@ var start_button_behaviour = function() {
         }
     });
 };
+
+/*
+ * Function to execute when user close application
+ * */
+/*
+$(window).unload(function() {
+    leave_button_behaviour();
+});
+*/
