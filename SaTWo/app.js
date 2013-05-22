@@ -182,6 +182,10 @@ io.sockets.on('connection', function (socket) {
         io.sockets.in(socket.room).emit('enable_dices_received', {info: data.info});
     });
 
+    socket.on('alter_resources', function() {
+        io.sockets.in(socket.room).emit('update_resources');
+    });
+
     socket.on('game_won_sent', function(data) {
         io.sockets.in(socket.room).emit('game_won_received', data);
     });

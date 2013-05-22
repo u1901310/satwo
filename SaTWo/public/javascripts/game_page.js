@@ -81,6 +81,9 @@ $(document).ready(function(){
             }
         );
     });
+    socket.on('update_resources', function() {
+        update_resources();
+    });
 });
 
 /*
@@ -90,6 +93,23 @@ function init_game_page() {
     $.getJSON('getGame/' + current_game_id, function(game) {
         $.each(game.game_players, function() {
             if (this.player_user_id == user_logged._id) player_id = this.player_id;
+            var current_player = this.player_id;;
+            $.ajax({
+                url: 'getUserUsername/' + this.player_user_id,
+                type: 'GET',
+                async: false
+            }).done(function(username) {
+                $('#nom_player' + current_player).html('Player' + current_player + ' - ' + username);
+                $('#brick_counter_player' + current_player).html('0');
+                $('#lumber_counter_player' + current_player).html('0');
+                $('#ore_counter_player' + current_player).html('0');
+                $('#wool_counter_player' + current_player).html('0');
+                $('#grain_counter_player' + current_player).html('0');
+                $('#weapon1_counter_player' + current_player).html('0');
+                $('#weapon2_counter_player' + current_player).html('0');
+                $('#weapon3_counter_player' + current_player).html('0');
+                $('#info_player' + current_player).show();
+            });
         });
     });
     $('#info_space').text(' ');
@@ -205,6 +225,7 @@ function action(image) {
                         async: false
                     }).done(function(data){
                         //socket.emit('conquer_territory_sent', image, player_id);
+                        socket.emit('alter_resources');
                     });
 
                     var imageObj = {
@@ -262,6 +283,7 @@ function action(image) {
                                         territory_id: image.attrs.id
                                     },
                                     function(){
+                                        socket.emit('alter_resources');
                                         clickable_territories();
                                     }
                                 );
@@ -300,6 +322,7 @@ function action(image) {
                                                     y: image.attrs.y
                                                 };
                                                 socket.emit('conquer_territory_sent', imageObj, player_id);
+                                                socket.emit('alter_resources');
                                                 clickable_territories();
                                             }
                                         );
@@ -342,6 +365,7 @@ function action(image) {
                                                     y: image.attrs.y
                                                 };
                                                 socket.emit('conquer_territory_sent', imageObj, player_id);
+                                                socket.emit('alter_resources');
                                                 clickable_territories();
                                             }
                                         );
@@ -364,6 +388,7 @@ function action(image) {
                                                 territory_id: territory_id
                                             },
                                             function(data,status){
+                                                socket.emit('alter_resources');
                                                 clickable_territories();
                                             }
                                         );
@@ -420,8 +445,7 @@ var throw_dices = function() {
                     territory_number: result
                 },
                 function(data) {
-                    //Actualitzar els comptadors (sockets)
-
+                    socket.emit('alter_resources');
                     clickable_territories();
                 }
         );
@@ -634,11 +658,31 @@ function buyWeapon(level) {
                     level: level
                 },
                 function(data){
+                    socket.emit('alter_resources');
                     clickable_territories();
                 }
             );
         }
     );
+}
+
+/*
+* Function to print all the resources of each player
+* */
+function update_resources() {
+    $.getJSON('getGame/' + current_game_id, function(game) {
+       for(var i = 0; i < game.game_players.length; i++) {
+           var current_player = game.game_players[i].player_id;
+           $('#brick_counter_player' + current_player).html(game.game_players[i].player_resources.brick);
+           $('#lumber_counter_player' + current_player).html(game.game_players[i].player_resources.lumber);
+           $('#ore_counter_player' + current_player).html(game.game_players[i].player_resources.ore);
+           $('#wool_counter_player' + current_player).html(game.game_players[i].player_resources.wool);
+           $('#grain_counter_player' + current_player).html(game.game_players[i].player_resources.grain);
+           $('#weapon1_counter_player' + current_player).html(game.game_players[i].player_weapons.weapon_level_1);
+           $('#weapon2_counter_player' + current_player).html(game.game_players[i].player_weapons.weapon_level_2);
+           $('#weapon3_counter_player' + current_player).html(game.game_players[i].player_weapons.weapon_level_3);
+       }
+    });
 }
 
 function roundRect(x, y, w, h, r) {
