@@ -3,8 +3,8 @@
     border: 2px outset;
     border-radius: 10px;
     background-color: rgba(59, 102, 5, 0.16);
-    width: 52.5%;
-    margin-left: 19%;
+    width: 70%;
+    margin-left: 15%;
 }
 
 #game_buttons #info_space {
@@ -23,8 +23,8 @@
 }
 
 #territory_info {
-    float: left;
-    width: 15%;
+    /*float: left;
+    width: 15%;*/
     height: 45%;
     margin-top: 1%;
     border: 2px outset;
@@ -82,13 +82,20 @@
 
 #container {
     float: left;
-    margin-left: 1%;
+    margin-left: -5%;
+}
+
+#info {
+    float: left;
+    width: 16%;
+    height: 90%;
+    margin-top: 1%;
 }
 
 #user_info {
-    float: left;
+    /*float: left;
     width: 15%;
-    /*height: 50%;*/
+    height: 50%;*/
     margin-top: 1%;
     border: 2px outset;
     border-radius: 10px;
@@ -108,7 +115,7 @@
 }
 
 .info_player_holder {
-    padding-bottom: 22%;
+    padding-bottom: 25%;
     padding-left: 3%;
     border-radius: 10px;
     font-weight: bold;

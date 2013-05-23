@@ -40,7 +40,7 @@
 
 .chat_room #Chat_conversation_div #data {
     margin-top: 4%;
-    width: 70%;
+    width: 55%;
     padding-left: 4%;
     border-radius: 15px;
 }
@@ -95,7 +95,7 @@
 
 .chat_game #Chat_conversation_div #data {
     margin-top: 4%;
-    width: 70%;
+    width: 60%;
     padding-left: 4%;
     border-radius: 15px;
 }

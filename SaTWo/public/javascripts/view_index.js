@@ -1,4 +1,4 @@
-
+//Session params
 var user_logged = null;
 var current_game_id = null;
 var main_page_loaded = false;
@@ -10,10 +10,6 @@ $(document).ready(function() {
     // Clean all possible information in inputs fields
     clear_inputs('login_div');
     clear_inputs('register_div');
-
-    //Session params
-    //var user_logged = null;
-    //var current_game_id = null;
 });
 
 /*

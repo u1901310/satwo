@@ -1,15 +1,6 @@
 var socket = io.connect('http://localhost:3000/');
 
-//TODO: Recarregar les sol·licituds i amics automàticament quan s'afegeixen
 $(document).ready(function() {
-//    $('#header_username_holder').text(user_logged.user_username);
-//
-//    $('#button_own_games').css('background-color', 'rgba(0,0,0,0.8)');
-//    $('#button_own_games').css('color', 'whitesmoke');
-//
-//    list_user_games();
-//    advice_requests();
-//    reload_friends();
     init_main_page();
 
     socket.on('init_main_page_received', function() {
@@ -102,15 +93,10 @@ var add_friend_button_behaviour = function(){
                         user: user_logged.user_username,
                         friend: $('#friend_username').val()
                     },
-                    function(data,status){
-
-                    },
-                    "json"
+                    function(data,status){}
                 );
 
                 socket.emit('request_sent', {info: 'sent'});
-
-                //alert("Friendship request sent");
             } else {
                 alert("This user does not exist");
             }
@@ -215,8 +201,7 @@ var accept_request_button_behaviour = function(name){
                         user: user_logged.user_username,
                         friend: name
                     },
-                    function(data,status){},
-                    "json"
+                    function(data,status){}
                 );
 
                 socket.emit('friend_sent', {info: 'sent'});
@@ -377,9 +362,7 @@ var submit_new_game_button_behaviour = function() {
                         user: user_logged._id,
                         game: game_created_id
                     },
-                    function(data, status){
-
-                    }
+                    function(data, status){}
                 );
             });
 
@@ -473,8 +456,7 @@ var enter_game_button_behaviour = function(game_id) {
                             user: user_logged._id,
                             game: game_id
                         },
-                        function(data, status){},
-                        "json"
+                        function(data, status){}
                     );
                     $('#main_page').hide();
 
@@ -539,8 +521,7 @@ var access_secure_game = function() {
             } else {
                 $('#password_game_access_input').after('<span class="error_access_secure_game">*Error: Password incorrect</span>');
             }
-        },
-        "json"
+        }
     );
 };
 

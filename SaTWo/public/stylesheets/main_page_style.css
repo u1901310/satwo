@@ -50,8 +50,8 @@
     border-radius: 10px;
     margin-top: 3%;
     padding-top: 1%;
-    height: 85%;
-    max-height: 85%;
+    height: 80%;
+    max-height: 80%;
     overflow-y: auto;
     width: 99%;
     max-width: 99%;
@@ -67,8 +67,8 @@
     border-radius: 10px;
     margin-top: 3%;
     padding-top: 1%;
-    height: 85%;
-    max-height: 85%;
+    height: 80%;
+    max-height: 80%;
     overflow-y: auto;
     width: 99%;
     max-width: 99%;
@@ -219,7 +219,7 @@
 #Game_management_div #new_game_buttons {
     float: right;
     margin-right: 1%;
-    width: 30%;
+    width: 50%;
 }
 
 #Game_management_div #button_game_submit {
@@ -255,7 +255,7 @@
 }
 
 #Friend_management_div #friend_username {
-    width: 60%;
+    width: 45%;
     padding-left: 2%;
     border-radius: 10px;
 }
@@ -290,7 +290,7 @@
 
 #Friend_management_div .friend_name {
     float: left;
-    width: 85%;
+    width: 75%;
     padding-top: 1%;
 }
 
@@ -338,7 +338,7 @@
 
 #header_buttons_div .request_name {
     float: left;
-    width: 75%;
+    width: 60%;
 }
 
 #header_buttons_div .button_accept_request {
@@ -367,7 +367,7 @@
 
 #header_buttons_div #header_username_holder {
     display: inline-block;
-    width: 60%;
+    width: 40%;
 }
 
 #header_buttons_div #button_request {

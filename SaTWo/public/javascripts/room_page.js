@@ -2,17 +2,6 @@
 var socket = io.connect('http://localhost:3000/');
 
 $(document).ready(function() {
-//    $.getJSON('/getGame/' + current_game_id, function(game) {
-//       $('#Room_name_div').text("Room of " + game.game_name);
-//       print_room_buttons(game);
-//    });
-//    print_room_user_info();
-//    print_room_list_users();
-//
-//    $('#chat_zone').removeClass('chat_game').addClass('chat_room'); //Alerta per si no funciona al no tenir class chat_game!!!
-//    $('#chat_zone').show();
-//    $('#chat_zone').load('html/chat_zone.html');
-
     init_room_page();
 
     socket.on('init_room_page_received', function() {
@@ -24,7 +13,6 @@ $(document).ready(function() {
         print_room_list_users();
     });
     socket.on('leave_update_players', function() {
-        alert("Update a player leave");
         print_room_list_users();
         $.getJSON('/getGame/' + current_game_id, function(game) {
             print_room_buttons(game);
@@ -32,7 +20,6 @@ $(document).ready(function() {
     });
     socket.on('inform_expelled_player', function(user_expelled_id) {
        if(user_logged._id == user_expelled_id) {
-           alert("I've been expelled");
            $('#chat_zone').hide();
            $('#room_page').hide();
            $('#main_page').show();
@@ -69,7 +56,7 @@ function init_room_page() {
     print_room_user_info();
     print_room_list_users();
 
-    $('#chat_zone').removeClass('chat_game').addClass('chat_room'); //Alerta per si no funciona al no tenir class chat_game!!!
+    $('#chat_zone').removeClass('chat_game').addClass('chat_room');
 
     if (!chat_zone_loaded) {
         $('#chat_zone').show();
@@ -138,7 +125,6 @@ function print_room_list_users() {
                             }
                         }
                 });
-                //});
             } else {
                 $('#Room_list_player_div').append('<p><span class="Room_list_no_user">\< Empty Slot \></span></p>');
             }
@@ -150,7 +136,6 @@ function print_room_list_users() {
 * Function to print the option buttons of the user, if user is room admin it have to start the game
 *  params: game (to evaluate if user_logged is room admin
 * */
-//var print_room_buttons = function(game) {
 function print_room_buttons(game) {
     $('#Room_buttons_div').empty();
     if(user_logged._id == game.game_room_administrator) {
@@ -204,7 +189,6 @@ var leave_button_behaviour = function(user_id) {
         },
         async:false
     }).done(function() {
-            //alert("Exit from the room");
             $('#chat_zone').hide();
             $('#room_page').hide();
             $('#main_page').show();
@@ -232,7 +216,6 @@ var expel_button_behaviour = function(user_id) {
     }).done(function() {
             socket.emit('expelled_player', user_id);
             socket.emit('alter_games_list');
-            //socket.emit('removeuser', {info: 'sent'});
         });
 };
 
@@ -265,7 +248,6 @@ var start_button_behaviour = function() {
                         );
                     }
                 );
-                //socket.emit('start_game_sent', {game_id: game._id});
             }
             else {
                 alert("There are some players who have not confirmed yet");
@@ -276,12 +258,3 @@ var start_button_behaviour = function() {
         }
     });
 };
-
-/*
- * Function to execute when user close application
- * */
-/*
-$(window).unload(function() {
-    leave_button_behaviour();
-});
-*/

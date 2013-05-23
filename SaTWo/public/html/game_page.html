@@ -7,8 +7,8 @@
 </head>
 <body>
     <div id="game_buttons">
-        <input id="dice_button" type="button" value="dices" onclick="javascript:throw_dices()"/>
-        <input id="end_turn_button" type="button" value="End turn" onclick="javascript:end_turn()"/>
+        <input id="dice_button" type="button" disabled="disabled" value="Dice" onclick="javascript:throw_dices()"/>
+        <input id="end_turn_button" type="button" disabled="disabled" value="End turn" onclick="javascript:end_turn()"/>
         <span id="info_space"></span>
         <div id="weapon_buttons">
             <input id="weapon_lvl1_button" type="button" disabled="disabled" value="W1" onclick="javascript:buyWeapon(1)"/>
@@ -16,41 +16,75 @@
             <input id="weapon_lvl3_button" type="button" disabled="disabled" value="W3" onclick="javascript:buyWeapon(3)"/>
         </div>
     </div>
-    <div id="territory_info">
-        <div id="territory_msg">Select territory</div>
-        <!--<input id='test'>-->
-        <div id="territory_random_number" hidden></div>
-        <div id="territory_resources" hidden>
-            <div id="brick_div" class="territory_resources_element">
-                <img id="brick_image" src="/images/brick.png" alt="Brick" />
-                <span>x</span>
-                <span id="brick_resources"></span>
-            </div>
-            <div id="lumber_div" class="territory_resources_element">
-                <img id="lumber_image" src="/images/lumber.png" alt="Lumber" />
-                <span>x</span>
-                <span id="lumber_resources"></span>
-            </div>
-            <div id="ore_div" class="territory_resources_element">
-                <img id="ore_image" src="/images/ore.png" alt="Ore" />
-                <span>x</span>
-                <span id="ore_resources"></span>
-            </div>
-            <div id="wool_div" class="territory_resources_element">
-                <img id="wool_image" src="/images/wool.png" alt="Wool" />
-                <span>x</span>
-                <span id="wool_resources"></span>
-            </div>
-            <div id="grain_div" class="territory_resources_element">
-                <img id="grain_image" src="/images/grain.png" alt="Grain" />
-                <span>x</span>
-                <span id="grain_resources"></span>
-            </div>
-        </div>
-        <div id="territory_level" hidden></div>
-    </div>
+    <!--<div id="territory_info">-->
+        <!--<div id="territory_msg">Select territory</div>-->
+        <!--&lt;!&ndash;<input id='test'>&ndash;&gt;-->
+        <!--<div id="territory_random_number" hidden></div>-->
+        <!--<div id="territory_resources" hidden>-->
+            <!--<div id="brick_div" class="territory_resources_element">-->
+                <!--<img id="brick_image" src="/images/brick.png" alt="Brick" />-->
+                <!--<span>x</span>-->
+                <!--<span id="brick_resources"></span>-->
+            <!--</div>-->
+            <!--<div id="lumber_div" class="territory_resources_element">-->
+                <!--<img id="lumber_image" src="/images/lumber.png" alt="Lumber" />-->
+                <!--<span>x</span>-->
+                <!--<span id="lumber_resources"></span>-->
+            <!--</div>-->
+            <!--<div id="ore_div" class="territory_resources_element">-->
+                <!--<img id="ore_image" src="/images/ore.png" alt="Ore" />-->
+                <!--<span>x</span>-->
+                <!--<span id="ore_resources"></span>-->
+            <!--</div>-->
+            <!--<div id="wool_div" class="territory_resources_element">-->
+                <!--<img id="wool_image" src="/images/wool.png" alt="Wool" />-->
+                <!--<span>x</span>-->
+                <!--<span id="wool_resources"></span>-->
+            <!--</div>-->
+            <!--<div id="grain_div" class="territory_resources_element">-->
+                <!--<img id="grain_image" src="/images/grain.png" alt="Grain" />-->
+                <!--<span>x</span>-->
+                <!--<span id="grain_resources"></span>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="territory_level" hidden></div>-->
+    <!--</div>-->
     <div id="container"></div>
-    <div id="user_info">
+    <div id="info">
+        <div id="territory_info">
+            <div id="territory_msg">Select territory</div>
+            <!--<input id='test'>-->
+            <div id="territory_random_number" hidden></div>
+            <div id="territory_resources" hidden>
+                <div id="brick_div" class="territory_resources_element">
+                    <img id="brick_image" src="/images/brick.png" alt="Brick" />
+                    <span>x</span>
+                    <span id="brick_resources"></span>
+                </div>
+                <div id="lumber_div" class="territory_resources_element">
+                    <img id="lumber_image" src="/images/lumber.png" alt="Lumber" />
+                    <span>x</span>
+                    <span id="lumber_resources"></span>
+                </div>
+                <div id="ore_div" class="territory_resources_element">
+                    <img id="ore_image" src="/images/ore.png" alt="Ore" />
+                    <span>x</span>
+                    <span id="ore_resources"></span>
+                </div>
+                <div id="wool_div" class="territory_resources_element">
+                    <img id="wool_image" src="/images/wool.png" alt="Wool" />
+                    <span>x</span>
+                    <span id="wool_resources"></span>
+                </div>
+                <div id="grain_div" class="territory_resources_element">
+                    <img id="grain_image" src="/images/grain.png" alt="Grain" />
+                    <span>x</span>
+                    <span id="grain_resources"></span>
+                </div>
+            </div>
+            <div id="territory_level" hidden></div>
+        </div>
+        <div id="user_info">
         <div id="info_player1" class="info_player_holder" hidden>
             <div id="nom_player1"></div>
             <div class="user_info_holder">
@@ -285,6 +319,243 @@
                 <div id="weapon3_counter_player6" class="user_info_element"></div>
             </div>
         </div>
+        </div>
     </div>
+    <!--<div id="user_info">-->
+        <!--<div id="info_player1" class="info_player_holder" hidden>-->
+            <!--<div id="nom_player1"></div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/brick.png" alt="Brick"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/lumber.png" alt="Lumber"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/ore.png" alt="Ore"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/wool.png" alt="Wool"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/grain.png" alt="Grain"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon1.png" alt="Weapon1"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon2.png" alt="Weapon2"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon3.png" alt="Weapon3"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div id="brick_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="lumber_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="ore_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="wool_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="grain_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="weapon1_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="weapon2_counter_player1" class="user_info_element"></div>-->
+                <!--<div id="weapon3_counter_player1" class="user_info_element"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="info_player2" class="info_player_holder" hidden>-->
+            <!--<div id="nom_player2"></div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/brick.png" alt="Brick"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/lumber.png" alt="Lumber"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/ore.png" alt="Ore"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/wool.png" alt="Wool"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/grain.png" alt="Grain"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon1.png" alt="Weapon1"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon2.png" alt="Weapon2"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon3.png" alt="Weapon3"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div id="brick_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="lumber_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="ore_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="wool_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="grain_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="weapon1_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="weapon2_counter_player2" class="user_info_element"></div>-->
+                <!--<div id="weapon3_counter_player2" class="user_info_element"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="info_player3" class="info_player_holder" hidden>-->
+            <!--<div id="nom_player3"></div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/brick.png" alt="Brick"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/lumber.png" alt="Lumber"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/ore.png" alt="Ore"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/wool.png" alt="Wool"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/grain.png" alt="Grain"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon1.png" alt="Weapon1"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon2.png" alt="Weapon2"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon3.png" alt="Weapon3"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div id="brick_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="lumber_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="ore_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="wool_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="grain_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="weapon1_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="weapon2_counter_player3" class="user_info_element"></div>-->
+                <!--<div id="weapon3_counter_player3" class="user_info_element"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="info_player4" class="info_player_holder" hidden>-->
+            <!--<div id="nom_player4"></div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/brick.png" alt="Brick"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/lumber.png" alt="Lumber"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/ore.png" alt="Ore"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/wool.png" alt="Wool"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/grain.png" alt="Grain"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon1.png" alt="Weapon1"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon2.png" alt="Weapon2"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon3.png" alt="Weapon3"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div id="brick_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="lumber_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="ore_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="wool_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="grain_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="weapon1_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="weapon2_counter_player4" class="user_info_element"></div>-->
+                <!--<div id="weapon3_counter_player4" class="user_info_element"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="info_player5" class="info_player_holder" hidden>-->
+            <!--<div id="nom_player5"></div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/brick.png" alt="Brick"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/lumber.png" alt="Lumber"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/ore.png" alt="Ore"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/wool.png" alt="Wool"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/grain.png" alt="Grain"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon1.png" alt="Weapon1"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon2.png" alt="Weapon2"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon3.png" alt="Weapon3"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div id="brick_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="lumber_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="ore_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="wool_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="grain_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="weapon1_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="weapon2_counter_player5" class="user_info_element"></div>-->
+                <!--<div id="weapon3_counter_player5" class="user_info_element"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="info_player6" class="info_player_holder" hidden>-->
+            <!--<div id="nom_player6"></div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/brick.png" alt="Brick"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/lumber.png" alt="Lumber"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/ore.png" alt="Ore"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/wool.png" alt="Wool"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/grain.png" alt="Grain"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon1.png" alt="Weapon1"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon2.png" alt="Weapon2"/>-->
+                <!--</div>-->
+                <!--<div class="user_info_element">-->
+                    <!--<img src="/images/weapon3.png" alt="Weapon3"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="user_info_holder">-->
+                <!--<div id="brick_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="lumber_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="ore_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="wool_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="grain_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="weapon1_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="weapon2_counter_player6" class="user_info_element"></div>-->
+                <!--<div id="weapon3_counter_player6" class="user_info_element"></div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </body>
 </html>

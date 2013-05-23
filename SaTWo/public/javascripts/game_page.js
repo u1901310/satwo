@@ -39,13 +39,6 @@ var contour_layers;
 var thief_layer;
 
 $(document).ready(function(){
-//    $.getJSON('getGame/' + current_game_id, function(game) {
-//        $.each(game.game_players, function() {
-//            if (this.player_user_id == user_logged._id) player_id = this.player_id;
-//        });
-//    });
-//    $('#info_space').text(' ');
-
     init_game_page();
 
     socket.on('init_game_page_sent', function() {
@@ -58,13 +51,6 @@ $(document).ready(function(){
 
     socket.on('thief_received', function(imageObj) {
         drawThiefImage(imageObj);
-    });
-    socket.on('enable_dices_received', function(data) {
-        alert('message received to enable dices');
-        $.getJSON('/getGameTurn/' + current_game_id, function(turn) {
-            alert(turn + " and " + player_id);
-            if (player_id == turn) $('#dice_button').removeAttr("disabled");
-        });
     });
     socket.on('game_won_received', function(data) {
         alert('Player ' + data.winner + ' has won by ' + data.way);
@@ -83,6 +69,37 @@ $(document).ready(function(){
     });
     socket.on('update_resources', function() {
         update_resources();
+    });
+    socket.on('update_info_received', function(data) {
+        if (data.turn == player_id) {
+            if (data.state == 'init_round') {
+                $('#info_space').text('(Your turn) Select a territory');
+            }
+            else if (data.state == 'game_round') {
+                $('#info_space').text('(Your turn) Throw dice');
+                $('#dice_button').removeAttr("disabled");
+            }
+            else if (data.state == 'dice_result') {
+                $('#info_space').text('(Your turn) Dice result is ' + data.dice);
+                $('#dice_button').attr("disabled", "disabled");
+                $('#end_turn_button').removeAttr("disabled");
+            }
+            else if (data.state == 'thief') {
+                $('#info_space').text('(Your turn) Select a territory for the THIEF');
+                $('#dice_button').attr("disabled", "disabled");
+            }
+        }
+        else {
+            if (data.state == 'dice_result') {
+                $('#info_space').text('(Turn ' + data.turn + ') Dice result is ' + data.dice);
+            }
+            else if (data.state == 'thief') {
+                $('#info_space').text('(Turn ' + data.turn + ') Dice result is 7 (moving thief)');
+            }
+            else {
+                $('#info_space').text('(Turn ' + data.turn + ') Wait for your turn');
+            }
+        }
     });
 });
 
@@ -109,10 +126,12 @@ function init_game_page() {
                 $('#weapon2_counter_player' + current_player).html('0');
                 $('#weapon3_counter_player' + current_player).html('0');
                 $('#info_player' + current_player).show();
+
+                if (player_id == 1) $('#info_space').text('(Your turn) Select a territory');
+                else $('#info_space').text('(Turn 1) Wait for your turn');
             });
         });
     });
-    $('#info_space').text(' ');
 
     dices_throwed = true;
     thief_enabled = false;
@@ -164,15 +183,10 @@ function action(image) {
                             territory_id: territory_id,
                             player_id: player_id
                         },
-                        function(data,status){
-                            //socket.emit('conquer_territory_sent', image, player_id);
-                        },
-                        "json"
+                        function(data,status){}
                     );
 
-                    //drawFilledImage(image, player_id);
                     var imageObj = {
-                        //image: image.attrs.image,
                         desc: image.attrs.desc,
                         id: image.attrs.id,
                         index: image.attrs.index,
@@ -189,7 +203,9 @@ function action(image) {
                                 game_id: current_game_id,
                                 turn: new Number(game.game_turn) + 1
                             },
-                            function(data,status){}
+                            function(data,status){
+                                socket.emit('update_info_sent', {state: 'init_round', turn: new Number(game.game_turn) + 1});
+                            }
                         );
                     } else {
                         $.post('/setGameRound',
@@ -209,9 +225,7 @@ function action(image) {
                             territory_id: territory_id,
                             player_id: player_id
                         },
-                        function(data,status){
-                            //socket.emit('conquer_territory_sent', image, player_id);
-                        }
+                        function(data,status){}
                     );
 
                     $.ajax({
@@ -224,7 +238,6 @@ function action(image) {
                         },
                         async: false
                     }).done(function(data){
-                        //socket.emit('conquer_territory_sent', image, player_id);
                         socket.emit('alter_resources');
                     });
 
@@ -245,7 +258,9 @@ function action(image) {
                                 game_id: current_game_id,
                                 turn: new Number(game.game_turn) - 1
                             },
-                            function(data,status){}
+                            function(data,status){
+                                socket.emit('update_info_sent', {state: 'init_round', turn: new Number(game.game_turn) - 1});
+                            }
                         );
                     } else {
                         $.post('/setGameRound',
@@ -255,7 +270,7 @@ function action(image) {
                             },
                             function(data,status){
                                 dices_throwed = false;
-                                //socket.emit('enable_dices_sent', {info: 'sent'});
+                                socket.emit('update_info_sent', {state: 'game_round', turn: new Number(game.game_turn)});
                             }
                         );
                     }
@@ -284,6 +299,7 @@ function action(image) {
                                     },
                                     function(){
                                         socket.emit('alter_resources');
+                                        socket.emit('update_info_sent', {state: 'dice_result', turn: player_id, dice: 7});
                                         clickable_territories();
                                     }
                                 );
@@ -416,10 +432,10 @@ var end_turn = function() {
     $('#weapon_lvl2_button').attr("disabled", "disabled");
     $('#weapon_lvl3_button').attr("disabled", "disabled");
     dices_throwed = false;
-    $('#info_space').text(dices_throwed);
+
     $.getJSON('/nextGameTurn/' + current_game_id, function(data) {
         removeContourLayers();
-        //socket.emit('enable_dices_sent', {info: 'sent'});
+        socket.emit('update_info_sent', {state: 'game_round', turn: data.turn});
     });
 }
 
@@ -427,10 +443,6 @@ var end_turn = function() {
 * Function to simulate a throw of dices and update some info like players resources or auxiliary info to show the clickable territories
 * */
 var throw_dices = function() {
-
-    //$('#dice_button').attr("disabled", "disabled");
-
-
     var dice1 = Math.floor(Math.random()*6) + 1;
     var dice2 = Math.floor(Math.random()*6) + 1;
     var result = dice1 + dice2;
@@ -438,6 +450,7 @@ var throw_dices = function() {
     if(result == 7) { //Realitzar acció lladre
         thief_enabled = true;
         $('#end_turn_button').attr("disabled", "disabled");
+        socket.emit('update_info_sent', {state: 'thief', turn: player_id});
     } else {
         $.post('/addResourcesFromTerritoryByNumber',
                 {
@@ -450,12 +463,10 @@ var throw_dices = function() {
                 }
         );
         $('#end_turn_button').removeAttr("disabled");
+        socket.emit('update_info_sent', {state: 'dice_result', turn: player_id, dice: result});
     }
     dices_throwed = true;
-    $('#info_space').text(dices_throwed + ' (' + result + ')');
 }
-
-var alrt = false;
 
 /*
 * Function to select all the territories clickables for the current player.
@@ -474,7 +485,6 @@ var clickable_territories = function() {
     $.getJSON('isWinner/' + current_game_id + '/' + player_id, function(data) {
         if (data.win) {
             socket.emit('game_won_sent',{winner: player_id, way: data.way});
-            //alert("I have won!");
         } else {
             $.getJSON('getGame/' + current_game_id, function(game) {
                 var player;
@@ -496,7 +506,6 @@ var clickable_territories = function() {
 
                 check_buy_weapon = are_greater(player.player_resources, resources_weapon);
 
-                if (alrt) alert("Checking the clicable territories (" + game.game_territories.length + ")");
                 for(var i = 0; i < game.game_territories.length; i++) {
                     /*
                      * Per cada territori comprovar si algun adjacent és nostre, en cas afirmatiu:
@@ -513,15 +522,12 @@ var clickable_territories = function() {
                     }
 
                     if(territory.territory_ruler == game.game_turn && check_update && territory.territory_level < 4) {
-                        if (alrt) alert("Own territory");
                         territories_info[i] = {neutral: false, enemy: false, own: true};
                         drawContouredImage(i);
                     } else {
                         var trobat = false;
                         var j = 0;
-                        if (alrt) alert("Checking neighbours");
                         while(!trobat && j < territory.territory_neighbours.length) {
-                            if (alrt) alert("Neighbour territory " + territory.territory_neighbours[j]);
                             if(game.game_territories[territory.territory_neighbours[j] - 1].territory_ruler == game.game_turn) {
                                 trobat = true;
                             }
@@ -529,19 +535,15 @@ var clickable_territories = function() {
                         }
                         if(trobat) {
                             if(territory.territory_ruler == null && check_conquer) {
-                                if (alrt) alert("Neutral territory");
                                 territories_info[i] = {neutral: true, enemy: false, own: false};
                                 drawContouredImage(i);
                             } else if(territory.territory_ruler != null && territory.territory_ruler != game.game_turn && ((territory.territory_level == 1 && check_attack_lvl1) || (territory.territory_level == 2 && check_attack_lvl2) || (territory.territory_level == 3 && check_attack_lvl3))) {
-                                if (alrt) alert("Enemy territory");
                                 territories_info[i] = {neutral: false, enemy: true, own: false};
                                 drawContouredImage(i);
                             } else {
-                                if (alrt) alert("Non clicable territory");
                                 territories_info[i] = {neutral: false, enemy: false, own: false};
                             }
                         } else {
-                            if (alrt) alert("Non clicable territory");
                             territories_info[i] = {neutral: false, enemy: false, own: false};
                         }
                     }
@@ -724,7 +726,6 @@ function init_map() {
     stage.add(layer);
 
 
-    //var num_images;
     sources = [];
     ids = [];
 
@@ -786,14 +787,12 @@ function drawFilledImage(imageObj, player_id) {
         });
 
         kin_img.on('mouseover', function() {
-            //$('#test').val(this.attrs.desc);
             this.setOpacity(0.3);
             $('#container').css('cursor','pointer')
             filled_layers[this.attrs.index].draw();
             showTerritoryInformation(this);
         });
         kin_img.on('mouseout', function() {
-            //$('#test').val('');
             this.setOpacity(1);
             $('#container').css('cursor','auto')
             filled_layers[this.attrs.index].draw();
@@ -860,7 +859,6 @@ function drawThiefImage(imageObj) {
         });
 
         kin_img.on('mouseover', function() {
-            //$('#test').val(this.attrs.desc);
             filled_layers[this.attrs.index].setOpacity(0.3);
             filled_layers[this.attrs.index].draw();
             $('#container').css('cursor','pointer')
@@ -868,7 +866,6 @@ function drawThiefImage(imageObj) {
             showTerritoryInformation(this);
         });
         kin_img.on('mouseout', function() {
-            //$('#test').val('');
             filled_layers[this.attrs.index].setOpacity(1);
             filled_layers[this.attrs.index].draw();
             $('#container').css('cursor','auto')
@@ -909,14 +906,12 @@ function initStage() {
         });
 
         kinetic_images[i].on('mouseover', function() {
-            //$('#test').val(this.getAttrs().desc);
             this.setOpacity(0.3);
             $('#container').css('cursor','pointer')
             filled_layers[this.getAttrs().index].draw();
             showTerritoryInformation(this);
         });
         kinetic_images[i].on('mouseout', function() {
-            //$('#test').val('');
             this.setOpacity(1);
             $('#container').css('cursor','auto')
             filled_layers[this.getAttrs().index].draw();
@@ -938,11 +933,6 @@ function initStage() {
 
 
 function showTerritoryInformation(image) {
-    //$('#territories').empty();
-//    $('#territory_random_number').empty();
-//    $('#territory_resources').empty();
-//    $('#territory_level').empty();
-
     $('#territory_msg').hide();
 
     $.getJSON('/getGame/' + current_game_id, function(game) {
@@ -986,29 +976,12 @@ function showTerritoryInformation(image) {
                 $('#territory_random_number').show();
                 $('#territory_resources').show();
                 $('#territory_level').show();
-
-
-//                $('#territories').append('<span><b>    Territory ' + image.attrs.index + '</b></span><br>');
-//                $('#territories').append('<span><b>    Random number: </b>' + this.territory_random_number + '</span><br>');
-//                $('#territories').append('<span><b>    Resources: </b><br>' + this.territory_resources[0] + ' (brick)<br> ' +
-//                    this.territory_resources[1] + ' (lumber)<br> ' +
-//                    this.territory_resources[2] + ' (ore)<br> ' +
-//                    this.territory_resources[3] + ' (wool)<br> ' +
-//                    this.territory_resources[4] + ' (grain)</span><br>');
-//                $('#territories').append('<span><b>    Ruler: </b>' + this.territory_ruler + '</span><br>');
-//                $('#territories').append('<span><b>    Level: </b>' + this.territory_level + '</span><br>');
-//                $('#territories').append('<span><b>    Thief: </b>' + this.territory_thief + '</span><br><br>');
             }
         });
     });
 };
 
 function hideTerritoryInformation() {
-    //$('#territories').empty();
-//    $('#territory_random_number').empty();
-//    $('#territory_resources').empty();
-//    $('#territory_level').empty();
-
     $('#territory_random_number').hide();
     $('#territory_resources').hide();
     $('#territory_level').hide();

@@ -186,6 +186,10 @@ io.sockets.on('connection', function (socket) {
         io.sockets.in(socket.room).emit('update_resources');
     });
 
+    socket.on('update_info_sent', function(data) {
+        io.sockets.in(socket.room).emit('update_info_received', data);
+    });
+
     socket.on('game_won_sent', function(data) {
         io.sockets.in(socket.room).emit('game_won_received', data);
     });
@@ -194,7 +198,6 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('subscribe', function(room, username) {
         io.sockets.in(room).emit('userconnected', username);
-        console.log("SUBSCRIBE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         socket.emit('updatechat', 'SERVER', 'you have connected');
         //socket.join(room);
         socket.username = username;

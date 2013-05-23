@@ -1,8 +1,6 @@
 var socket = io.connect('http://localhost:3000');
 var usernames = {};
 
-//socket.emit('subscribe', current_game_id, user_logged.user_username);
-
 socket.on('init_chat_zone_received', function() {
     init_chat_zone();
     $('#chat_zone').show();
@@ -38,24 +36,6 @@ socket.on('updatechat', function (username, data) {
 
 // on load of page
 $(function(){
-//    $('#conversation').empty();
-//    $('#users').empty();
-//    $.getJSON('/getGame/' + current_game_id, function(game) {
-//        $.each(game.game_users_info, function(){
-//            var user_id = this.user_id;
-//            $.ajax({
-//                url: 'getUserUsername/' + user_id,
-//                type: 'GET',
-//                async: false
-//            }).done(function(username){
-//                usernames[username] = username;
-//                $('#users').append('<div>' + username + '</div>');
-//            });
-//        });
-//
-//        socket.emit('subscribe', current_game_id, user_logged.user_username);
-//    });
-
     init_chat_zone();
 
     // when the client clicks SEND

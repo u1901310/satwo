@@ -887,7 +887,7 @@ exports.nextGameTurn = function(req, res) {
                     res.send({error: 'An error has occurred setting the turn of a game'});
                 } else {
                     console.log('Success: next turn set to game ' + game_id);
-                    res.send({info: 'info'});
+                    res.send({turn: game.game_turn});
                 }
             });
 
